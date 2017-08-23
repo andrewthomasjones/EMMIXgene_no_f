@@ -10,28 +10,12 @@ add <- function(x, y) {
   x + y
 }
 
-#E-step
 
-tau.estep.wire<-function(dat,pro,mu,sigma,n,m,g)
-{
-
-
-  print(paste0("pro :", pro),na.print="NA")
-  print(paste0("mu :", mu),na.print="NA")
-  print(paste0("sigma :", sigma),na.print="NA")
-  print(paste0("n :", n),na.print="NA")
-  print(paste0("m :", m),na.print="NA")
-  print(paste0("g :", g),na.print="NA")
-
-
-
-
-  obj <- .Fortran("estepmvn",PACKAGE="EMMIXcontrasts2",
-                  as.double(dat),as.integer(n),as.integer(m),as.integer(g),
-                  as.double(pro),as.double(mu),as.double(sigma),
-                  mtauk=double(n*g),double(g),loglik=double(1),
-                  error = integer(1))[8:11]
-  if(obj$error) stop("error")
-  tau <- array(obj$mtauk,c(n,g))
-  list(tau=tau,loglik=obj$loglik,pro=colMeans(tau))
+select_genes_dat<-function(filename, g=1, k =, random_starts=5, ll_thresh = 0.001, min_clust_size = 3){
+    data<-read.delim(filename, sep=" ", header=F)
+    row<-dim(x)[1]
+    col<-dim(x)[2]
+    res<-select_genes(data, row, col, g, k, random_starts,ll_thresh, min_clust_size)
 }
+
+

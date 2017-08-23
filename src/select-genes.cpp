@@ -7,28 +7,110 @@ using namespace Rcpp;
 //'@useDynLib EMMIXgene
 
 #include <vector>
-#include <sting>
-
+#include <string>
+#include <algorithm>
 
 #define LINE_LENGTH 5000	/* max length of each line in microarray data */
 #define MAX_GENES 5000		/* max number of genes in microarray data */
 #define MAX_TISSUES 200     /* max number of tissues in microarray data */
 #define MAX_GROUPS 100		/* max number of groups to split into */
 #define MAX_ENTRY_LENGTH 20	/* max length of any single entry in the array */
+#define MAX_SELECTED_GENES 100
 
+using namespace arma;
 
 struct tab
 {
   int nu;
   int count;
+  int sm;
   double tl;
   std::vector<double> s;
 };
 
+bool tabcompare(const tab &a, const tab &b)
+{
+  return a.tl< b.tl;
+};
+
+
+
+
+//&tl, &sm, &er
+
+// [[Rcpp::export]]
+ vec call_emmix_sel( vec t, int row, int col, int g){
+  double fl1, fl2;
+  int group1[MAX_TISSUES], group2[MAX_TISSUES];
+  int comp[MAX_TISSUES], x, y = 0, a1, a2, i;
+   vec s =  zeros(col);
+   vec ret =  zeros(3);
+  double tl, sm, er;
+
+  if (g == 1){
+    //actually call emmix on t
+  }
+  else{
+    //actually call emmix on t
+  }
+
+  //out1.%d"
+  a1 = 0;//sscanf (s, " Final Log-Likelihood is %f", &fl1);
+  //out2.%d
+  a2 = 0;//sscanf (s, " Final Log-Likelihood is %f", &fl2);
+
+  //final loglikes
+  fl1=0;
+  fl2=0;
+
+  if (a1 && a2){
+    tl = 2.0 * (fl2 - fl1);
+  }
+  else{
+    ret(0) = tl;
+    ret(1) = er;
+    ret(2) = sm;
+    return(ret);
+  }
+
+
+  //out2
+  // group2[i] = some number per line
+
+  er = 0;
+
+  memset (comp, 0, sizeof (comp));
+  for (i = 0; i < col; i++){
+    comp[group2[i]]++;
+  }
+
+  sm = 9999;
+  for (i = 1; i <= g + 1; i++){
+    if (comp[i] < sm){
+      sm = comp[i];
+    }
+  }
+
+  /* 06/04/2002 CGT GJM
+   ** If minimum size is 1, the set -2 log lambda t = -100
+   */
+  if (sm == 1)
+  {
+    tl = -100;
+    er = -100;
+  }
+
+  //return stuff
+  ret(0) = tl;
+  ret(1) = er;
+  ret(2) = sm;
+  return(ret);
+}
+
 
 
 // [[Rcpp::export]]
-int select_genes(std::string filename, int row, int col, int g, int k, int r, double b1, int b2)
+int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, int b2)
 {
   //  ("How many random starts for the fitting of t components to individual genes?\n"); r
   // ("How many k-means starts for the fitting of t components to individual genes?\n"); k
@@ -37,56 +119,72 @@ int select_genes(std::string filename, int row, int col, int g, int k, int r, do
 
   int x;			/* counter */
   int i;			/* another counter */
-  int rc, b1, b2, r1, k1, clus;
+  int rc, r1, k1, clus;
   int genecount = 0;
-  arma::vec s =  arma::zeros(LINE_LENGTH);
-  arma::vec sg = arma::zeros(MAX_GENES);
 
-  struct tab gtab[MAX_SELECTED_GENES];	/* for our cut-down genes and -2 log \lambdas */
+   mat sg =  zeros<mat>(MAX_GENES,col);
+   mat f4 =  zeros<mat>(MAX_GENES,col);
+   mat f3 =  zeros<mat>(row,3);
+
+  //struct tab gtab[MAX_SELECTED_GENES];	/* for our cut-down genes and -2 log \lambdas */
+  std::vector<tab> gtab;
   g = 1; //why
 
-  rc = 0;
-  while (rc < row)
+  for(int rc=0;rc<row;rc++)
   {
-    arma::vec t =  arma::zeros(LINE_LENGTH);
+     vec t =   zeros(col);
     double last;
     int sm, er;
     double tl;
 
-    /* grab line i, change space to CR, remove blank lines */
-    /* sed -n $i'p' $1 | tr ' ' '\n' | sed '/^$/d' > tmp.$$ */
-    /* write output to tmp.$$ */
+    t = data.row(rc);
 
-    fgets (s, LINE_LENGTH, f); //grab row - how to ensue is the right one
-    rc++;
+    // int row;			/* 2nd argument */ argv
+    // int col;			/* 3rd argument */
+    // int g;			/* 4th argument */
 
-    call_emmix (argv, t, &tl, &sm, &er, col, g);	/* get -2 log \lambda, smaller, error */ //call emmix
+     vec em_res = call_emmix_sel(t, row, col, g);	/* get -2 log \lambda, smaller, error */ //call emmix
+    tl = em_res(0);
+    er = em_res(1);
+    sm = em_res(2);
 
     if (tl > b1)		/* if -2 log \lambda exceeds b_1 cutoff */
     {
       if (sm >= b2)		/* if smaller groups exceeds b_2 cutoff */
       {
-        fprintf (f3, "%d %f %d\n", rc, tl, sm); //saves result
+         vec temp =  zeros(3);
+        temp(0) = rc;
+        temp(1) = tl;
+        temp(2) = sm;
+        f3.row(rc) = temp;
 
         gtab[genecount].nu = genecount; //results
         gtab[genecount].tl = tl;
         gtab[genecount].sm = sm;
 
-        strcpy (sg[genecount], s); //copies s to sg[genecount]
+        sg.row(genecount)= t; //copies s to sg[genecount]
         genecount++;
 
       } else {
 
         /* g is the number of groups */
-        call_emmix (argv, t, &tl, &sm, &er, col, g + 1); //same but g+1
+         vec em_res = call_emmix_sel(t, row, col, g+1); //same but g+1
+        tl = em_res(0);
+        er = em_res(1);
+        sm = em_res(2);
+
         if (tl > b1)
         {
-          fprintf (f3, "%d %f %d\n", rc, tl, sm);
+          vec temp =  zeros(3);
+          temp(0) = rc;
+          temp(1) = tl;
+          temp(2) = sm;
+          f3.row(rc) = temp;
 
           gtab[genecount].nu = genecount;
           gtab[genecount].tl = tl;
           gtab[genecount].sm = sm;
-          strcpy (sg[genecount], s);
+          sg.row(genecount)= t;
           genecount++;
         }
       }
@@ -95,24 +193,25 @@ int select_genes(std::string filename, int row, int col, int g, int k, int r, do
 
   }
 
-  qsort ((void *) gtab, genecount, sizeof (struct tab), tabcompare); //sort gtab on .tl
+
+  std::sort(gtab.begin(), gtab.end(), tabcompare);
 
 
   // save data
-  rc = 0;
-  while (rc < genecount){
-    fputs (sg[gtab[rc++].nu], f4);
+  vec tmp = zeros(3);
+
+  for(int j=0;j<genecount;j++){
+    f4.row(j)=sg.row(gtab[j].nu);
+    tmp(0)=gtab[j].nu+1;
+    tmp(1)=gtab[j].tl;
+    tmp(2)=gtab[j].sm;
+    f3.row(j)=tmp;
   }
 
-  rc = 0;
-  while (rc < genecount)
-  {
-    fprintf (f3,"%d %f %d\n",gtab[rc].nu+1, gtab[rc].tl, gtab[rc].sm);
-    rc++;
-  }
-
+  //need to write or save f3 and f4
 
   return 0;
 }
+
 
 
