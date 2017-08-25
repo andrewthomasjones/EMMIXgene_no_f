@@ -1,7 +1,7 @@
       PROGRAM EMMIXlite
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     INCLUDE 'EMMIXFAC.max'
-      INCLUDE 'EMMIX-f1.max'
+C      INCLUDE 'emmix/EMMIX-f1.max'
 
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
@@ -30,7 +30,7 @@ C     INCLUDE 'EMMIXFAC.max'
 
 C    Check to see if the random number generator works (try two formats)
       CALL DETERRANDOM(IER)
-	              
+
       CALL SETUP(NIND,NATT,NCOV,NG0,NG1,NKMEANS,NRANDS,RDSB,INFYLE,
      & OFYLE,MFYLE,MODFYLE,OPTION,START,TOLS,SUB,SCAL,FACT,NATTQ,
      & REV,IER)
@@ -39,7 +39,7 @@ C    Check to see if the random number generator works (try two formats)
       OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       OPEN (UNIT=23,FILE=MFYLE,STATUS = 'UNKNOWN')
       OPEN (UNIT=24,FILE=MODFYLE,STATUS = 'UNKNOWN')
-       
+
       WRITE(22,*) '--------------------------------------'
       WRITE(22,*) 'Output from analysis of ',INFYLE
       WRITE(22,*) '--------------------------------------'
@@ -47,7 +47,7 @@ C    Check to see if the random number generator works (try two formats)
       WRITE(22,*) 'Number of Variables=',NATT
       WRITE(22,*) 'Number of Groups=',NG0
       WRITE(22,*) '--------------------------------------'
-      WRITE(22,*) 
+      WRITE(22,*)
 
       CALL READX(NIND,NATT,X,SUB,REV)
       IF (SCAL.EQ.1) THEN
@@ -64,7 +64,7 @@ C    Check to see if the random number generator works (try two formats)
         NATT=SUB(2)
         CALL READALLOC(NIND,NATT,NG0,XMU,XVAR,T,X)
       ENDIF
-       
+
       NATT=SUB(2)
       CALL MAIN(NIND,NATT,NCOV,X,NG0,NG1,XMU,XVAR,T,MAXITS,
      & TOLS,AIT,OPTION,START,NRANDS,NKMEANS,FACT,RDSB,NATTQ)
@@ -77,7 +77,7 @@ C    Check to see if the random number generator works (try two formats)
 
       SUBROUTINE READX(NIND,NATT,X,SUB,REV)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
         REAL X(MNIND,MNATT)
         REAL TEMP(MNATT*10)
         INTEGER SUB(2+MNATT*10)
@@ -96,15 +96,15 @@ C    Check to see if the random number generator works (try two formats)
 	   IF (NIND.GT.MNIND) THEN
 	    WRITE (*,*)'Adjust EMMIX-f1.max'
 	    stop
-           ENDIF	     
+           ENDIF
 	   IF (NATT.GT.MNATT) THEN
 	    WRITE (*,*)'Adjust EMMIX-f1.max'
 	    stop
-           ENDIF	     
+           ENDIF
 	 WRITE (*,*) 'Transposed new dim= ',NIND,NATT
 	 WRITE (22,*) 'Transposed new dim= ',NIND,NATT
 	 ENDIF
-        ELSEIF (SUB(1).EQ.100) THEN 
+        ELSEIF (SUB(1).EQ.100) THEN
           DO 71 I=1,NIND
             READ(21,*) (TEMP(J),J=1,NATT)
              DO 72 J=1,SUB(2)
@@ -116,9 +116,9 @@ C    Check to see if the random number generator works (try two formats)
          DO 100 I=1,NIND
           READ(21,*) (TEMP(J),J=1,NATT)
           R=RANDNUM()
-          IF (R*100.0.LT.FLOAT(SUB(1))) THEN  
+          IF (R*100.0.LT.FLOAT(SUB(1))) THEN
             COUNT=COUNT+1
-            IF (SUB(2).NE.NATT) THEN 
+            IF (SUB(2).NE.NATT) THEN
              DO 80 J=1,SUB(2)
               X(COUNT,J)=TEMP(SUB(2+J))
 80           CONTINUE
@@ -134,7 +134,7 @@ C    Check to see if the random number generator works (try two formats)
         IF (SUB(1).NE.100) THEN
          NIND=COUNT
         ENDIF
-         
+
         WRITE (*,*)  ' - Read in of data sucessful'
         WRITE (22,*) ' - Read in of data sucessful'
 	RETURN
@@ -142,7 +142,7 @@ C    Check to see if the random number generator works (try two formats)
 
       SUBROUTINE READPARA(NATT,NG,XMU,XVAR,T,SUB)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NATT,      ! Number of attributes/variables/dimensions
      &        NG         ! Number of components or groups
       INTEGER SUB(2+MNATT*10)
@@ -169,7 +169,7 @@ C    Check to see if the random number generator works (try two formats)
 
       SUBROUTINE READALLOC(NIND,NATT,NG0,XMU,XVAR,T,X)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       REAL X(MNIND,MNATT)
       INTEGER NIND,
      &        NATT,      ! Number of attributes/variables/dimensions
@@ -186,11 +186,11 @@ C    Check to see if the random number generator works (try two formats)
                XVAR(K,IC(I,L))=0.0
 224        CONTINUE
 
- 
+
 	     DO 227 I=1,NIND
 	      READ (21,*) IDT
 	      N(IDT)=N(IDT)+1
-	      DO 226 J=1,NATT 
+	      DO 226 J=1,NATT
 	       XMU(IDT,J)=XMU(IDT,J)+DBLE(X(I,J))
 	       DO 226 L=1,J
 	         XVAR(IDT,IC(J,L))=XVAR(IDT,IC(J,L))+DBLE(X(I,J)*X(I,L))
@@ -204,8 +204,8 @@ C    Check to see if the random number generator works (try two formats)
                 XVAR(KK,IC(JJ,II))=
      &          XVAR(KK,IC(JJ,II))-(XMU(KK,II)*XMU(KK,JJ)*FLOAT(N(KK)))
                 XVAR(KK,IC(JJ,II))=XVAR(KK,IC(JJ,II))/FLOAT(N(KK)-1)
-212       CONTINUE	
-213       CONTINUE	
+212       CONTINUE
+213       CONTINUE
         WRITE (*,*)  ' - Read in of allocation sucessful'
         WRITE (22,*) ' - Read in of allocation sucessful'
 	RETURN
@@ -221,7 +221,7 @@ C     and branches according to the options specified by FLAGS.
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
 
 C    Global Parameters
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
@@ -264,13 +264,13 @@ C   INPUT PARAMETERS
 7010     CONTINUE
          write (24,*) (T(K),K=1,NG1)
          RETURN
-       ENDIF        
+       ENDIF
 
        IF (OPTION.EQ.2) THEN
          IF (START.EQ.3) THEN
           CALL AUTO(NIND,NATT,NCOV,X,NG1,XMU,XVAR,T,MAXITS(1),
      &              NRANDS,NKMEANS,TOLS(1),AIT,RDSB,FACT,B,D,NATTQ)
-         ENDIF   
+         ENDIF
          MODE=2
 	 SETUPON=0
 	 FORMOT=1
@@ -278,7 +278,7 @@ C   INPUT PARAMETERS
      &          MAXITS(2),MODE,FACT,B,D,NATTQ,FORMOT,SETUPON,IER)
          CALL ESTEP(NIND,NATT,NCOV,NG1,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
-      
+
          DO 8010 K=1,NG1
             write (24,*) (XMU(K,I),I=1,NATT)
             DO 8011 I=1,NATT
@@ -288,7 +288,7 @@ C   INPUT PARAMETERS
 8010     CONTINUE
          write (24,*) (T(K),K=1,NG1)
 
-	     
+
        ELSEIF (OPTION.EQ.3) THEN
         DO 200 K=NG0,NG1
            CALL AUTO(NIND,NATT,NCOV,X,K,XMU,XVAR,T,MAXITS(1),
@@ -300,7 +300,7 @@ C   INPUT PARAMETERS
      &      MAXITS(2),MODE,FACT,B,D,NATTQ,FORMOT,SETUPON,IER)
 200     CONTINUE
        ENDIF
- 
+
          DO 9010 K=1,NG1
             write (24,*) (XMU(K,I),I=1,NATT)
             DO 9011 I=1,NATT
@@ -317,7 +317,7 @@ C   INPUT PARAMETERS
      &         NRANDS,NKMEANS,TOL,AIT,RDSB,FACT,B,D,NATTQ)
 C    Constants that define array sizes at compilation time.
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-        INCLUDE 'EMMIX-f1.max'
+        INCLUDE 'emmix/EMMIX-f1.max'
 	COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
 	INTEGER FACT(3)
 	REAL X(MNIND,MNATT)
@@ -329,10 +329,10 @@ C    Constants that define array sizes at compilation time.
      &            B(MAXNG,MNATT,MNATTQ)
 
 
-	  write (22,*) '  --------------------------' 
-	TMP=1.0 
-	NS=0      
-	DO I=1,NRANDS      
+	  write (22,*) '  --------------------------'
+	TMP=1.0
+	NS=0
+	DO I=1,NRANDS
           write (*,*) '  Calling Random Start ',I
 	  write (22,*) '  Random Start ',I
           write (22,*) '     Seeds ', IX,IY,IZ
@@ -341,7 +341,7 @@ C    Constants that define array sizes at compilation time.
 	  CALL FIT(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
      &   	   TOL,MAXIT,AIT,XLIKE,TLIKE,TMP,FACT,B,D,NATTQ,IER)
           write(22,*)'     Log Likelihhod = ',TLIKE
-	  write (22,*) '  --------------------------' 
+	  write (22,*) '  --------------------------'
 
 	  IF (IER.LE.0) THEN
 	   NS=NS+1
@@ -360,7 +360,7 @@ c	  write (22,*) 'End of Random start ',I
 	  CALL FIT(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
      &	           TOL,MAXIT,AIT,XLIKE,TLIKE,TMP,FACT,B,D,NATTQ,IER)
           write(22,*)'     Log Likelihhod = ',TLIKE
-	  write (22,*) '  --------------------------' 
+	  write (22,*) '  --------------------------'
 	  IF (IER.LE.0) THEN
 	   NS=NS+1
 	   SLIKS(NS)=TLIKE
@@ -371,8 +371,8 @@ c	  write (22,*) 'End of K-means start ',I
 	END DO
         write (22,*)
         write (22,*) 'Possible starting solutions found'
-        write (22,*) (SLIKS(I),I=1,NS) 
-	write (22,*) '  --------------------------' 
+        write (22,*) (SLIKS(I),I=1,NS)
+	write (22,*) '  --------------------------'
         write (22,*)
 	RETURN
 	END
@@ -382,7 +382,7 @@ c	  write (22,*) 'End of K-means start ',I
      &                  T2,B,D,BT,DT,FACT,NATTQ)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER FACT(3)
 	DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),XMU(MAXNG,MNATT),
      &            T(MAXNG)
@@ -412,8 +412,8 @@ C    Constants that define array sizes at compilation time.
          DO I=1,NATT*(NATT+1)/2
 	     XVAR(K,I)=XVAR2(K,I)
 	   END DO
-	  ENDDO	 
-      ENDIF	
+	  ENDDO
+      ENDIF
 
 	DO K=1,NG
 	 T(K)=T2(K)
@@ -428,7 +428,7 @@ C    Constants that define array sizes at compilation time.
 	   D(K,I)=DT(K,I)
 	   DO 200 J=1,NATTQ
 	    B(K,I,J)=BT(K,I,J)
-200        CONTINUE 
+200        CONTINUE
         ENDIF
 	RETURN
 	END
@@ -439,7 +439,7 @@ C    Constants that define array sizes at compilation time.
      &                   RDSB)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
 
 	REAL X(MNIND,MNATT)
 	DIMENSION XMU2(MAXNG,MNATT),
@@ -456,7 +456,7 @@ C    Constants that define array sizes at compilation time.
      &                   RDSB)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
 
         COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
 	REAL X(MNIND,MNATT)
@@ -478,7 +478,7 @@ C    Constants that define array sizes at compilation time.
           JG=INT(R*FLOAT(NG))+1
           N(JG)=N(JG)+1
           DO 1091 JJ=1,NATT
-            XMU2(JG,JJ)=XMU2(JG,JJ)+DBLE(X(I,JJ))	
+            XMU2(JG,JJ)=XMU2(JG,JJ)+DBLE(X(I,JJ))
             DO 1091 II=1,JJ
   	      IND=JJ*(JJ-1)/2+II
               XVAR2(JG,IND)=XVAR2(JG,IND)+DBLE(X(I,II)*X(I,JJ))
@@ -493,7 +493,7 @@ C    Constants that define array sizes at compilation time.
           JG=INT(R*FLOAT(NG))+1
           N(JG)=N(JG)+1
           DO 2091 JJ=1,NATT
-            XMU2(JG,JJ)=XMU2(JG,JJ)+DBLE(X(P,JJ))	
+            XMU2(JG,JJ)=XMU2(JG,JJ)+DBLE(X(P,JJ))
             DO 2091 II=1,JJ
 		    IND=JJ*(JJ-1)/2+II
               XVAR2(JG,IND)=XVAR2(JG,IND)+DBLE(X(P,II)*X(P,JJ))
@@ -509,17 +509,17 @@ C    Constants that define array sizes at compilation time.
                 XVAR2(KK,IND)=
      &          XVAR2(KK,IND)-(XMU2(KK,II)*XMU2(KK,JJ)*FLOAT(N(KK)))
                 XVAR2(KK,IND)=XVAR2(KK,IND)/FLOAT(N(KK)-1)
-212       CONTINUE	
-213       CONTINUE	
+212       CONTINUE
+213       CONTINUE
 	RETURN
 	END
 
 
       SUBROUTINE RANDDIAG(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
-c         Have to modify 
+c         Have to modify
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
 
 	COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
 	REAL X(MNIND,MNATT)
@@ -541,7 +541,7 @@ C    Constants that define array sizes at compilation time.
           JG=INT(R*FLOAT(NG))+1
           N(JG)=N(JG)+1
           DO 1091 JJ=1,NATT
-            XMU2(JG,JJ)=XMU2(JG,JJ)+DBLE(X(P,JJ))	
+            XMU2(JG,JJ)=XMU2(JG,JJ)+DBLE(X(P,JJ))
             XVAR2(JG,JJ)=XVAR2(JG,JJ)+DBLE(X(P,JJ)*X(P,JJ))
 1091      CONTINUE
 111     CONTINUE
@@ -553,7 +553,7 @@ C    Constants that define array sizes at compilation time.
                  XVAR2(KK,IND)=
      &              XVAR2(KK,JJ)-(XMU2(KK,JJ)*XMU2(KK,JJ))*FLOAT(N(KK))
                  XVAR2(KK,JJ)=XVAR2(KK,JJ)/FLOAT(N(KK)-1)
-112     CONTINUE	
+112     CONTINUE
 	RETURN
 	END
 
@@ -562,7 +562,7 @@ C    Constants that define array sizes at compilation time.
 	SUBROUTINE KMEANCON(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
 
         COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
 	REAL X(MNIND,MNATT)
@@ -576,7 +576,7 @@ C    Constants that define array sizes at compilation time.
      &               TOL,MAXIT,AIT,XLIKE,TLIKE,TMP,FACT,B,D,NATTQ,IER)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER FACT(3)
 	REAL X(MNIND,MNATT)
 	DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
@@ -587,14 +587,14 @@ C    Constants that define array sizes at compilation time.
      &            B(MAXNG,MNATT,MNATTQ)
 	DIMENSION DT(MAXNG,MNATT),
      &            BT(MAXNG,MNATT,MNATTQ)
-        MODE=1 
+        MODE=1
 	SETUPON=1
 	FORMOT=0
         write (*,*) 'Calling EM from Fit'
         CALL EM(NIND,NATT,NG,NCOV,X,XMU2,XVAR2,T2,TLIKE,
      &    TOL,MAXIT,MODE,FACT,BT,DT,NATTQ,FORMOT,SETUPON,IER)
         write (*,*) 'Return to fit from EM '
- 
+
 
 	IF (IER.GT.0) RETURN
 
@@ -605,18 +605,18 @@ C    Constants that define array sizes at compilation time.
      &	 B,D,BT,DT,FACT,NATTQ)
          TMP=0.0
 	ENDIF
- 
+
 
 	RETURN
 	END
 
-      
+
       SUBROUTINE SETUP(NIND,NATT,NCOV,NG0,NG1,NKMEANS,NRANDS,RDSB,
      &  INFYLE,OFYLE,MFYLE,MODFYLE,OPTION,START,TOLS,SUB,SCAL,FACT,
      &  NATTQ,REV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
       INTEGER SUB(2+MNATT),FACT(3)
       DOUBLE PRECISION TOLS(2)
@@ -624,18 +624,18 @@ C    Constants that define array sizes at compilation time.
       CHARACTER*255 OFYLE
       CHARACTER*255 MFYLE
       CHARACTER*255 MODFYLE
-      
+
 C	WRITE (*,*) 'Factor Analysis (0=No,1-Yes)'
-C        READ (*,*) FACT(1) 
+C        READ (*,*) FACT(1)
         FACT(1)=1
 	IER=0
-        WRITE(*,*)'      ---------------------------------' 
+        WRITE(*,*)'      ---------------------------------'
         WRITE(*,*)'      VERSION OF EMMIX TO FIT MIXTURES'
         WRITE(*,*)'            OF FACTORS ANALYZERS'
         WRITE(*,*)'            Jun 7th 2001 - Model file'
         WRITE(*,*)'            added for cross validation'
 	WRITE(*,*)'            Jun 18th 2001 -Add common D'
-        WRITE(*,*)'      ---------------------------------' 
+        WRITE(*,*)'      ---------------------------------'
 C	CALL GETOPT(OPTION)
        OPTION=2.0
        CALL GETIO(INFYLE,OFYLE,IER)
@@ -649,13 +649,13 @@ C	CALL GETOPT(OPTION)
        CALL GETNIND(NIND,SUB)
        CALL GETNATT(NATT,SUB)
        WRITE (*,*) 'Do you wish to transpose the data'
-       WRITE (*,*) ' so that you cluster the columns' 
+       WRITE (*,*) ' so that you cluster the columns'
        WRITE (*,*) ' (0=No ,1=Yes)'
        READ (*,*) REV
        WRITE (*,*) 'How many factor dimensions'
        READ (*,*) NATTQ
        WRITE (*,*) 'Scale Data (0-No,1-Yes)'
-       READ (*,*) SCAL 
+       READ (*,*) SCAL
 	CALL GETNG(NG0,NG1,OPTION)
 	CALL GETNCOV(NCOV)
         CALL GETST(START)
@@ -672,11 +672,11 @@ C	CALL GETOPT(OPTION)
 C	write (*,*) 'What form do you want the output'
 C	write (*,*) ' (0-Parameters, 1-Partition, 3-Both)'
 C	read (*,*) FORMOT
-	
+
 	CALL GETSEEDS(IX,IY,IZ)
-	
-	
-	      
+
+
+
 c	OPTION=2
 c	INFYLE='green'
 c	OFYLE='green.out'
@@ -697,31 +697,31 @@ c	SCAL=0
 c     IX=1
 c	IY=2
 c	IZ=3
-	 
+
       RETURN
       END
 
       SUBROUTINE GETNIND(NIND,SUB)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER SUB(2+MNATT)
       SUB(1)=100
 10    WRITE(*,*) 'Number of data points: '
       READ (*,*) NIND
 C      WRITE (*,*) 'Percentage of data to be used'
-C      READ (*,*) SUB(1) 
+C      READ (*,*) SUB(1)
        SUB(1)=100
       IF (NIND*SUB(1).GT.MNIND*100) THEN
-       WRITE(*,*) 'You may need to Change EMMIX-f1.max' 
+       WRITE(*,*) 'You may need to Change EMMIX-f1.max'
       ENDIF
       RETURN
       END
- 
+
       SUBROUTINE GETNATT(NATT,SUB)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER SUB(2+MNATT)
 10    SUB(2)=0
       WRITE(*,*) 'Total number of variables/dimensions'
@@ -729,7 +729,7 @@ C    Constants that define array sizes at compilation time.
       WRITE(*,*)'Use a subset of the data variables '
       WRITE(*,*)'(New number of varables):'
 
-      READ (*,*) SUB(2) 
+      READ (*,*) SUB(2)
       IF (SUB(2).GT.MNATT) THEN
        WRITE (*,*) 'You may need to CHANGE EMMIX-f1.max'
       ENDIF
@@ -740,7 +740,7 @@ C    Constants that define array sizes at compilation time.
       RETURN
       END
 
-    
+
       SUBROUTINE GETIO(INFYLE,OFYLE,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       CHARACTER*255 INFYLE
@@ -764,7 +764,7 @@ C    Read in output file and open^M
       WRITE (*,*)'Enter name of output file: '
       READ (*,'(A)') OFYLE
 c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
-      
+
       RETURN
       END
 
@@ -782,7 +782,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       READ (*,*) TEMP
       IF (TEMP.EQ.1) THEN
        OPTION=2.0
-      ELSE 
+      ELSE
        OPTION=3.0
       ENDIF
       RETURN
@@ -806,7 +806,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       ENDIF
       RETURN
       END
-      
+
 
       SUBROUTINE GETST(START)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -868,7 +868,7 @@ C      The purpose of the subroutine is to implement the EM algorithm
 C      of Dempster et al. (1977).
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'         
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
      &        NG,        ! Number of components or groups
@@ -877,20 +877,20 @@ C      of Dempster et al. (1977).
      &        FACT(3),   !control for mix of Fact
      &        IDT(MNIND),N(MAXNG)
       REAL X(MNIND,MNATT)! Data set/sample
-C     
+C
       DIMENSION XMU(MAXNG,MNATT),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
      &          XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          T(MAXNG),
      &          TXML(MITER) ,XLA(MITER)
-     
+
       DIMENSION W(MNIND,MAXNG),DV(MAXNG)
 
       DIMENSION D(MAXNG,MNATT),
      &          B(MAXNG,MNATT,MNATTQ)
 
       DIMENSION GAMM(MAXNG,MNATT,MNATTQ)
- 
+
       IER=0
       IOUNT=0
       IF (FACT(1).EQ.1) THEN
@@ -898,16 +898,16 @@ C
       CALL FSASET2(NIND,NATT,NG,NCOV,X,DV,XVAR,V,
      &             D,B,XMU,NATTQ,MODE,FACT,SETUPON,T,IER)
       ENDIF
- 
+
       write (*,*) '   Applying EM'
       IF (MODE.EQ.2) THEN
        WRITE(22,*) '   Progress at Each Iteration'
-       WRITE(22,*) '   --------------------------' 
+       WRITE(22,*) '   --------------------------'
       ENDIF
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C    MAIN ITERATIVE LOOP ENTRY POINT
-900   CONTINUE     
-      
+900   CONTINUE
+
       IOUNT=IOUNT+1
       IF (FACT(1).EQ.1) THEN
        CALL ESTEP(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
@@ -917,8 +917,8 @@ C    MAIN ITERATIVE LOOP ENTRY POINT
        CALL ESTEP(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
       ENDIF
-      IF (IER.GT.0) RETURN 
-      TXML(IOUNT)=XLOGL 
+      IF (IER.GT.0) RETURN
+      TXML(IOUNT)=XLOGL
       write (*,*) 'Log-Likelihood at iteration',IOUNT,' = ',TXML(IOUNT)
       write (*,*) ' Determinants=',(DV(KKK),KKK=1,NG)
       IF (MODE.EQ.2) THEN
@@ -933,7 +933,7 @@ C    MAIN ITERATIVE LOOP ENTRY POINT
        CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,XMU,T,W,FACT,IER)
       ENDIF
       IF (IER.GT.0) GOTO 1099
-      
+
       GOTO 900
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
@@ -994,13 +994,13 @@ C      Calculate multivariate density of each point for every group
 	DO 940 I=1,NG
 	 write (23,*) '   idt(',JJ,',',I+1,')=',W(JJ,I),';'
 940     CONTINUE
-950     CONTINUE	     
-       write (22,*) 'Implied Grouping' 
+950     CONTINUE
+       write (22,*) 'Implied Grouping'
        write (22,201) (IDT(I),I=1,NIND)
 201    FORMAT (2X,10I4)
        write (22,*) 'Number in each group'
        write (22,202) (N(K),K=1,NG)
-202    FORMAT (2X,10I4) 
+202    FORMAT (2X,10I4)
 	   ENDIF
 
 
@@ -1013,8 +1013,8 @@ C      Calculate multivariate density of each point for every group
      &            XLOGL,IER)
 C     This Subroutine implements the E-step of the EM algorithm
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'         
-      
+      INCLUDE 'emmix/EMMIX-f1.max'
+
       COMMON /STORE2/ FLAGS,FYLENO
 
 C   INPUT PARAMETERS
@@ -1114,7 +1114,7 @@ CC      write (*,*) 'Det=',DV(1),DV(2)
      &           XMU,T,W,FACT,IER)
 C     This Subroutine implements the M-step of the EM algorithm
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'         
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
      &        NG,        ! Number of components or groups
@@ -1130,7 +1130,7 @@ C     This Subroutine implements the M-step of the EM algorithm
 
       DIMENSION W(MNIND,MAXNG),DV(MAXNG)
          IER=0
-C     Compute new estimates of mixing proportions 
+C     Compute new estimates of mixing proportions
          CALL CALC_T(NIND,NATT,NG,W,T,IER)
          IF (IER.NE.0) RETURN
 C     Compute new estimates of group means
@@ -1148,12 +1148,12 @@ C     Compute new estimates of covariance matrices
        ENDIF
 	ENDIF
          RETURN
-         END       
-      
+         END
+
       SUBROUTINE CALC_XMU(NIND,NATT,NG,X,W,XMU,T)
-C     This Subroutine calculates estimates of the group means 
+C     This Subroutine calculates estimates of the group means
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
      &        NG         ! Number of components or groups
@@ -1173,9 +1173,9 @@ C     Compute new estimates of group means (XMU)
       END
 
       SUBROUTINE CALC_XVAR(NIND,NATT,NG,NCOV,X,W,XMU,T,XVAR)
-C     This Subroutine calculates estimates of the group covariances 
+C     This Subroutine calculates estimates of the group covariances
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
      &        NG         ! Number of components or groups
@@ -1217,7 +1217,7 @@ C     Compute new estimate of covariance matrix for each group
 170       CONTINUE
         XVAR(1,IC(I,I))=XVAR(1,IC(I,I))/FLOAT(NIND)
 180     CONTINUE
-         
+
 
        ELSEIF (NCOV.EQ.2) THEN
 
@@ -1260,17 +1260,17 @@ C     Compute new estimate of covariance matrix for each group
         XVAR(1,IC(I,J))=XVAR(1,IC(I,J))/NIND
 390     CONTINUE
 
-      ENDIF    
+      ENDIF
 
       RETURN
-      END 
+      END
 
 
 
       SUBROUTINE CALC_T(NIND,NATT,NG,W,T,IER)
 C     This Subroutine calculates estimates of the mixing proportions
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
      &        NG         ! Number of components or groups
@@ -1303,8 +1303,8 @@ C
       FUNCTION XIT(IOUNT,MAXIT,TOL,TXML,XLA)
 C     Test for exit from EM Algorithm
 
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)       
-      INCLUDE 'EMMIX-f1.max'  
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER FLAGS(40),FYLENO,USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION TXML(MITER),XLA(MITER)
@@ -1313,19 +1313,19 @@ C     Test for exit from EM Algorithm
       IF (IOUNT.LE.10) RETURN
 
 
-      IF (IOUNT.GE.MAXIT) THEN      
-         WRITE (22,115) MAXIT 
-115      FORMAT (/2X,'Note: This sample did not converge in ',I3, 
-     &     ' iterations.',/8X,'However the program will continue ', 
-     &     'to print results ',/8X,'obtained from the last cycle ', 
-     &     'estimates.') 
+      IF (IOUNT.GE.MAXIT) THEN
+         WRITE (22,115) MAXIT
+115      FORMAT (/2X,'Note: This sample did not converge in ',I3,
+     &     ' iterations.',/8X,'However the program will continue ',
+     &     'to print results ',/8X,'obtained from the last cycle ',
+     &     'estimates.')
          XIT=1.0
-      ENDIF 
+      ENDIF
       ALIM=TOL*TXML(LAST)
       DIFF=TXML(IOUNT)-TXML(LAST)
       IF (ABS(DIFF).LE.ABS(ALIM)) THEN
         XLA(IOUNT)=0
-        XIT=1.0 
+        XIT=1.0
       ENDIF
 
 C      IF (FLAGS(21).LT.0) THEN
@@ -1352,19 +1352,19 @@ C        ENDIF
 C      IF ((ABS(DIFF).LE.ABS(ALIM)).AND.(XLA(IOUNT).GE.TXML(IOUNT)))
 C     &      THEN
 C          TXML(IOUNT)=XLA(IOUNT)
-C          XIT=1.0 
+C          XIT=1.0
 C         ENDIF
 C      ENDIF
       RETURN
       END
 
- 
+
       SUBROUTINE GDET(NCOV,NATT,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
      &          DV(MAXNG)
@@ -1374,7 +1374,7 @@ C     for each covariance matrix in turn.
 	IF (NCOV.EQ.2) CALL GDET2(NATT,NG,XVAR,V,DV,IER)
 	IF (NCOV.EQ.3) CALL GDET3(NATT,NG,XVAR,V,DV,IER)
 	IF (NCOV.EQ.4) CALL GDET4(NATT,NG,XVAR,V,DV,IER)
-      
+
 	IF (IER.NE.0) THEN
 895   FORMAT (/2X,'Terminal error in matrix inversion for group ',I3,
      &        ': error code ',I3)
@@ -1393,10 +1393,10 @@ C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
 
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
-     &          DV(MAXNG) 
+     &          DV(MAXNG)
         NNULL=0
         IT=0
         TOL=0.0
@@ -1410,7 +1410,7 @@ C     for each covariance matrix in turn.
         IF (NULL.NE.0) THEN
 c          WRITE (FYLENO,815) NULL
 815       FORMAT (/2X,'Rank deficiency of common covariance matrix ',
-     &                ' is ',I3)         
+     &                ' is ',I3)
           NNULL=NULL+1
         ENDIF
         IF (DV(1).EQ.0) THEN
@@ -1427,10 +1427,10 @@ c         WRITE(FYLENO,*)'  Determinant is equal to zero for common cov.'
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
-     &          DV(MAXNG)	 
+     &          DV(MAXNG)
       NNULL=0
       DO 830 K=1,NG
         IT=0
@@ -1445,7 +1445,7 @@ C     for each covariance matrix in turn.
         IF (NULL.NE.0) THEN
 c          WRITE (FYLENO,815)  K, NULL
 815       FORMAT (/2X,'Rank deficiency of covariance matrix ',I3,
-     &                ' is ',I3)         
+     &                ' is ',I3)
           NNULL=NULL+1
         ENDIF
         IF (DV(K).EQ.0) THEN
@@ -1463,7 +1463,7 @@ c         WRITE (FYLENO,*)'  Determinant is equal to zero for grp ',K
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
      &          DV(MAXNG)
@@ -1486,10 +1486,10 @@ C     for each covariance matrix in turn.
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
-     &          DV(MAXNG)	 
+     &          DV(MAXNG)
       DO 830 K=1,NG
 	 DV(K)=1.0
 	 DO 830 I=1,NATT
@@ -1529,7 +1529,7 @@ C
 C       Latest revision - 18 April 1981
 
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
      &          DV(MAXNG)
@@ -1618,7 +1618,7 @@ C
 C       Latest revision - 18 April 1981
 C
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MAXNG,MNATT*(MNATT+1)/2),
      &          V(MAXNG,MNATT*(MNATT+1)/2),
      &          R(MNATT)
@@ -1681,7 +1681,7 @@ C         End of row, estimate relative accuracy of diagonal element.
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MNATTQ*(MNATTQ+1)/2),
      &          V(MNATTQ*(MNATTQ+1)/2)
       NNULL=0
@@ -1734,7 +1734,7 @@ C
 C       Latest revision - 18 April 1981
 
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MNATT*(MNATT+1)/2),
      &          V(MNATT*(MNATT+1)/2)
       DIMENSION W(MNATT)
@@ -1822,7 +1822,7 @@ C
 C       Latest revision - 18 April 1981
 C
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max' 
+      INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XVAR(MNATT*(MNATT+1)/2),
      &          V(MNATT*(MNATT+1)/2),
      &          R(MNATT)
@@ -1881,18 +1881,18 @@ C         End of row, estimate relative accuracy of diagonal element.
 C
 C
 C   This group of subroutines deal with generating random numbers
-C   
+C
 C   The subroutines in this file  basically act as a interface between
 C   how this program calls the random number generator ( R=RANDNUM(SEED)
-C  
+C
 
 C   D.Peel Nov 1995
 
        SUBROUTINE DETERRANDOM(IER)
 C      This subroutine is called at the very beginning of the program
-C      to determine if the random number generator is working 
+C      to determine if the random number generator is working
 C
-C      The result of the test is stored in the common random 
+C      The result of the test is stored in the common random
 C      variable RANDTYPE
 C      This is now defunct as only one random number generator is tried
 C      but is left in the code in case a number of generators are available
@@ -1927,7 +1927,7 @@ C      in future versions
        WRITE(*,*)'  compatible with your inbuilt random number'
        WRITE(*,*)'  generator or alternatively use another random'
        WRITE(*,*)'  number generator.'
-       WRITE(*,*)      
+       WRITE(*,*)
        WRITE(*,*)' At present MIXCLUS will still function but you will'
        WRITE(*,*)' be unable to use features that incorporate random'
        WRITE(*,*)' numbers'
@@ -1935,10 +1935,10 @@ C      in future versions
        IER=40
 	   RETURN
 	   END
-	   
+
 	   FUNCTION RANDNUM()
 C          This is the function called by the program NMM. If you
-C          wish to use your own portable random number generator 
+C          wish to use your own portable random number generator
 C          then it should be used in place of this function.
 
 	   IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1995,18 +1995,18 @@ C
 C
 C
 C  This group of subroutines implements the K-means Clustering algorithm.
-C  Implemented by David Peel May 1994                      
+C  Implemented by David Peel May 1994
 
       SUBROUTINE KMEANS(NIND,NATT,NCOV,NG,X,XMU2,XVAR2,T2,IER)
 C      Main subroutine
-      
+
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INTEGER T
        EXTERNAL RANDNUM
        INTEGER FLAGS(40),FYLENO
        COMMON /STORE2/ FLAGS,FYLENO
        DOUBLE PRECISION RANDNUM
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
        REAL X(MNIND,MNATT)
        DIMENSION XKOLD(MAXNG,MNATT),
      &           XSTAN(MNATT),
@@ -2021,7 +2021,7 @@ C      Main subroutine
        DO 1 I=1,NATT
 	XMU2(K,I)=0.0
 1     CONTINUE
-      CALL KSTAND(NIND,NATT,X,XM,XVR) 
+      CALL KSTAND(NIND,NATT,X,XM,XVR)
       CALL KSEED(NIND,NATT,NG,X,XKOLD,XM,XVR,IER)
 
       DO 19 KK=1,NIND
@@ -2030,13 +2030,13 @@ C      Main subroutine
 17      CONTINUE
        CALL WINNER(NATT,NG,XSTAN,XKOLD,GRP,IER)
        CALL INIT(NIND,NATT,NG,XSTAN,XMU2,GRP,N,IER)
-       IF (IER.NE.0) RETURN 
+       IF (IER.NE.0) RETURN
 19    CONTINUE
       DO 30 T=1,MAXKM
 
       DO 430 KK=1,NG
 	N(KK)=0
-        DO 420 LL=1,NATT 
+        DO 420 LL=1,NATT
             XKOLD(KK,LL)=XMU2(KK,LL)
 	    XMU2(KK,LL)=0.0
 420   	  CONTINUE
@@ -2052,10 +2052,10 @@ C      Main subroutine
           ET=RULE(NG,NATT,XKOLD,XMU2)
           IF (ET.LE.TOLKM) GO TO 99
 30    CONTINUE
-      
+
       WRITE (FYLENO,*) 'REACHED MAXIMUM NUMBER OF ',MAXKM,' ITERATIONS'
       IER=-41
-99    CONTINUE 
+99    CONTINUE
        DO 300 K=1,NG
        DO 300 I=1,NATT
 	 XKOLD(K,I)=XMU2(K,I)
@@ -2064,13 +2064,13 @@ C      Main subroutine
       CALL CALC_PARA(NIND,NATT,NCOV,NG,X,XMU2,XKOLD,XVAR2,T2,XM,XVR)
       RETURN
       END
-     
+
       SUBROUTINE CALC_PARA(NIND,NATT,NCOV,NG,X,
      &               XMU2,XKOLD,XVAR2,T2,XM,XVR)
 C     This Subroutine calculates estimates of the group covariance
 C      and mixing proportions.
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER NIND,      ! Number of sample points
      &        NATT,      ! Number of attributes/variables/dimensions
      &        NG         ! Number of components or groups
@@ -2108,7 +2108,7 @@ C      and mixing proportions.
        DO 499 I=1,NATT
         DO 499 J=1,I
 	 XVAR2(K,IC(I,J))=XVAR2(K,IC(I,J))/T2(K)
-499    CONTINUE	 
+499    CONTINUE
        T2(K)=T2(K)/FLOAT(NIND)
 500   CONTINUE
       RETURN
@@ -2116,20 +2116,20 @@ C      and mixing proportions.
 
 
 
-      
-      
 
 
-      SUBROUTINE KSTAND(NIND,NATT,X,XM,XVR) 
+
+
+      SUBROUTINE KSTAND(NIND,NATT,X,XM,XVR)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-f1.max'
+      INCLUDE 'emmix/EMMIX-f1.max'
       REAL X(MNIND,MNATT)
       DIMENSION  XVR(MNATT),XM(MNATT)
       DO 200 J=1,NATT
        XM(J)=0
        DO 200 I=1,NIND
-        XM(J)=XM(J)+DBLE(X(I,J))/FLOAT(NIND) 
-200   CONTINUE       
+        XM(J)=XM(J)+DBLE(X(I,J))/FLOAT(NIND)
+200   CONTINUE
       DO 210 J=1,NATT
        XVR(J)=0
        DO 210 I=1,NIND
@@ -2139,16 +2139,16 @@ C      and mixing proportions.
       RETURN
       END
 
-      SUBROUTINE KSEED(NIND,NATT,NG,X,XK,XM,XVR,IER)               
+      SUBROUTINE KSEED(NIND,NATT,NG,X,XK,XM,XVR,IER)
 c     This Subroutine chooses the initial K seeds (Means of clusters)
-c     for the algorithm. At present they are chosen from data set at 
+c     for the algorithm. At present they are chosen from data set at
 c     random.
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INTEGER CHOICE
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       REAL  X(MNIND,MNATT)
       DIMENSION XK(MAXNG,MNATT)
       DIMENSION  XVR(MNATT),XM(MNATT)
@@ -2165,29 +2165,29 @@ c       Convert CHOICE to integer
       END
 
       SUBROUTINE WINNER(NATT,NG,XSTAN,XK,GRP,IER)
-c     This subroutine determines the allocation of the KKth point 
+c     This subroutine determines the allocation of the KKth point
 c     ie which mean is closest to the given data point (Euclidean).
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XSTAN(MNATT),XK(MAXNG,MNATT)
       DO 310 I=1,NG
         DIST=0
   	DO 300 J=1,NATT
           DIST=DIST+(XSTAN(J)-XK(I,J))**2
 300 	CONTINUE
-        IF (I.EQ.1) DISTB=DIST 
+        IF (I.EQ.1) DISTB=DIST
         IF (DIST.LE.DISTB) THEN
 	  GRP=I
           DISTB=DIST
         ENDIF
 310   CONTINUE
       RETURN
-      END 
-          
+      END
+
       SUBROUTINE INIT(NIND,NATT,NG,XSTAN,XK,GRP,N,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       DIMENSION XK(MAXNG,MNATT),
      &          XSTAN(MNATT)
       INTEGER N(MAXNG)
@@ -2202,7 +2202,7 @@ c         Update rules
 
       SUBROUTINE UPDATE(NIND,NATT,NG,XSTAN,XK,GRPOLD,GRP,N,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
        DIMENSION XSTAN(MNATT),N(MAXNG)
        DIMENSION XK(MAXNG,MNATT)
           IF (N(GRPOLD).GT.1) THEN
@@ -2226,10 +2226,10 @@ c         Update rules
 
       FUNCTION RULE(NG,NATT,XKOLD,XK)
 c     This function returns the value used to determine if the algorithm
-c     has converged it is a measure of the change in the nodes from iteration 
-c     to iteration. 
+c     has converged it is a measure of the change in the nodes from iteration
+c     to iteration.
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER R
       DIMENSION XK(MAXNG,MNATT),XKOLD(MAXNG,MNATT)
       RULE=0.0
@@ -2243,9 +2243,9 @@ c     to iteration.
 
       SUBROUTINE FACTE(NIND,NATT,NG,X,W,GAMM,XMU,NATTQ)
 C     This Subroutine determine the factor weights `e'
-C     that can be plotted 
+C     that can be plotted
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       REAL X(MNIND,MNATT)
@@ -2267,13 +2267,13 @@ C     that can be plotted
 300   CONTINUE
       RETURN
       END
- 
+
 
       SUBROUTINE FSAMSP(NIND,NATT,NG,NCOV,XVAR,V2,D,B,
      &                XMU,GAMM,NATTQ,DV2,FACT,T,IER)
-C     This Subroutine implements the M-step of the EM algorithm 
+C     This Subroutine implements the M-step of the EM algorithm
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER FLAGS(40),FYLENO,FACT(3)
       COMMON /STORE2/ FLAGS,FYLENO
       REAL X(MNIND,MNATT)
@@ -2291,7 +2291,7 @@ C     This Subroutine implements the M-step of the EM algorithm
 
         DO 2000 K=1,NG
 
-C      Calculate Gamma 
+C      Calculate Gamma
 C--------------------------------------------------------------
 C	CALL VMULT(V2,0,B,0,NATT,NATT,NATTQ,NG,GAMM)       !inv(SigmaN)*B
 	DO 10 L=1,NATTQ
@@ -2383,7 +2383,7 @@ C	CALL TRANS(TEMP,NATTQ,NATT,NG,B)              ! Transpose result
 C    Done in mult above
 C--------------------------------------------------------------
 
-C      Calculate D 
+C      Calculate D
 C--------------------------------------------------------------
 C	CALL MULT(XVAR,0,GAMM,0,NATT,NATT,NATTQ,NG,TEMP)  ! (Sigma*Gamm
         DO 90 L=1,NATTQ
@@ -2438,9 +2438,9 @@ C      PPDA Part
         DO 2001 K=1,NG
 C--------------------------------------------------------------
 
-C        Invert part of Sigma New        
+C        Invert part of Sigma New
 C      Calculate inversion part of Sigma New
-C        calculate BT * inv(D) 
+C        calculate BT * inv(D)
 C--------------------------------------------------------------
 C        calculate BT * inv(D)
 	  DO 260 I=1,NATTQ
@@ -2464,7 +2464,7 @@ C	CALL EYEaA(V2,NATTQ,NG,TEMP)                  ! I + ^
 C--------------------------------------------------------------
 	  IER=0
 	  CALL GDETQ(NATTQ,TEMP2,TEMP3,DV,IER)
-           
+
 	  IF (IER.GT.0) THEN
 	   WRITE (*,*) 'ERROR inverting Sigma New matrix in Mstep'
 	   RETURN
@@ -2524,7 +2524,7 @@ C	  CALL EYEmA(TEMP,NATTQ,NG,BD)               !I-B'*inv(B'B+D)*B
 170       CONTINUE
 C--------------------------------------------------------------
 	  IER=0
-           
+
 	  CALL GDETQ(NATTQ,TEMP2,TEMP3,DV,IER)
 	  DV2(K)=DV
 	  IF (IER.GT.0) THEN
@@ -2534,7 +2534,7 @@ C--------------------------------------------------------------
 C--------------------------------------------------------------
 C         calculate det of D
 	   DV2(K)=1/DV2(K)
-	   DO 1000 I=1,NATT        
+	   DO 1000 I=1,NATT
 	    DV2(K)=DV2(K)*D(K,I)
 1000       CONTINUE
 
@@ -2544,9 +2544,9 @@ C         calculate det of D
 
       SUBROUTINE FSASET2(NIND,NATT,NG,NCOV,X,DV2,XVAR,V2,
      &                  D,B,XMU,NATTQ,MODE,FACT,SETUPON,T,IER)
-C     This Subroutine implements the M-step of the EM algorithm 
+C     This Subroutine implements the M-step of the EM algorithm
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-f1.max'
+       INCLUDE 'emmix/EMMIX-f1.max'
       INTEGER FLAGS(40),FYLENO,FACT(3)
       COMMON /STORE2/ FLAGS,FYLENO
       REAL X(MNIND,MNATT)
@@ -2568,12 +2568,12 @@ C     This Subroutine implements the M-step of the EM algorithm
       IF (SETUPON.EQ.1) THEN
 
 C     Initialse method by B=0 and D= diag(component covariances)
-       IF (FACT(3).EQ.1) THEN 
+       IF (FACT(3).EQ.1) THEN
 	write (22,*) 'Using Random'
 	CALL GDET(NCOV,NATT,NG,XVAR,V2,DV2,IER)
         DPROD=1
         DO 1200 K=1,NG
- 	 DO 1110 I=1,NATT         
+ 	 DO 1110 I=1,NATT
 	  D(K,I)=V2(K,IC(I,I))
          DPROD=DPROD*D(K,I)/FLOAT(NATT)
 1110     CONTINUE
@@ -2582,7 +2582,7 @@ C     Initialse method by B=0 and D= diag(component covariances)
            XR=RANDNUM()
            CALL NORM(B(K,I,J),XR)
            IER=0
-           B(K,I,J)=B(K,I,J)*SQRT(DPROD)**(1/FLOAT(NATT))/FLOAT(NATTQ) 
+           B(K,I,J)=B(K,I,J)*SQRT(DPROD)**(1/FLOAT(NATT))/FLOAT(NATTQ)
 1200     CONTINUE
 C      Common D
 	IF (FACT(2).EQ.1) THEN
@@ -2599,10 +2599,10 @@ C      Common D
 
        ELSE
 	write (22,*) 'Using Eigenvalues'
-        
+
 C--------------------------------------------------------------
 	DO 110 K=1,NG
- 	 DO 110 I=1,NATT         
+ 	 DO 110 I=1,NATT
 	  D(K,I)=XVAR(K,IC(I,I))
 110      CONTINUE
 C      Common D
@@ -2620,37 +2620,37 @@ C      Common D
 
 	DO 3000 K=1,NG
 C--------------------------------------------------------------
-	 DO 100 I=1,NATT       
-	  DO 100 J=1,I     
+	 DO 100 I=1,NATT
+	  DO 100 J=1,I
 	   V2(K,IC(I,J))=XVAR(K,IC(I,J))*SQRT((1.0/D(K,I))*(1.0/D(K,J)))
 100      CONTINUE
 C--------------------------------------------------------------
 	 CALL TDIAG(NATT,K,V2,EIGVAL,EIG,EIGVEC,IER)
 	 CALL LRVT(NATT,EIGVAL,EIG,EIGVEC,IER)
 	 IF (NATT.LE.30) THEN
-          WRITE(22,*)'Eigenvalues of sample covariance grp ',K 
+          WRITE(22,*)'Eigenvalues of sample covariance grp ',K
           WRITE (22,*) (EIGVAL(ii),ii=1,NATT)
 	 ELSE
-          WRITE(22,*)'First 30 Eigenvalues of sample covariance grp ',K 
+          WRITE(22,*)'First 30 Eigenvalues of sample covariance grp ',K
           WRITE (22,*) (EIGVAL(ii),ii=1,30)
 	 ENDIF
          Esigma=0.0
          DO 102 I=NATTQ+1,NATT
          Esigma=Esigma+EIGVAL(I)/FLOAT(NATT-NATTQ)
-102      CONTINUE 	
+102      CONTINUE
 C--------------------------------------------------------------
 	DO 111 I=1,NATTQ
 	   TEMP1(I)=(EIGVAL(I)-Esigma)**(0.5)      ! (EIGVAL-I )^1/2
 111     CONTINUE
 C--------------------------------------------------------------
-C	MULT(EIGVEC,0,TEMP1,0,NATT,NATTQ,NATTQ,TEMP)   
+C	MULT(EIGVEC,0,TEMP1,0,NATT,NATTQ,NATTQ,TEMP)
 	DO 208 I=1,NATT
 	DO 208 J=1,NATTQ
 	 B(K,I,J)=EIGVEC(I,J)*TEMP1(J)
 208     CONTINUE
 C--------------------------------------------------------------
-	DO 210 I=1,NATT  
-	DO 210 J=1,NATTQ  
+	DO 210 I=1,NATT
+	DO 210 J=1,NATTQ
 	   B(K,I,J)=B(K,I,J)*(D(K,I))**(0.5)
 210     CONTINUE
 C--------------------------------------------------------------
@@ -2660,13 +2660,13 @@ C--------------------------------------------------------------
        ENDIF
 
         DO 2000 K=1,NG
-C        Invert part of Sigma New        
+C        Invert part of Sigma New
 C      Calculate inversion part of Sigma New
 C--------------------------------------------------------------
-C        calculate BT * inv(D) 
+C        calculate BT * inv(D)
 	  DO 260 I=1,NATTQ
 	   DO 260 J=1,NATT
- 	    TEMP2(J,I)=B(K,J,I)*1.0/D(K,J) 
+ 	    TEMP2(J,I)=B(K,J,I)*1.0/D(K,J)
 260       CONTINUE
 C--------------------------------------------------------------
 C	CALL MULT2V(TEMP2,1,B,0,NATTQ,NATT,NATTQ,NG,V2)    !   ^ * B
@@ -2756,12 +2756,12 @@ C--------------------------------------------------------------
 C--------------------------------------------------------------
 C         calculate det of D
 	   DV2(K)=1/DV2(K)
-	   DO 1000 I=1,NATT        
+	   DO 1000 I=1,NATT
 	    DV2(K)=DV2(K)*D(K,I)
 1000       CONTINUE
 2000    CONTINUE
       RETURN
-      END    
+      END
 
 
 c      SUBROUTINE LOOP(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,TXML,IDT,
@@ -2800,32 +2800,32 @@ c     &           XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 cccc      ENDIF
       SUBROUTINE TDIAG (N,KK,A,D,E,Z,IFAULT)
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
-C 
-       INCLUDE 'EMMIX-f1.max'
+C
+       INCLUDE 'emmix/EMMIX-f1.max'
 
-      DIMENSION A(MAXNG,MNATT*(MNATT+1)/2), D(MNATT), E(MNATT) 
+      DIMENSION A(MAXNG,MNATT*(MNATT+1)/2), D(MNATT), E(MNATT)
       DIMENSION Z(MNATT,MNATT)
       DATA ZERO/0.0/,ONE/1.0/
       DATA ETA/1.0D-37/,EPS/1.0D-14/
-C 
+C
 C       Algorithm as 60.1 appl.statist. (1973) vol.22 no.2
-C 
+C
 C        reduces real symmetric matrix to tridiagonal form
-C 
+C
 C       tol is a machine dependent constant , tol = eta/eps , where
 C       eta is the smallest positive number representable in the
 C       computer and eps is the smallest positive number for which
 C       1+eps.ne.1.
-C 
+C
 C         eta=eps*tol
 C         eps=0.7105427358e-14
 C         tol=0.3131513063e-293
 C         precis=1.0e-14
-C 
+C
 C         nb
 C           real constants must be le 15 decimal digits
 C           the range of a real constant is from 1.0e-293 to 1.0e+322
-C 
+C
       TOL=ETA/EPS
       IFAULT=1
       IF (N.LE.1) RETURN
@@ -2842,10 +2842,10 @@ C
         DO 20 K=1,L
  20       G=G+Z(I,K)**2
  30     H=G+F*F
-C 
+C
 C       if g is too small for orthogonality to be guaranteed, the
 C       transformation is skipped
-C 
+C
         IF (G.GT.TOL) GO TO 40
         E(I)=F
         D(I)=ZERO
@@ -2860,28 +2860,28 @@ C
         DO 80 J=1,L
           Z(J,I)=Z(I,J)/H
           G=ZERO
-C 
+C
 C       form element of a * u
-C 
+C
           DO 50 K=1,J
  50         G=G+Z(J,K)*Z(I,K)
           IF (J.GE.L) GO TO 70
           J1=J+1
           DO 60 K=J1,L
  60         G=G+Z(K,J)*Z(I,K)
-C 
+C
 C       form element of p
-C 
+C
  70       E(J)=G/H
           F=F+G*Z(J,I)
  80     CONTINUE
-C 
+C
 C       form k
-C 
+C
         HH=F/(H+H)
-C 
+C
 C       form reduced a
-C 
+C
         DO 90 J=1,L
           F=Z(I,J)
           G=E(J)-HH*F
@@ -2894,9 +2894,9 @@ C
  110  CONTINUE
       D(1)=ZERO
       E(1)=ZERO
-C 
+C
 C       accumulation of transformation matrices
-C 
+C
       DO 160 I=1,N
         L=I-1
         IF (D(I).EQ.ZERO.OR.L.EQ.0) GO TO 140
@@ -2922,15 +2922,15 @@ C
       SUBROUTINE LRVT (N,D,E,Z,IFAULT)
 
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
-       INCLUDE 'EMMIX-f1.max'
-C 
+       INCLUDE 'emmix/EMMIX-f1.max'
+C
 C       algorithm as 60.2 appl.statist. (1973) vol.22, no.2
-C 
+C
 C        finds latent roots and vectors of tridiagonal matrix
-C 
+C
       DIMENSION D(MNATT), E(MNATT), Z(MNATT,MNATT)
       DATA MITS/30/,ZERO/0.0/,ONE/1.0/,TWO/2.0/
-C 
+C
       PRECIS=1.0D-14
       IFAULT=2
       IF (N.LE.1) RETURN
@@ -2945,9 +2945,9 @@ C
         JJ=0
 	H=PRECIS*(ABS(D(L))+ABS(E(L)))
         IF (B.LT.H) B=H
-C 
+C
 C       look for small sub-diagonal element
-C 
+C
         DO 20 M1=L,N
           M=M1
 	  IF (ABS(E(M)).LE.B) GO TO 30
@@ -2955,9 +2955,9 @@ C
  30     IF (M.EQ.L) GO TO 90
  40     IF (JJ.EQ.MITS) RETURN
         JJ=JJ+1
-C 
+C
 C       form shift
-C 
+C
         P=(D(L+1)-D(L))/(TWO*E(L))
 	R=SQRT(P*P+ONE)
         PR=P+R
@@ -2966,9 +2966,9 @@ C
         DO 50 I=L,N
  50       D(I)=D(I)-H
         F=F+H
-C 
+C
 C       ql transformation
-C 
+C
         P=D(M)
         C=ONE
         S=ZERO
@@ -2993,9 +2993,9 @@ C
           C=ONE/R
  70       P=C*D(I)-S*G
           D(J)=H+S*(C*G+S*D(I))
-C 
+C
 C       form vector
-C 
+C
           DO 80 K=1,N
           H=Z(K,J)
           Z(K,J)=S*Z(K,I)+C*H
@@ -3006,9 +3006,9 @@ C
 	IF (ABS(E(L)).GT.B) GO TO 40
  90     D(L)=D(L)+F
  100  CONTINUE
-C 
+C
 C       order latent roots and vectors
-C 
+C
       DO 130 I=1,N1
         K=I
         P=D(I)

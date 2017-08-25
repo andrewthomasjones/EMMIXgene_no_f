@@ -1,5 +1,9 @@
 //[[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+
+#include <emmix.h>
+
+//using namespace arma;
 using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 
@@ -17,7 +21,7 @@ using namespace Rcpp;
 #define MAX_ENTRY_LENGTH 20	/* max length of any single entry in the array */
 #define MAX_SELECTED_GENES 100
 
-using namespace arma;
+
 
 struct tab
 {
@@ -39,12 +43,12 @@ bool tabcompare(const tab &a, const tab &b)
 //&tl, &sm, &er
 
 // [[Rcpp::export]]
- vec call_emmix_sel( vec t, int row, int col, int g){
+ arma:: vec call_emmix_sel( arma:: vec t, int row, int col, int g){
   double fl1, fl2;
   int group1[MAX_TISSUES], group2[MAX_TISSUES];
   int comp[MAX_TISSUES], x, y = 0, a1, a2, i;
-   vec s =  zeros(col);
-   vec ret =  zeros(3);
+   arma:: vec s =  zeros(col);
+   arma:: vec ret =  zeros(3);
   double tl, sm, er;
 
   if (g == 1){
@@ -110,7 +114,7 @@ bool tabcompare(const tab &a, const tab &b)
 
 
 // [[Rcpp::export]]
-int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, int b2)
+int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double b1, int b2)
 {
   //  ("How many random starts for the fitting of t components to individual genes?\n"); r
   // ("How many k-means starts for the fitting of t components to individual genes?\n"); k
@@ -122,9 +126,9 @@ int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, i
   int rc, r1, k1, clus;
   int genecount = 0;
 
-   mat sg =  zeros<mat>(MAX_GENES,col);
-   mat f4 =  zeros<mat>(MAX_GENES,col);
-   mat f3 =  zeros<mat>(row,3);
+   arma::mat  sg =  zeros<mat>(MAX_GENES,col);
+   arma::mat  f4 =  zeros<mat>(MAX_GENES,col);
+   arma::mat  f3 =  zeros<mat>(row,3);
 
   //struct tab gtab[MAX_SELECTED_GENES];	/* for our cut-down genes and -2 log \lambdas */
   std::vector<tab> gtab;
@@ -132,7 +136,7 @@ int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, i
 
   for(int rc=0;rc<row;rc++)
   {
-     vec t =   zeros(col);
+     arma::vec t =   zeros(col);
     double last;
     int sm, er;
     double tl;
@@ -143,7 +147,7 @@ int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, i
     // int col;			/* 3rd argument */
     // int g;			/* 4th argument */
 
-     vec em_res = call_emmix_sel(t, row, col, g);	/* get -2 log \lambda, smaller, error */ //call emmix
+     arma::vec em_res = call_emmix_sel(t, row, col, g);	/* get -2 log \lambda, smaller, error */ //call emmix
     tl = em_res(0);
     er = em_res(1);
     sm = em_res(2);
@@ -152,7 +156,7 @@ int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, i
     {
       if (sm >= b2)		/* if smaller groups exceeds b_2 cutoff */
       {
-         vec temp =  zeros(3);
+         arma::vec temp =  zeros(3);
         temp(0) = rc;
         temp(1) = tl;
         temp(2) = sm;
@@ -168,14 +172,14 @@ int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, i
       } else {
 
         /* g is the number of groups */
-         vec em_res = call_emmix_sel(t, row, col, g+1); //same but g+1
+         arma::vec em_res = call_emmix_sel(t, row, col, g+1); //same but g+1
         tl = em_res(0);
         er = em_res(1);
         sm = em_res(2);
 
         if (tl > b1)
         {
-          vec temp =  zeros(3);
+          arma::vec temp =  zeros(3);
           temp(0) = rc;
           temp(1) = tl;
           temp(2) = sm;
@@ -198,7 +202,7 @@ int select_genes( mat& data, int row, int col, int g, int k, int r, double b1, i
 
 
   // save data
-  vec tmp = zeros(3);
+  arma::vec tmp = zeros(3);
 
   for(int j=0;j<genecount;j++){
     f4.row(j)=sg.row(gtab[j].nu);

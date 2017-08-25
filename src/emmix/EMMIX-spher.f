@@ -1,18 +1,18 @@
-      PROGRAM EMMIX 
+      PROGRAM EMMIX
 
 C      Special Version for Gene Microarrays (2001)
-C      stripped away some features Diagonal Cov 
-C      Version 1.3 1999 
+C      stripped away some features Diagonal Cov
+C      Version 1.3 1999
 
-C   PURPOSE 
+C   PURPOSE
 
 C      The main purpose of this program is to fit a mixture model of
 C      multivariate normal or t-distributions to a user supplied data set
 C      This is done via the EM algorithm.  A large number of other features
 C      are included that were found to be of use when fitting mixture models.
 C
-C      For information about how to run and use this program see 
-C      http:\\www.maths.uq.edu.au\~gjm\emmix\emmix.html 
+C      For information about how to run and use this program see
+C      http:\\www.maths.uq.edu.au\~gjm\emmix\emmix.html
 
 C   HISTORY
 
@@ -21,7 +21,7 @@ C      Combined with MMresamp (D.Peel Nov 1995) on Oct 1996
 C      Renamed MIXCLUS in 1996
 C      Renamed MIXFIT May 1997
 C      Renamed EMMIX from MIXFIT version 1.3 Oct 1998
-C      Version EMMIX 1.2     
+C      Version EMMIX 1.2
 C      Version EMMIX 1.3 fixed bugs from previous version and modified
 C                        structure to be used as a DLL in other versions
 C                        May 1999
@@ -32,7 +32,7 @@ C     the main loop of the program + the user interface
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-spher.max'
+C      INCLUDE 'emmix/EMMIX-spher.max'
 
 C    Global Parameters
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
@@ -48,7 +48,7 @@ C   INPUT PARAMETERS
      &          NCOV,          ! Structure of covariance matrices
      &          IX,IY,IZ       ! Random seeds
 
-      DIMENSION X(MNIND,MNATT) ! Data or sample. 
+      DIMENSION X(MNIND,MNATT) ! Data or sample.
 
 C   OTHER INPUT PARAMETERS
       INTEGER   IDT(MNIND),              ! User defined partition of sample
@@ -68,31 +68,31 @@ C    Output para
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C   FLAGS CODES
-   
+
 C    1 - % of data used to form random starts (100 =std random start)
 C    2 - SEM FLAG  (0-normal EM, 1-Stochastic EM)
-C    3 - temp 1- tru data fit 2- bootstrap fit (no output to screen) 
+C    3 - temp 1- tru data fit 2- bootstrap fit (no output to screen)
 C                                   3 -Bootstrap under H0
 C    4 - Type of start 1-partition, 2-parameter 3-auto 4-weights
-C    5 - Number of k-means starts 
+C    5 - Number of k-means starts
 C    6 - Display density values to use as a discriminant rule -disc
 C    7 - T density (1-T ,0-normal)
 C    8 - 0-simulate 1-Bootstrap analysis, 2-Specific analysis,
-C        3-Full auto analysis, 4-Discriminant, 5- Prediction 
+C        3-Full auto analysis, 4-Discriminant, 5- Prediction
 C    9 - 1-Final EM iterations / 2-Initial EM iterations
 C   10 - resamp test (0-No, >0 -yes (Number of replications))
 C   11 - Space efficient version (0-no 1- partial 2- minimal)
 C   12 - Partial user allocation knowledge (0-no,1-yes)
 C   13 - unused
-C   14 - Weighted data set (0-no 1-yes) 
+C   14 - Weighted data set (0-no 1-yes)
 C   15 - Output Index+partition for external plot (0-no, 1=yes)
 C   16 - Output boot distrib for external plot (0-no,1-yes)
 C   17 - Estimate Standard Errors (0-no >0 = No its or =1 yes)
-C   18 - SE's Method (0-parametric,1-Samp w/replace,2-weight like,4-info method 
-C   19 - Variable Selection:-1 samp 1- adjust data 2- adjust parameters as well 
+C   18 - SE's Method (0-parametric,1-Samp w/replace,2-weight like,4-info method
+C   19 - Variable Selection:-1 samp 1- adjust data 2- adjust parameters as well
 C   20 - Output to separate file  1- parameters,  2-point likelihoods 3-data
 C   21 - Use Aitken's acceleration during bootstrapping (<0 active >0 on)
-C   22 - Output subset of data to separate file 
+C   22 - Output subset of data to separate file
 C   23 - Read Parameters
 C   24 - Read Partition
 C   25 - Read Posterior
@@ -109,22 +109,22 @@ C   5 - Determinant = 0
 C   6 - Input partition incorrect
 C   11 - Number of data points too big for this compilation
 C   12 - Number of data variables too big for this compilation
-C   13 - Unused 
+C   13 - Unused
 C   14 - Maximum Number of clusters too big for this compilation
 C   15 - Number of clusters too big for this compilation
-C   21 - Not enough points in cluster at initial estimation stage 
-C   22 - No points allocated to cluster during an EM iteration 
+C   21 - Not enough points in cluster at initial estimation stage
+C   22 - No points allocated to cluster during an EM iteration
 C   23 - Problem in the generation of a bootstrap sample
 C   25 - Estimated Nu value when fitting T's is < or equal to Zero
 C   31 - No stable starting solution could be found
-C   40 - Random number generator not working 
-C  -41 - Warning : k-means reached maximum number of iterations 
-C  -53 - Warning : Estimated Nu value when fitting T's limited to 300 
+C   40 - Random number generator not working
+C  -41 - Warning : k-means reached maximum number of iterations
+C  -53 - Warning : Estimated Nu value when fitting T's limited to 300
 C -111 - Warning : Some points have zero likelihood
 
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C  INPUT/OUTPUT FILE ID NUMBERS 
+C  INPUT/OUTPUT FILE ID NUMBERS
 
 C 21 - main data file + starting parameters or partition
 C 22 - main output file from main gives clusterings
@@ -136,8 +136,8 @@ C 42 - 'respH0.out' output file for fit under H0 for last bootstrap replicate
 C 42 - 'respH1.out' output file for fit under H1 for last bootstrap replicate
 C 43 -  output file of bootstrap sample for last -2logLambda replicate
 C 43 -  output file of bootstrap sample for last SE replicate
-C 25 - 'boot_vs_.out output file contain bootstrap replicates of -2logL 
-C 26 - Standard error estimates of parameters for replications 
+C 25 - 'boot_vs_.out output file contain bootstrap replicates of -2logL
+C 26 - Standard error estimates of parameters for replications
 C 29 - Output parameters for variable selection
 C 39 - Output data when a subset of variables are used
 
@@ -146,7 +146,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 C    Check to see if the random number generator works (try two formats)
       CALL DETERRANDOM(IER)
- 
+
 C -------------------- Snip Here ----------------------------------
 C    For DLL remove this section
 
@@ -154,7 +154,7 @@ C    Read in parameters and options from the user
       CALL SETUP(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
      &   SIG,XUU,XMU,XVAR,T,IDT,W,IER)
       IF (IER.GT.0) THEN
-c      ERROR as the input file may be in the wrong format of the 
+c      ERROR as the input file may be in the wrong format of the
 c      specified parameters do not match the input file.
        GOTO 99
       ENDIF
@@ -165,10 +165,10 @@ C    Call the main control section of the program
       CALL MAIN(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
      &   SIG,XUU,XMU,XVAR,T,IDT,W
      &   ,AIC,BIC,AWE,TLL,IER)
-      
+
       WRITE (*,*) 'Program run complete'
 99    CONTINUE
-      END 
+      END
 C
 C
 C
@@ -177,7 +177,7 @@ C
 C      Read in main parameters and set options with interactive
 C      questions with the user (or alternatively from a file)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,THING,POINT,FI
       INTEGER USA(MNIND)
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
@@ -259,7 +259,7 @@ C     Set all FLAGS to default zero
         READ (*,'(A)') OFYLE
         OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
         WRITE (*,*)'Enter name of file to send matlab results '
-        WRITE (*,*)'   (name must not have any full stop or extension):' 
+        WRITE (*,*)'   (name must not have any full stop or extension):'
         READ (*,'(A)') MFYLE
         OPEN (UNIT=74,FILE=MFYLE,STATUS = 'UNKNOWN')
       ENDIF
@@ -426,7 +426,7 @@ C       GOTO 599
           WRITE(*,*) '  consuming -see readme file'
          ENDIF
          WRITE(*,*)'How many random starts: '
-         READ (THING,*) FLAGS(26) 
+         READ (THING,*) FLAGS(26)
           IF ((RANDTYPE.EQ.0).AND.(FLAGS(26).GT.0)) THEN
             WRITE (*,*) 'Unable to use random starts as random'
             WRITE (*,*) 'number generator does not work'
@@ -534,7 +534,7 @@ cc     Modification D.Podlich 1995
 	   IF (NIND.GT.MNIND) THEN
 	     WRITE (*,*)'Adjust EMMIX-spher.max'
 	     stop
-	   ENDIF            
+	   ENDIF
 	   WRITE (*,*) 'Transposed new dim= ',NIND,NATT
 	   WRITE (22,*) 'Transposed new dim= ',NIND,NATT
 	ENDIF
@@ -598,7 +598,7 @@ C       Correct posterior probabilities for classified data
 
        SUBROUTINE EXOPT(NG1,TOLS,XUU,NCOV,NEDRAN)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,THING,TEMP
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
       COMMON /STORE2/ FLAGS,FYLENO
@@ -823,7 +823,7 @@ C         Option in New version
             XUU(KK)=XUU(1)
 593         CONTINUE
             FLAGS(7)=1
-            
+
        ELSEIF (TEMP.EQ.4) THEN
 
           ELSE
@@ -840,7 +840,7 @@ C     This section is appropriate for FLAGS(4) = 2
 C     where the user has supplied starting parameters for the EM
 C     algorithm
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION XMU(MAXNG,MNATT),XVAR(MAXNG,MNATT),
@@ -893,7 +893,7 @@ C     This subroutine sets up the initialisation for the EM algorithm
 C     when an initial partition is given by the user (FLAGS(4) = 1)
 C
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       INTEGER IDT(MNIND)
@@ -934,7 +934,7 @@ C
 C
       SUBROUTINE PRED(NIND,NATT,NCOV,NG,X,XMU,XVAR,V,DV,T,USA,WL,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       INTEGER USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
@@ -945,7 +945,7 @@ C
      &         W(MNIND,MAXNG),WL(MNIND),
      &         XMAH(MNIND,MAXNG)
        IER=0
-       IOUNT=1 
+       IOUNT=1
       CALL ESTEP(NIND,NATT,NG,X,XMU,XVAR,T,WL,W,XUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
       WRITE (FYLENO,*) ' Log Likelihood is ',XLOGL(IOUNT)
@@ -963,7 +963,7 @@ C
 
       SUBROUTINE DISC(NIND,NATT,NCOV,NG,X,XMU,XVAR,V,DV,T,USA,WL,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       INTEGER USA(MNIND)
           COMMON /STORE2/ FLAGS,FYLENO
@@ -978,7 +978,7 @@ C     Initialisation of partition to zero for discrimination option
        DO 2 II=1,NIND
         IDT(II)=0
 2      CONTINUE
-      
+
 C      Calculate parameter estimates
        CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,DV,
      &                  T,USA,IER)
@@ -986,7 +986,7 @@ C      Calculate parameter estimates
        WRITE(FYLENO,*) '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 C      Write parameter estimates to output file
        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
-      
+
        IF (IER.GT.0) THEN
          WRITE (FYLENO,*)'  Unable to continue covariance singular'
          WRITE (FYLENO,*)'  too few points in one of the components'
@@ -1017,11 +1017,11 @@ C      Write parameter estimates to output file
         FLAGS(12)=0
         CALL ESTEP(NIND,NATT,NG,X,XMU,XVAR,T,WL,W,XUU,USA,DV,
      &  XLOGL,IOUNT,XMAH,IER)
-        IF (IER.GT.0) RETURN 
+        IF (IER.GT.0) RETURN
         XTMP=1
         CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,WTOT,T,W,XUU,XMAH,XTMP,U,IER)
-        IF (IER.GT.0) RETURN 
+        IF (IER.GT.0) RETURN
         FLAGS(12)=1
         WRITE(FYLENO,*)
         CALL OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
@@ -1036,14 +1036,14 @@ C
      &   SIG,XUU,XMU,XVAR,T,IDT,W
      &   ,AIC,BIC,AWE,TLL,IER)
 
-C   PURPOSE 
-C     This is the main subroutine which controls the program 
+C   PURPOSE
+C     This is the main subroutine which controls the program
 C     and branches according to the options specified by FLAGS.
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 
 C    Constants that define array sizes at compilation time.
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
 
 C    Global Parameters
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
@@ -1059,7 +1059,7 @@ C   INPUT PARAMETERS
      &          NCOV,          ! Structure of covariance matrices
      &          IX,IY,IZ       ! Random seeds
 
-      DIMENSION X(MNIND,MNATT) ! Data or sample. 
+      DIMENSION X(MNIND,MNATT) ! Data or sample.
 
 C   OTHER INPUT PARAMETERS
       INTEGER   IDT(MNIND),              ! User defined partition of sample
@@ -1072,25 +1072,25 @@ C   OTHER INPUT PARAMETERS
      &           TOLS(4)                  ! User stopping tolerances for EM
 
 C   OUTPUT PARAMETERS
-      DIMENSION  
+      DIMENSION
      &           AIC(MAXNG),                      !Akaike Information Criterion
      &           BIC(MAXNG),                      !Bayesian  "  "       "  "
      &           AWE(MAXNG),                      !Approx. Weight. Evidence
      &           TLL(MAXNG)                       !-2log(Lambda)
- 
 
-C   WORK PARAMETERS 
+
+C   WORK PARAMETERS
       INTEGER TFLAG
       DIMENSION DV(MAXNG),
      &          TXML(MAXNG),XLOGL(MITFIN),FSEED(3),
      &          XMAH(MNIND,MAXNG),WL(MNIND)
- 
-C     Store random seeds for the record 
+
+C     Store random seeds for the record
       FSEED(1)=IX
       FSEED(2)=IY
       FSEED(3)=IZ
 
-      IF (FLAGS(14).NE.1) THEN 
+      IF (FLAGS(14).NE.1) THEN
         DO 10 I=1,NIND
           WL(I)=1
 10      CONTINUE
@@ -1113,7 +1113,7 @@ c      Call main clustering subroutine
           IER=0
           CALL NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,
      &     TXML(ING),DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
-          IF (IER.EQ.6) RETURN 
+          IF (IER.EQ.6) RETURN
 c      Estimate criteria values AIC,BIC etc.
           CALL CRITERIA(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),
      &                  BIC(ING),AWE(ING))
@@ -1153,13 +1153,13 @@ C       Display parameter estimates to output file if required
            WRITE (FYLENO,*) '       covariance matrices is singular'
            WRITE (*,*) 'ERROR: One or more of the resulting'
            WRITE (*,*) '       covariance matrices is singular'
-           RETURN 
+           RETURN
          ENDIF
-         
+
 C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C     Fit a mixture model for a range of NG0 to NG1 (Option 3)
-      ELSE  
+      ELSE
           ING=0
         DO 9999 NG=NG0,NG1
           ING=ING+1
@@ -1179,7 +1179,7 @@ c         Call main clustering subroutine
           IER=0
           CALL NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,
      &     TXML(ING),DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
-          IF (IER.EQ.6) RETURN 
+          IF (IER.EQ.6) RETURN
 
 
 c         Calculate various criteria AIC,BIC etc
@@ -1189,12 +1189,12 @@ c         Calculate various criteria AIC,BIC etc
 	  WRITE (FYLENO,*) ' AIC  BIC'
 	  WRITE (FYLENO,*) AIC(ING),BIC(ING)
 
-          
+
           IF (ING.GT.1) THEN
 c          Calculate likelihood ratio statistic
             TLL(ING)=(-2)*(TXML(ING-1)-TXML(ING))
           ENDIF
- 
+
 
 9999  CONTINUE
 99999 CONTINUE
@@ -1205,24 +1205,24 @@ C
       WRITE (*,*) '---------------------------------------------------'
       FYLENO=22
 
-c     Display the a summary of the results to determine the number of groups 
+c     Display the a summary of the results to determine the number of groups
       IF (FLAGS(8).EQ.3) THEN
         CALL ANASUM(NIND,NATT,NG0,NG1,NCOV,TXML,TLL,AIC,BIC,AWE)
       ENDIF
 
       RETURN
-      END 
+      END
 
       SUBROUTINE ANASUM(NIND,NATT,NG0,NG1,NCOV,TXML,TLL,AIC
      &                  ,BIC,AWE)
-c     
+c
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION TXML(MAXNG),TLL(MAXNG),
      &           AIC(MAXNG),BIC(MAXNG),AWE(MAXNG)
-      
+
       WRITE(FYLENO,*)
       WRITE(FYLENO,*) ' ANALYSIS SUMMARY'
       WRITE(FYLENO,*) ' ~~~~~~~~~~~~~~~~'
@@ -1285,7 +1285,7 @@ C     &                AWE(ING))
 
       SUBROUTINE SUMRY(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,FI
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
       COMMON /STORE2/ FLAGS,FYLENO
@@ -1294,7 +1294,7 @@ C     &                AWE(ING))
       CHARACTER INFYLE*255, OFYLE*255,OFYLE2*255
       CHARACTER P1FYLE*255,P2FYLE*255,P3FYLE*255
       WRITE(FI,*)'      --------------------------------------------'
-      IF (FLAGS(8).EQ.0) THEN 
+      IF (FLAGS(8).EQ.0) THEN
          WRITE(FI,*)'        EMMIX - Generated sample from Mixture'
       ELSEIF (FLAGS(8).EQ.1) THEN
         IF ((FLAGS(10).GT.0).AND.(FLAGS(17).GT.0)) THEN
@@ -1307,14 +1307,14 @@ C     &                AWE(ING))
      &    ' Analysis'
         ENDIF
       ELSEIF (FLAGS(8).EQ.2) THEN
-      WRITE(FI,*)'       EMMIX - Mixture Analysis(Clustering) of' 
+      WRITE(FI,*)'       EMMIX - Mixture Analysis(Clustering) of'
       WRITE(FI,*)'                 Sample in File ',INFYLE
-      WRITE(FI,*)'                 for a specified range of g' 
+      WRITE(FI,*)'                 for a specified range of g'
       ELSEIF (FLAGS(8).EQ.3) THEN
       WRITE(FI,*)'       EMMIX - Mixture Analysis(Clustering) of'
       WRITE(FI,*)'                (Range of G) Sample in File ',INFYLE
       ELSEIF (FLAGS(8).EQ.4) THEN
-      WRITE(FI,*)'       EMMIX - Discriminant Analysis of' 
+      WRITE(FI,*)'       EMMIX - Discriminant Analysis of'
       WRITE(FI,*)'                 Sample in File ',INFYLE
       ENDIF
 
@@ -1323,7 +1323,7 @@ C     &                AWE(ING))
       WRITE(FI,*)'              input file:',INFYLE
       WRITE(FI,*)'              output file:',OFYLE
       WRITE(FI,*)'      --------------------------------------------'
-      
+
       IF ((FLAGS(8).NE.4).AND.(FLAGS(8).NE.0)) THEN
       WRITE(FI,*)'      Initial fit Tolerance:',TOLS(1)
       WRITE(FI,580) TOLS(2)
@@ -1361,14 +1361,14 @@ C     &                AWE(ING))
      &' random start(s), ',INT(FLAGS(5))
       WRITE(FI,*) '      k-mean(s) starts and'
       ELSEIF (FLAGS(4).EQ.2) THEN
-       WRITE(FI,*) '      user-defined parameters used to start the' 
-       WRITE(FI,*) '      EM algorithm' 
+       WRITE(FI,*) '      user-defined parameters used to start the'
+       WRITE(FI,*) '      EM algorithm'
       ELSEIF (FLAGS(4).EQ.1) THEN
        WRITE(FI,*) '      user-defined grouping of sample used to'
-       WRITE(FI,*) '      start the EM algorithm' 
+       WRITE(FI,*) '      start the EM algorithm'
       ELSEIF (FLAGS(4).EQ.4) THEN
        WRITE(FI,*) '      user-defined posterior probabilities used'
-       WRITE(FI,*) '      to start the EM algorithm' 
+       WRITE(FI,*) '      to start the EM algorithm'
       ENDIF
       WRITE(FI,*) '      --------------------------------------------'
       ENDIF
@@ -1407,15 +1407,15 @@ C     &                AWE(ING))
       WRITE(FI,*) '      --------------------------------------------'
       ELSEIF (FLAGS(7).EQ.2) THEN
         WRITE(FI,*)'     Mixture of : Ts Iterative NU started at'
-        WRITE(FI,*)'     user estimate with unequal NUs for all groups' 
+        WRITE(FI,*)'     user estimate with unequal NUs for all groups'
       WRITE(FI,*) '      --------------------------------------------'
       ELSEIF (FLAGS(7).EQ.3) THEN
         WRITE(FI,*)'     Mixture of : Ts Iterative NU started at'
-        WRITE(FI,*)'     user estimate with equal NUs for all groups' 
+        WRITE(FI,*)'     user estimate with equal NUs for all groups'
       WRITE(FI,*) '      --------------------------------------------'
       ELSEIF (FLAGS(7).EQ.4) THEN
         WRITE(FI,*)'     Mixture of : Ts Iterative NU started at'
-      WRITE(FI,*)'     moment estimate with unequal NUs for all groups' 
+      WRITE(FI,*)'     moment estimate with unequal NUs for all groups'
       WRITE(FI,*) '      --------------------------------------------'
       ENDIF
       IF (FLAGS(15).EQ.1) THEN
@@ -1429,7 +1429,7 @@ C     &                AWE(ING))
       WRITE(FI,*) '      --------------------------------------------'
       ENDIF
       IF (FLAGS(18).GT.0) THEN
-        WRITE(FI,*) '      Standard Errors to be estimated and reported' 
+        WRITE(FI,*) '      Standard Errors to be estimated and reported'
       WRITE(FI,*) '      --------------------------------------------'
       ENDIF
       WRITE(FI,*)
@@ -1440,17 +1440,17 @@ C     &                AWE(ING))
       END
 
 
-   
+
         SUBROUTINE INPSUM(NIND,NATT,NG)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
       COMMON /STORE2/ FLAGS,FYLENO
       COMMON /STORE3/ OFYLE,INFYLE,P1FYLE,P2FYLE,P3FYLE,OFYLE2
       CHARACTER INFYLE*255, OFYLE*255,OFYLE2*255
       CHARACTER P1FYLE*255,P2FYLE*255,P3FYLE*255
-      
+
       WRITE(*,*)'       The Input File should be of the form:'
       IF ((FLAGS(8).GT.1).OR.(FLAGS(18).GE.1)) THEN
        WRITE(*,*)'       The sample consisting of'
@@ -1464,7 +1464,7 @@ C     &                AWE(ING))
       IF ((FLAGS(8).LE.1).OR.(FLAGS(4).EQ.2)) THEN
         WRITE(*,*)'       Mean component 1'
         WRITE(*,*)'       Covariance component 1'
-        IF (NG.GT.1) THEN 
+        IF (NG.GT.1) THEN
         WRITE(*,*)'       repeat for other',NG-1,' components'
         WRITE(*,*)'       ',NG,' mixing proportions'
         ELSE
@@ -1476,9 +1476,9 @@ C     &                AWE(ING))
         WRITE(*,*)'         eg 1 1 2 2 1 2 1 2'
       ELSEIF (FLAGS(4).EQ.4) THEN
         WRITE(*,*)'       ',
-     &           NG,'Posterior probabilities on each line' 
+     &           NG,'Posterior probabilities on each line'
         WRITE(*,*) '      for',NIND,'points'
-      ENDIF 
+      ENDIF
       WRITE(*,*)'      --------------------------------------------'
       RETURN
       END
@@ -1486,11 +1486,11 @@ C     &                AWE(ING))
 
       SUBROUTINE INVRT(NATT,NCOV,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION XVAR(MAXNG,MNATT),DV(MAXNG)
- 
+
          IF ((NCOV.EQ.3).OR.(NCOV.EQ.5)) THEN
           CALL GDET(NCOV,NATT,NG,XVAR,V,DV,IER)
           DO 5401 K=2,NG
@@ -1512,7 +1512,7 @@ C     &                AWE(ING))
        END
 
 C
-C     
+C
 C     This group of subroutines handles the generation of initial partitions
 C     for the EM algorithm.  This is done via various clustering methods plus
 C     random starts
@@ -1524,7 +1524,7 @@ C      This subroutine is the main subroutine and controls the calling and
 C      interaction of the other subroutines to generate initial partitions
 
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
        INTEGER FLAGS(40),FYLENO,USA(MNIND)
        COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
        COMMON /STORE2/ FLAGS,FYLENO
@@ -1539,7 +1539,7 @@ c	WRITE (FYLENO,109)
 	XMLBEST=0
 	DO 12 I=1,MAXNS
 	 CORIND(I)=0
-12      CONTINUE	  
+12      CONTINUE
 	FFG=-1
         WRITE(FYLENO,*) '     Results of search for initial Grouping'
         WRITE(FYLENO,*) '     ******* ** ****** *** ******* ********'
@@ -1564,7 +1564,7 @@ c	WRITE (FYLENO,109)
         CALL KMEANCON(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,NS,
      &        MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
         WRITE(FYLENO,15)
-        
+
         IF (FFG.EQ.-1) THEN
 	   IER=31
            IF (FLAGS(3).EQ.1) THEN
@@ -1606,7 +1606,7 @@ C      each random partition calls the subroutine FIT.
 
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        DOUBLE PRECISION RANDNUM,R
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
        INTEGER FLAGS(40),FYLENO,USA(MNIND)
        COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
        COMMON /STORE2/ FLAGS,FYLENO
@@ -1670,7 +1670,7 @@ cc          WRITE(FYLENO,*)
                R=RANDNUM()
                XCUT=FLOAT(FLAGS(1))/100.00
                IF (R.GE.XCUT) THEN
-                IDT(I)=0 
+                IDT(I)=0
                ELSE
 	        R=RANDNUM()
                 G=R*FLOAT(NG)
@@ -1709,7 +1709,7 @@ c          FLAGS(9)=3
 C     This subroutine calls the various Hierarchical clustering methods used
 C     and for each resulting grouping calls the subroutine FIT.
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION X(MNIND,MNATT),XML(MSTART),IDT(MNIND),
@@ -1733,14 +1733,14 @@ C     and for each resulting grouping calls the subroutine FIT.
       NH=NH+1
       READ(28,*) ISU(NH),IS(NH)
       IF (ISU(NH).EQ.-1) THEN
-         CLOSE(28) 
+         CLOSE(28)
          GOTO 230
       ENDIF
       IF (IS(NH).EQ.6) THEN
          READ(28,*) BETA(NH)
       ENDIF
       GOTO 210
- 
+
 220   CONTINUE
 C     If input file hier.inp is not present these defaults are used
       NH=7
@@ -1761,7 +1761,7 @@ c                   HIERARCHICAL STARTS
 c          Determine Hierarchical grouping
            CALL HIER(NIND,NATT,NG,X,IDT,ISU(JJ),IS(JJ),BETA(JJ),IFAULT)
            IF (IFAULT.EQ.9) RETURN
-c            Display Hierarchical grouping 
+c            Display Hierarchical grouping
              IF (FLAGS(11).EQ.0) WRITE (FYLENO,235)
 235        FORMAT (2X,'------------------------------------'
      &               ,'------------------------------------')
@@ -1798,12 +1798,12 @@ C          Now we have the data and an IDT initial allocation
 C     This subroutine calls the Subroutine KMEANS and for the resulting
 C     partition calls the subroutine FIT.
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
        INTEGER FLAGS(40),FYLENO,USA(MNIND)
        COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
        COMMON /STORE2/ FLAGS,FYLENO
-C      CGT 2002/03/30       
-C      Changed dimension of WL to 1-dimension       
+C      CGT 2002/03/30
+C      Changed dimension of WL to 1-dimension
        DIMENSION X(MNIND,MNATT),IDT(MNIND),WBEST(MNIND,MAXNG),
      &           XML(MSTART),TOLS(4),W(MNIND,MAXNG),CORIND(MSTART),
      &           WL(MNIND),XUU(MAXNG),XUUBEST(MAXNG)
@@ -1830,7 +1830,7 @@ C       K-means Start
          ENDIF
         ENDIF
         CALL KMEANS(NIND,NATT,NG,X,IDT,EPSILON,IER)
-        IF (IER.EQ.-41) THEN 
+        IF (IER.EQ.-41) THEN
         WRITE (FYLENO,*)'  WARNING : K-means did not converge current'
         WRITE (FYLENO,*)'            estimates will be used.'
          IER=0
@@ -1859,15 +1859,15 @@ C       K-means Start
       END
 
        SUBROUTINE CHECK(NCOV,NG,NIND,NATT,IDT,SWAPID)
-C      This subroutine checks to see if the partition found has enough 
+C      This subroutine checks to see if the partition found has enough
 C      points in all of it's groups. If this is not so then the
 C      subroutine swap is called and points are taken from other groups.
 
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
          DIMENSION IDT(MNIND),NO(MAXNG)
          IF (NCOV.EQ.4) THEN
-          IRANGE=3 
+          IRANGE=3
           DO 410 IF=1,NG
 410        NO(IF)=0.0
           DO 420 IG=1,NIND
@@ -1888,7 +1888,7 @@ C      subroutine swap is called and points are taken from other groups.
        SUBROUTINE SWAP(IDT,NO,NIND,NATT,NG,I)
 C     This subroutine moves points from one group to another
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
          DIMENSION IDT(MNIND),NO(MAXNG)
         IF (NCOV.EQ.4) IDIF=4-NO(I)
         JJ=0
@@ -1919,7 +1919,7 @@ C     via the EM algorithm (subroutine LOOP) started from the initial
 C     partition contained in IDT
 
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
        INTEGER FLAGS(40),FYLENO,USA(MNIND)
        COMMON /STORE2/ FLAGS,FYLENO
        DIMENSION X(MNIND,MNATT),XVAR(MAXNG,MNATT),
@@ -1945,7 +1945,7 @@ c           ENDIF
 C	write (*,*) (IDT(III),III=1,NIND)
       CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,
      &	 XVAR,DV,T,USA,IER)
-         IF (IER.NE.0) GOTO 660 
+         IF (IER.NE.0) GOTO 660
 c	 ENDIF
            FLAGS(9)=2
         IF (FLAGS(7).EQ.4) THEN
@@ -1985,12 +1985,12 @@ c	 ENDIF
            WRITE(FYLENO,*) '  Log Like set to Zero'
            XML(NS)=0
 	   CORIND(NS)=-1
-           GOTO 700 
+           GOTO 700
          ENDIF
    	 IF(IER-1)680,660,670
-C        If the matrix has zero pivot set Log likelihood to 0 
+C        If the matrix has zero pivot set Log likelihood to 0
 C        This corresponds to convergence to a singular matrix
-660      CONTINUE 
+660      CONTINUE
          XML(NS)=0.0
 	 CORIND(NS)=-1
          WRITE(FYLENO,*) '   Problem with Inversion.'
@@ -1999,7 +1999,7 @@ C        This corresponds to convergence to a singular matrix
 	 GOTO 680
 
 670      IER=2
-	 GOTO 700 
+	 GOTO 700
 
 680      CONTINUE
 
@@ -2014,14 +2014,14 @@ c         IF (XML(FLAGS(26)+NH+1).LT.XMLBEST) GOTO 583
            DO 1690 II=1,NIND
 1690          WBEST(II,KK)=W(II,KK)
 
-         ELSEIF ((XML(NS).GT.XMLBEST).AND.(CORIND(NS).GE.0)) THEN 
+         ELSEIF ((XML(NS).GT.XMLBEST).AND.(CORIND(NS).GE.0)) THEN
           XMLBEST=XML(NS)
           DO 690 KK=1,NG
             XUUBEST(KK)=TXUU(KK)
             DO 690 II=1,NIND
               WBEST(II,KK)=W(II,KK)
-690       CONTINUE 
-699      ENDIF 
+690       CONTINUE
+699      ENDIF
 
 
 700      CONTINUE
@@ -2043,7 +2043,7 @@ C
 C     D.Peel Nov 1995 Based on the program kmmu by K.Basford
 C
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,TEMPNCOV
       INTEGER USA(MNIND)
           COMMON /STORE2/ FLAGS,FYLENO
@@ -2055,9 +2055,9 @@ C
      &         XMAH(MNIND,MAXNG),XCC(MAXNG),XLOGL(MITFIN),
      &         U(MNIND,MAXNG)
 C
-      IER=0  
+      IER=0
 
-C     Calculate total data size when data is weighted ie weighted 
+C     Calculate total data size when data is weighted ie weighted
 C     likelihood and sum of weights does not equal one.
       WTOT=0.0
       DO 70 I=1,NIND
@@ -2074,7 +2074,7 @@ C       Set Flag for final EM run and equal covariances
         FLAGS(9)=1
 C        TEMPNCOV=NCOV
 C       NCOV=1
-C       Calculate parameter estimates 
+C       Calculate parameter estimates
         CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,
      &               DV,T,USA,IER)
        IOUNT=1
@@ -2087,7 +2087,7 @@ C       Calculate parameter estimates
           DO 20100 KKK=1,NG
            W(III,KKK)=0
 20100    CONTINUE
-         W(III,IDT(III))=1 
+         W(III,IDT(III))=1
 20101    CONTINUE
          CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
          WRITE (FYLENO,*) '  Moment estimates of NU are '
@@ -2098,14 +2098,14 @@ C       Execute the EM algorithm
         CALL LOOP(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,
      &            TXML,IDT,WL,W,XUU,USA,TOLS)
 C       Go to end of routine to output section
-       GOTO 23 
+       GOTO 23
       ENDIF
 
 
 
 C    User supplied partition of the data
       IF (FLAGS(4).EQ.1) THEN
-C       Calculate parameter estimates from allocation 
+C       Calculate parameter estimates from allocation
         CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,DV,
      &                  T,USA,IER)
 C       Display parameter estimates to output file if required
@@ -2115,7 +2115,7 @@ C       Display parameter estimates to output file if required
         ENDIF
 
 C    Use automatic starts
-      ELSEIF (FLAGS(4).EQ.3) THEN 
+      ELSEIF (FLAGS(4).EQ.3) THEN
 C       Generate maximum likelihood solution from various starts
 	CALL AUTOPARTITION(NIND,NATT,NG,NCOV,X,
      &	 W,WL,TOLS,XUU,USA,FSEED,IER)
@@ -2132,14 +2132,14 @@ C       Display parameter estimates to output file if required
  	 CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
         ENDIF
         IF ((FLAGS(3).EQ.1).AND.(FLAGS(11).EQ.0)) THEN
-          CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)     
+          CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
           WRITE (*,*) '  Best Partition'
           WRITE (*,315) (IDT(JJ),JJ=1,NIND)
         ENDIF
         IF (FLAGS(11).EQ.0) THEN
-         CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)     
+         CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
          IF (NIND.LE.DISNIND) THEN
-         WRITE (FYLENO,*)  
+         WRITE (FYLENO,*)
          WRITE (FYLENO,*) '  Starting Partition Found'
          WRITE (FYLENO,315) (IDT(JJ),JJ=1,NIND)
 315      FORMAT (2X,10I4)
@@ -2147,14 +2147,14 @@ C       Display parameter estimates to output file if required
 	 ENDIF
         ENDIF
 
-C    User posterior probabilities (weights,fuzzy partition)  
+C    User posterior probabilities (weights,fuzzy partition)
       ELSEIF (FLAGS(4).EQ.4) THEN
 C      Calculate parameters from posterior probabilities
        TEMP=0
        CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,
-     &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER) 
+     &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 
-      ENDIF 
+      ENDIF
 C     END of options
 
 
@@ -2164,7 +2164,7 @@ C     conditions eg stopping conditions, tolerances
 C     Set flag to switch off the Stochastic EM
       FLAGS(2)=0
 
-       IF (IER.GT.0) THEN 
+       IF (IER.GT.0) THEN
          WRITE (FYLENO,*)'  Unable to continue covariance singular'
          WRITE (FYLENO,*)'  too few points in one of the components'
          RETURN
@@ -2174,9 +2174,9 @@ C     Set flag to switch off the Stochastic EM
          DO 10100 KKK=1,NG
           W(III,KKK)=0
 10100    CONTINUE
-         W(III,IDT(III))=1 
+         W(III,IDT(III))=1
 10101    CONTINUE
-   
+
         CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
         WRITE (FYLENO,*) '  Moment estimates of NU are '
         WRITE (FYLENO,*) '   ',(XUU(KKK),KKK=1,NG)
@@ -2194,13 +2194,13 @@ C      IF (NG.EQ.1) NCOV=TEMPNCOV
 60    WRITE (FYLENO,65)
 65    FORMAT (/2X,'Terminal error in SYMINV from input data')
 
-99    RETURN 
+99    RETURN
       END
 
 
       SUBROUTINE FINOUT(NIND,NATT,NCOV,NG,XUU,XMU,XVAR,T,IDT,XCC)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DOUBLE PRECISION RANDNUM
@@ -2285,14 +2285,14 @@ C     Test if a common covariance matrix is specified (NCOV = 1)
 50      CONTINUE
       ENDIF
       ENDIF
-99    RETURN 
+99    RETURN
       END
 
       SUBROUTINE ESTEP(NIND,NATT,NG,X,XMU,XVAR,T,WL,W,XUU,USA,DV,
      &                 XLOGL,IOUNT,XMAH,IER)
-C     This Subroutine implements the E-step of the EM algorithm 
+C     This Subroutine implements the E-step of the EM algorithm
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       INTEGER USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
@@ -2323,9 +2323,9 @@ C      Calculate multivariate density of each point for every group
             AL(K)=AL(K)+(X(JJ,I)-XMU(K,I))**2/XVAR(K,I)
 910       CONTINUE
           IF (K.EQ.1) THEN
-            AG=AL(1) 
+            AG=AL(1)
             AL(1)=1.0
-            DG=DV(1) 
+            DG=DV(1)
             TG=T(1)
             ALL(K)=AL(K)
           ELSE
@@ -2338,12 +2338,12 @@ C           Calculate component density
 	     TOOBIG=1.0
             ELSE
              AL(K)=EXP(AL(K))
-C            Calculate mixture density            
+C            Calculate mixture density
              GUM=GUM+T(K)/TG*AL(K)
 	    ENDIF
           ENDIF
 920     CONTINUE
-       
+
 C       Compute current estimates of posterior probabilities of group
 C       membership (W)
           DO 930 K=1,NG
@@ -2368,7 +2368,7 @@ C       membership (W)
         ELSE
           DO 940 K=1,NG
 C           Check to catch numerical underflow
-            IF (T(K).LT.XLOWEM.OR.AL(K).LT.XLOWEM) THEN 
+            IF (T(K).LT.XLOWEM.OR.AL(K).LT.XLOWEM) THEN
               W(JJ,K)=0.0
             ELSE
 C             Calculate posterior probabilities
@@ -2386,13 +2386,13 @@ C         Calculate Log-Likelihood contribution from point JJ
       WRITE (*,'AXF10.2XF6.2A') IOUNT,' lik= ',XLOGL(IOUNT),
      &                  LOOK/FLOAT(NIND)*100.0,'%'
       RETURN
-      END 
+      END
 
       SUBROUTINE MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,
      &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
-C     This Subroutine implements the M-step of the EM algorithm 
+C     This Subroutine implements the M-step of the EM algorithm
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION X(MNIND,MNATT),XMU(MAXNG,MNATT),
@@ -2464,14 +2464,14 @@ C       Compute new estimate of common covariance matrix
         DO 991 J=1,NATT
             XVAR(K,J)=XVAR(1,J)
 991     CONTINUE
-        
+
 C       Obtain inverse of this matrix
         CALL GDET(NCOV,NATT,1,XVAR,V,DV,IER)
         IF (IER.GT.0) GO TO 1030
         DO 992 K=2,NG
           DV(K)=DV(1)
 992     CONTINUE
-       
+
       ELSEIF ((NCOV.EQ.4).OR.(NCOV.EQ.6)) THEN
 C       Obtain inverse and determinant of each estimated covariance
 C       matrix
@@ -2503,10 +2503,10 @@ C       matrix
 
       SUBROUTINE PARCORR(NIND,NATT,NG,USA,W)
 C      This subroutine corrects the posterior probabilities
-C      for classified data by reassigning the classified points 
+C      for classified data by reassigning the classified points
 C      to their prior groups
        implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
        INTEGER FLAGS(40),FYLENO,USA(MNIND)
        COMMON /STORE2/ FLAGS,FYLENO
        DIMENSION W(MNIND,MAXNG)
@@ -2529,7 +2529,7 @@ C     This Subroutine handles the estimation of the parameters
 C     of a multivariate normal mixture model given a sample X and an
 C     initial partition (group allocation) IDT.
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION X(MNIND,MNATT),XMU(MAXNG,MNATT),U(MNIND,MAXNG),
@@ -2543,19 +2543,19 @@ C     proportion for each group
         DO 50 I=1,NIND
          U(I,K)=1
 50    CONTINUE
-      IF ((FLAGS(8).NE.4).AND.(FLAGS(12).GT.0)) THEN  
+      IF ((FLAGS(8).NE.4).AND.(FLAGS(12).GT.0)) THEN
         DO 60 II=1,NIND
           IF (USA(II).GT.-1) THEN
             IDT(II)=USA(II)
             ICOUNT=ICOUNT+1
-          ENDIF  
+          ENDIF
 60      CONTINUE
-      ELSEIF (FLAGS(12).GT.0) THEN  
+      ELSEIF (FLAGS(12).GT.0) THEN
         DO 61 II=1,NIND
           IF (USA(II).GT.-1) THEN
             ICOUNT=ICOUNT+1
             IDT(ICOUNT)=USA(II)
-          ENDIF  
+          ENDIF
 61      CONTINUE
 	NTNIND=NIND
 	NIND=ICOUNT
@@ -2568,7 +2568,7 @@ C     proportion for each group
         WSUM(K)=0
 80    CONTINUE
       DO 95 I=1,NIND
-        DO 90 K=1,NG 
+        DO 90 K=1,NG
           W(I,K)=0
 90      CONTINUE
         KK=IDT(I)
@@ -2641,13 +2641,13 @@ C       matrix
       ENDIF
       RETURN
       END
-      
+
       SUBROUTINE OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
 C     This subroutine writes the estimates of the parameters to the outfile
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XMU(MAXNG,MNATT),XVAR(MAXNG,MNATT),
      &       T(MAXNG),DV(MAXNG),XUU(MAXNG)
       DO 210 K=1,NG
@@ -2656,7 +2656,7 @@ C     This subroutine writes the estimates of the parameters to the outfile
 210     WRITE (FYLENO,215) (XMU(K,J),J=1,NATT)
 215   FORMAT (2X,5G14.6)
       IF (NATT.LE.DISNATT) THEN
-      IF ((NCOV.EQ.4).OR.(NCOV.EQ.6)) THEN 
+      IF ((NCOV.EQ.4).OR.(NCOV.EQ.6)) THEN
         DO 220 K=1,NG
           WRITE (FYLENO,231) K
 231   FORMAT(/2X,'Estimated diagonal covariance matrix for component '
@@ -2664,7 +2664,7 @@ C     This subroutine writes the estimates of the parameters to the outfile
             WRITE (FYLENO,218) (XVAR(K,I),I=1,NATT)
 218         FORMAT (2X,5G14.6)
 220     CONTINUE
-      ELSE 
+      ELSE
         IF (NCOV.EQ.1) THEN
          WRITE (FYLENO,225)
 225      FORMAT (/2X,'Estimated common component-covariance matrix ')
@@ -2684,7 +2684,7 @@ C     This subroutine writes the estimates of the parameters to the outfile
 
       IF (FLAGS(7).GT.0) THEN
         WRITE (FYLENO,*) 'Initial estimates of Nu'
-        WRITE (FYLENO,*) (XUU(K),K=1,NG) 
+        WRITE (FYLENO,*) (XUU(K),K=1,NG)
       ENDIF
       RETURN
       END
@@ -2694,18 +2694,18 @@ C     This subroutine writes the estimates of the parameters to the outfile
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION XVAR(MAXNG,MNATT),
      &          DV(MAXNG)
-      IF (NCOV.EQ.3) THEN 
+      IF (NCOV.EQ.3) THEN
        CALL GDET3(NATT,XVAR,V,DV,IER)
-      ELSEIF (NCOV.EQ.4) THEN 
+      ELSEIF (NCOV.EQ.4) THEN
        CALL GDET4(NATT,NG,XVAR,V,DV,IER)
-      ELSEIF (NCOV.EQ.5) THEN 
+      ELSEIF (NCOV.EQ.5) THEN
        CALL GDET5(NATT,XVAR,V,DV,IER)
-      ELSEIF (NCOV.EQ.6) THEN 
+      ELSEIF (NCOV.EQ.6) THEN
        CALL GDET6(NATT,NG,XVAR,V,DV,IER)
       ENDIF
       RETURN
@@ -2716,7 +2716,7 @@ C     for each covariance matrix in turn.
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XVAR(MAXNG,MNATT),
      &          DV(MAXNG)
          DV(1)=0.0
@@ -2736,7 +2736,7 @@ C     for each covariance matrix in turn.
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XVAR(MAXNG,MNATT),
      &          DV(MAXNG)
           IF (XVAR(1,1).GT.0.0) THEN
@@ -2753,7 +2753,7 @@ C     for each covariance matrix in turn.
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XVAR(MAXNG,MNATT),
      &          DV(MAXNG)
       DO 830 K=1,NG
@@ -2775,7 +2775,7 @@ C     for each covariance matrix in turn.
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
 C     for each covariance matrix in turn.
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XVAR(MAXNG,MNATT),
      &          DV(MAXNG)
       DO 830 K=1,NG
@@ -2795,7 +2795,7 @@ C     for each covariance matrix in turn.
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine uses the EM algorithm from a specified starting
 C     value to find a solution of the likelihood equation.
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION X(MNIND,MNATT),
@@ -2821,7 +2821,7 @@ c        DO 10101 III=1,NIND
 c         DO 10100 KKK=1,NG
 c          W(III,KKK)=0
 c10100    CONTINUE
-c         W(III,IDT(III))=1 
+c         W(III,IDT(III))=1
 c10101    CONTINUE
 c        CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
 c        WRITE (FYLENO,*) '  Moment estimates of NU are '
@@ -2848,7 +2848,7 @@ C       MAIN ITERATIVE LOOP
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 900   CONTINUE
 
-C     Display to screen determinants if required 
+C     Display to screen determinants if required
        IF ((FLAGS(9).EQ.1).AND.(NG.NE.1)
      &     .AND.(FLAGS(11).EQ.0).AND.(FLAGS(3).EQ.1)) THEN
          WRITE (FYLENO,905)
@@ -2860,13 +2860,13 @@ C     Display to screen determinants if required
        ENDIF
        CALL ESTEP(NIND,NATT,NG,X,XMU,XVAR,T,WL,W,XUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
-c       IF (IER.GT.0) GOTO 9999 
-       IF (IER.GT.0) GOTO 1099 
+c       IF (IER.GT.0) GOTO 9999
+       IF (IER.GT.0) GOTO 1099
 
        IF (FLAGS(2).EQ.1) THEN
          CALL SEM(NIND,NATT,NG,W)
        ENDIF
-C       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)     
+C       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
 C       WRITE (*,11111) (IDT(III),III=1,NIND)
 C11111  FORMAT(10I3)
 C     Display to screen Log-likelihood if required
@@ -2895,7 +2895,7 @@ C     Display to screen Log-likelihood if required
 
 
 C     Test for exit from loop
-       IF (IOUNT.GE.MAXIT) THEN 
+       IF (IOUNT.GE.MAXIT) THEN
          WRITE (FYLENO,115) MAXIT
 115      FORMAT (/2X,'Note: This sample did not converge in ',I3,
      &     ' iterations.',/8X,'However the program will continue ',
@@ -2904,7 +2904,7 @@ C     Test for exit from loop
          GO TO 1099
        ENDIF
 C      Standard stopping criteria
-       IF (IOUNT.GT.10) THEN 
+       IF (IOUNT.GT.10) THEN
         LAST=IOUNT-10
 C       Aitkin's acceleration to be used when specified and doing
 C       a bootstrap fit
@@ -2913,7 +2913,7 @@ ccc        IF (FLAGS(21).GE.0) THEN
          DIFF=XLOGL(IOUNT)-XLOGL(LAST)
          IF (ABS(DIFF).LE.ABS(ALIM)) THEN
            XLA(IOUNT)=0
-           GO TO 1099 
+           GO TO 1099
          ENDIF
 
 
@@ -2926,33 +2926,33 @@ ccc        ELSE
           XLANEW=0
          ELSE
         C=XNUM/DEM
- 
+
          ENDIF
          IF ((C.LT.(.99)).OR.(C.GT.(1.01))) THEN
           XLANEW=XLOGL(IOUNT-1)+XNUM*1/(1-C)
          ELSE
           XLANEW=0
          ENDIF
- 
+
           XLA(IOUNT)=XLANEW
- 
+
          IF (XLA(IOUNT).NE.0) THEN
           ALIM=TOLERENCE*XLAOLD
           DIFF=XLA(IOUNT)-XLAOLD
          ENDIF
       IF ((ABS(DIFF).LE.ABS(ALIM)).AND.(XLA(IOUNT).GE.XLOGL(IOUNT)))
      &      THEN
-          XLOGL(IOUNT)=XLA(IOUNT)        
-          GOTO 1099 
+          XLOGL(IOUNT)=XLA(IOUNT)
+          GOTO 1099
          ENDIF
        ENDIF
       ENDIF
 
       TEMP=1.0
-      
+
       CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
-      IF (IER.GT.0) GOTO 1099 
+      IF (IER.GT.0) GOTO 1099
       IOUNT=IOUNT+1
       XLAST=1.0
       GOTO 900
@@ -2987,8 +2987,8 @@ C    Final work after convergence
         IF (CKOUT.LT.0.0001) IDT(I)=0
 1098  CONTINUE
       IF ((FLAGS(12).GT.0).AND.(FLAGS(9).EQ.1)) THEN
-       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)     
-        WRITE(FYLENO,*) 
+       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+        WRITE(FYLENO,*)
         WRITE(FYLENO,*) '     *******************************'
        IF (FLAGS(8).EQ.4) THEN
         WRITE(FYLENO,*) '    FIT USING PARTIAL CLASSIFIED DATA'
@@ -2996,7 +2996,7 @@ C    Final work after convergence
         WRITE(FYLENO,*) '      FIT USING PARTIAL GROUPING '
        ENDIF
         WRITE(FYLENO,*) '     *******************************'
-        WRITE(FYLENO,*) 
+        WRITE(FYLENO,*)
       WRITE(FYLENO,*)'  Implied grouping for all unclassified entities'
       WRITE(FYLENO,*)' (with component membership of classified'
       WRITE(FYLENO,*)'  entities as specified)'
@@ -3007,13 +3007,13 @@ C    Final work after convergence
         FLAGS(12)=0
         CALL ESTEP(NIND,NATT,NG,X,XMU,XVAR,T,WL,W,XUU,USA,DV,
      &  XLOGL,IOUNT,XMAH,IER)
-	IF (IER.GT.0) GOTO 9999 
+	IF (IER.GT.0) GOTO 9999
         XTMP=1
         CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,WTOT,T,W,XUU,XMAH,XTMP,U,IER)
-	IF (IER.GT.0) GOTO 9999 
+	IF (IER.GT.0) GOTO 9999
         FLAGS(12)=1
-        WRITE(FYLENO,*) 
+        WRITE(FYLENO,*)
         CALL OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
      &	             W,IDT,X,USA,U)
       ELSEIF (FLAGS(9).EQ.1) THEN
@@ -3032,11 +3032,11 @@ C    Final work after convergence
       RETURN
       END
 
-      SUBROUTINE CAPART(NIND,NATT,NG,W,IDT,USA,XCC)     
+      SUBROUTINE CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
 C     This subroutine determines  the partition of entities,
 C     from the posterior probabilities W, into NG groups
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO,USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION W(MNIND,MAXNG),IDT(MNIND),
@@ -3058,22 +3058,22 @@ C     from the posterior probabilities W, into NG groups
       END
 
       SUBROUTINE OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
-     &                   W,IDT,X,USA,U)     
+     &                   W,IDT,X,USA,U)
 c      This subroutine displays all the relevant information from the
-c      EM algorithm applied to the best partition. 
+c      EM algorithm applied to the best partition.
       implicit double precision (a-h,o-z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
 	      INTEGER FLAGS(40),FYLENO,USA(MNIND)
 	      COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION DV(MAXNG),T(MAXNG),W(MNIND,MAXNG),
      &          XCC(MAXNG),XLOGL(MITER),XMU(MAXNG,MNATT),
      &          IDT(MNIND),X(MNIND,MNATT),
      &          U(MNIND,MAXNG)
-      IF (FLAGS(8).NE.4) THEN 
+      IF (FLAGS(8).NE.4) THEN
 	WRITE (FYLENO,1105) IOUNT,XLOGL(IOUNT)
 1105    FORMAT (/2X,'In loop ',I3,' log likelihood is ',F15.3)
       ENDIF
-      CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)     
+      CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
       IF (FLAGS(6).EQ.1) THEN
         WRITE (*,*)
         WRITE (FYLENO,*) '  Density values of user defined model'
@@ -3091,13 +3091,13 @@ c      EM algorithm applied to the best partition.
         ELSEIF (FLAGS(7).GT.0) THEN
       WRITE (FYLENO,*) 'Observation | mixture log density|',
      &' Us Grp1 Grp2 ..etc...|'
-        ELSE   
+        ELSE
       WRITE (FYLENO,*) 'Observation | mixture log density|',
      &'Grp1 Grp2 ..etc...|'
         ENDIF
         DO 1160 I=1,NIND
           IF ((FLAGS(12).EQ.1).AND.(USA(I).GT.-1)) THEN
-      WRITE (FYLENO,1170) I,(W(I,K),K=1,NG),FLOAT(USA(I)) 
+      WRITE (FYLENO,1170) I,(W(I,K),K=1,NG),FLOAT(USA(I))
           ELSEIF (FLAGS(7).GT.0) THEN
             WRITE (FYLENO,1170) I,(U(I,K),K=1,NG),
      &                 (W(I,K),K=1,NG)
@@ -3114,8 +3114,8 @@ c1170   FORMAT (2X,I6,2X,10G13.5,'*',I3)
 1175  FORMAT (/2X,'Implied grouping of the entities into ',
      &     I3,' groups')
       ELSE
-        WRITE (FYLENO,*) 
-        WRITE (FYLENO,*)'  Implied grouping for all entities' 
+        WRITE (FYLENO,*)
+        WRITE (FYLENO,*)'  Implied grouping for all entities'
         WRITE (FYLENO,*)'   (including classified entities)'
       ENDIF
       WRITE (FYLENO,1177) (IDT(I),I=1,NIND)
@@ -3130,7 +3130,7 @@ c1170   FORMAT (2X,I6,2X,10G13.5,'*',I3)
 
       SUBROUTINE LCAL(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
       DIMENSION X(MNIND,MNATT),W(MNIND,MAXNG),WUSUM(MAXNG),
@@ -3171,10 +3171,10 @@ C     Compute new estimate of covariance matrix for each group
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
 C
-C    This subroutine implements various criterion for determining the number of 
+C    This subroutine implements various criterion for determining the number of
 C    components. See Celeux and Soromenho "An Entropy Criterion for assessing
-C    the Number of Clusters in a Mixture Model".                 
-C                      Implemented by David Peel Sept 1994                     
+C    the Number of Clusters in a Mixture Model".
+C                      Implemented by David Peel Sept 1994
 C
        IF (NCOV.EQ.3) THEN
          VK =(NG-1) + NATT*NG + NATT
@@ -3198,7 +3198,7 @@ C      Calculate the value of the Approximate Weight of Evidence
       SUBROUTINE SEM(NIND,NATT,NG,W)
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION W(MNIND,MAXNG),XL(MAXNG),WSEM(MNIND,MAXNG)
       DOUBLE PRECISION RANDNUM,R
       DO 100 I=1,MNIND
@@ -3216,7 +3216,7 @@ C      Calculate the value of the Approximate Weight of Evidence
             WSEM(I,K)=1
             GOTO 120
           ENDIF
-110     CONTINUE 
+110     CONTINUE
         XL(NG)=1.0
 	WSEM(I,NG)=1
 120   CONTINUE
@@ -3231,7 +3231,7 @@ C
 C
       SUBROUTINE DOGLEG(N,R,LR,DIAG,QTB,DELTA,X,WA1,WA2)
       INTEGER N,LR
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DOUBLE PRECISION DELTA
       DOUBLE PRECISION R(LR),DIAG(MAXNG),QTB(MAXNG),X(MAXNG),
      &                 WA1(MAXNG),WA2(MAXNG)
@@ -3608,7 +3608,7 @@ C     LAST CARD OF FUNCTION DPMPAR.
 C
       END
       DOUBLE PRECISION FUNCTION ENORM(N,X)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER N
       DOUBLE PRECISION X(MAXNG)
 C     **********
@@ -3718,7 +3718,7 @@ C
       END
       SUBROUTINE FDJAC1(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,
      *                  WA1,WA2)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER N,LDFJAC,IFLAG,ML,MU
       DOUBLE PRECISION EPSFCN
       DOUBLE PRECISION X(MAXNG),FVEC(*),FJAC(LDFJAC,MAXNG),WA1(MAXNG),
@@ -3871,7 +3871,7 @@ C
       SUBROUTINE HYBRD(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,DIAG,
      *                 MODE,FACTOR,NPRINT,INFO,NFEV,FJAC,LDFJAC,R,LR,
      *                 QTF,WA1,WA2,WA3,WA4)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER N,MAXFEV,ML,MU,MODE,NPRINT,INFO,NFEV,LDFJAC,LR
       DOUBLE PRECISION XTOL,EPSFCN,FACTOR
       DOUBLE PRECISION X(MAXNG),FVEC(*),DIAG(MAXNG),FJAC(LDFJAC,MAXNG),
@@ -4330,7 +4330,7 @@ C     LAST CARD OF SUBROUTINE HYBRD.
 C
       END
       SUBROUTINE HYBRD1(FCN,N,X,FVEC,TOL,INFO,WA,LWA)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER N,INFO,LWA
       DOUBLE PRECISION TOL
       DOUBLE PRECISION X(MAXNG),FVEC(*),WA((MAXNG*(3*MAXNG+13))/2)
@@ -4455,7 +4455,7 @@ C     LAST CARD OF SUBROUTINE HYBRD1.
 C
       END
       SUBROUTINE QFORM(M,N,Q,LDQ,WA)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER M,N,LDQ
       DOUBLE PRECISION Q(LDQ,M),WA(M)
 C     **********
@@ -4552,7 +4552,7 @@ C
       END
 
       SUBROUTINE QRFAC(M,N,A,LDA,PIVOT,IPVT,LIPVT,RDIAG,ACNORM,WA)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER M,N,LDA,LIPVT
       INTEGER IPVT(LIPVT)
       LOGICAL PIVOT
@@ -4718,7 +4718,7 @@ C
       END
 
       SUBROUTINE R1MPYQ(M,N,A,LDA,V,W)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER M,N,LDA
       DOUBLE PRECISION A(LDA,MAXNG),V(MAXNG),W(MAXNG)
 C     **********
@@ -4811,7 +4811,7 @@ C     LAST CARD OF SUBROUTINE R1MPYQ.
 C
       END
       SUBROUTINE R1UPDT(M,N,S,LS,U,V,W,SING)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER M,N,LS
       LOGICAL SING
       DOUBLE PRECISION S(LS),U(MAXNG),V(MAXNG),W(MAXNG)
@@ -5022,27 +5022,27 @@ C
 C
 C
 C  This group of subroutines implements the K-means Clustering algorithm.
-C  Implemented by David Peel May 1994                      
+C  Implemented by David Peel May 1994
 
       SUBROUTINE KMEANS(NIND,NATT,NG,X,IDT,EPSILON,IER)
 C      Main subroutine
-      
+
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INTEGER T
        EXTERNAL RANDNUM
        INTEGER FLAGS(40),FYLENO
        COMMON /STORE2/ FLAGS,FYLENO
        DOUBLE PRECISION RANDNUM
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
        DIMENSION X(MNIND,MNATT),XK(MAXNG,MNATT),
      &           XKOLD(MAXNG,MNATT),IDT(MNIND),
      &           XSTAN(MNIND,MNATT)
       IER=0
-      CALL KSTAND(NIND,NATT,X,XSTAN) 
+      CALL KSTAND(NIND,NATT,X,XSTAN)
       CALL KSEED(NIND,NATT,NG,XSTAN,XK,IER)
       DO 30 T=1,MKMEAN
       DO 430 KK=1,NG
-        DO 420 LL=1,NATT 
+        DO 420 LL=1,NATT
             XKOLD(KK,LL)=XK(KK,LL)
 420   	  CONTINUE
 430     CONTINUE
@@ -5053,22 +5053,22 @@ C      Main subroutine
           ET=RULE(NG,NATT,XKOLD,XK)
           IF (ET.LE.EPSILON) GO TO 99
 30    CONTINUE
-      
+
       WRITE (FYLENO,*) 'REACHED MAXIMUM NUMBER OF ',MKMEAN,' ITERATIONS'
       IER=-41
 99    RETURN
       END
 
-      SUBROUTINE KSTAND(NIND,NATT,X,XNEW) 
+      SUBROUTINE KSTAND(NIND,NATT,X,XNEW)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION X(MNIND,MNATT),XNEW(MNIND,MNATT),
      &          XVAR(MNATT),XMU(MNATT)
       DO 200 J=1,NATT
        XMU(J)=0
        DO 200 I=1,NIND
-        XMU(J)=XMU(J)+X(I,J)/NIND 
-200   CONTINUE       
+        XMU(J)=XMU(J)+X(I,J)/NIND
+200   CONTINUE
       DO 210 J=1,NATT
        XVAR(J)=0
        DO 210 I=1,NIND
@@ -5082,16 +5082,16 @@ C      Main subroutine
       RETURN
       END
 
-      SUBROUTINE KSEED(NIND,NATT,NG,XSTAN,XK,IER)               
+      SUBROUTINE KSEED(NIND,NATT,NG,XSTAN,XK,IER)
 c     This Subroutine chooses the initial K seeds (Means of clusters)
-c     for the algorithm. At present they are chosen from data set at 
+c     for the algorithm. At present they are chosen from data set at
 c     random.
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INTEGER CHOICE
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XSTAN(MNIND,MNATT),XK(MAXNG,MNATT)
       DO 210 I=1,NG
         R=RANDNUM()
@@ -5099,18 +5099,18 @@ c     random.
 c       Convert CHOICE to integer
 	CHOICE=INT(R)+1
 	DO 200 J=1,NATT
-          XK(I,J)=XSTAN(CHOICE,J) 
+          XK(I,J)=XSTAN(CHOICE,J)
 200	CONTINUE
 210   CONTINUE
       RETURN
       END
 
       SUBROUTINE WINNER(NATT,NG,XSTAN,KK,XK,IDT,IER)
-c     This subroutine determines the allocation of the KKth point 
+c     This subroutine determines the allocation of the KKth point
 c     ie which mean is closest to the given data point (Euclidean).
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XSTAN(MNIND,MNATT),XK(MAXNG,MNATT),
      &          IDT(MNIND)
       DO 310 I=1,NG
@@ -5118,24 +5118,24 @@ c     ie which mean is closest to the given data point (Euclidean).
   	DO 300 J=1,NATT
           DIST=DIST+(XSTAN(KK,J)-XK(I,J))**2
 300 	CONTINUE
-        IF (I.EQ.1) DISTB=DIST 
+        IF (I.EQ.1) DISTB=DIST
         IF (DIST.LE.DISTB) THEN
 	  IDT(KK)=I
           DISTB=DIST
         ENDIF
 310   CONTINUE
       RETURN
-      END 
-          
+      END
+
       SUBROUTINE UPDATE(NIND,NATT,NG,XSTAN,XK,IDT,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION XK(MAXNG,MNATT),IDT(MNIND),
      &          XSTAN(MNIND,MNATT),N(MAXNG)
         DO 410 II=1,NG
           N(II)=0
           DO 410 LL=1,NATT
-            XK(II,LL)=0 
+            XK(II,LL)=0
 410     CONTINUE
         DO 450 I=1,NIND
           II=IDT(I)
@@ -5148,7 +5148,7 @@ c         Update rules
         DO 499 II=1,NG
           DO 499 LL=1,NATT
            IF (N(II).NE.0) THEN
-            XK(II,LL)=XK(II,LL)/N(II)       
+            XK(II,LL)=XK(II,LL)/N(II)
            ELSE
              RETURN
            ENDIF
@@ -5159,10 +5159,10 @@ c         Update rules
 
       FUNCTION RULE(NG,NATT,XKOLD,XK)
 c     This function returns the value used to determine if the algorithm
-c     has converged it is a measure of the change in the nodes from iteration 
-c     to iteration. 
+c     has converged it is a measure of the change in the nodes from iteration
+c     to iteration.
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       INTEGER R
       DIMENSION XK(MAXNG,MNATT),XKOLD(MAXNG,MNATT)
       RULE=0.0
@@ -5246,14 +5246,14 @@ C
 
       SUBROUTINE TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       DIMENSION X(MNIND,MNATT),XMU(MAXNG,MNATT),XUU(MAXNG)
       DIMENSION XVAR(MAXNG,MNATT),W(MNIND,MAXNG)
       DIMENSION C(2,MAXNG)
       DO 150 K=1,NG
       DO 100 I=1,NATT
         C(1,K)=C(1,K)+XVAR(K,I)*XVAR(K,I)
-100   CONTINUE 
+100   CONTINUE
       CBOT=0
       C(2,K)=0
       DO 110 I=1,NIND
@@ -5269,7 +5269,7 @@ C
 
       SUBROUTINE TEQ0(NDUMMY,XUU1,FVEC1,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       COMMON /HYBD/ UTEMP(MNIND,MAXNG),TNIND,TNATT,XUUOLD(MAXNG),
      &   WTEMP(MNIND,MAXNG),NGTEMP
         FVEC1=0
@@ -5297,11 +5297,11 @@ C
 
       SUBROUTINE TEQ(NG,XUU,FVEC,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      INCLUDE 'EMMIX-spher.max'
+      INCLUDE 'emmix/EMMIX-spher.max'
       COMMON /HYBD/ UTEMP(MNIND,MAXNG),TNIND,TNATT,XUUOLD(MAXNG),
      &   WTEMP(MNIND,MAXNG),NGTEMP
       DIMENSION XUU(MAXNG),FVEC(MAXNG)
-      DO 110 K=1,NG 
+      DO 110 K=1,NG
         FVEC(K)=0
         DO 100 I=1,TNIND
           IF (XUU(K).LE.0.00001) THEN
@@ -5325,11 +5325,11 @@ C
 
         SUBROUTINE TFREE(NIND,NATT,NG,XUU,U,W,ITER,IER)
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-        INCLUDE 'EMMIX-spher.max'
+        INCLUDE 'emmix/EMMIX-spher.max'
       COMMON /HYBD/ UTEMP(MNIND,MAXNG),TNIND,TNATT,XUUOLD(MAXNG),
      &    WTEMP(MNIND,MAXNG),NGTEMP
       INTEGER FLAGS(40),FYLENO
-      COMMON /STORE2/ FLAGS,FYLENO 
+      COMMON /STORE2/ FLAGS,FYLENO
         EXTERNAL TEQ,TEQ0
 c	common/comm6/fail,s0jeq1,nboot,group,itct
 	DIMENSION fvec(MAXNG),W(MNIND,MAXNG)
@@ -5351,7 +5351,7 @@ c	double precision newbetai,newgammai
          DO 100 I=1,NIND
           UTEMP(I,K)=U(I,K)
           WTEMP(I,K)=W(I,K)
-100     CONTINUE           
+100     CONTINUE
         TNIND=FLOAT(NIND)
         TNATT=FLOAT(NATT)
 
@@ -5369,7 +5369,7 @@ C	  tmp=(group-1)*3+1
           IF (FLAGS(7).EQ.3) THEN
           XUU1=XUU(1)
 	  call HYBRD1(TEQ0,1,XUU1,FVEC1,xtol,ifail,work,sizehy)
-      DO 111 K=1,NG 
+      DO 111 K=1,NG
        XUU(K)=XUU1
 111   CONTINUE
           ELSE
@@ -5381,18 +5381,18 @@ C20     continue
 C
 C
 C   This group of subroutines deal with generating random numbers
-C   
+C
 C   The subroutines in this file  basically act as a interface between
 C   how this program calls the random number generator ( R=RANDNUM(SEED)
-C  
+C
 
 C   D.Peel Nov 1995
 
        SUBROUTINE DETERRANDOM(IER)
 C      This subroutine is called at the very beginning of the program
-C      to determine if the random number generator is working 
+C      to determine if the random number generator is working
 C
-C      The result of the test is stored in the common random 
+C      The result of the test is stored in the common random
 C      variable RANDTYPE
 C      This is now defunct as only one random number generator is tried
 C      but is left in the code in case a number of generators are available
@@ -5427,7 +5427,7 @@ C      in future versions
        WRITE(*,*)'  compatible with your inbuilt random number'
        WRITE(*,*)'  generator or alternatively use another random'
        WRITE(*,*)'  number generator.'
-       WRITE(*,*)      
+       WRITE(*,*)
        WRITE(*,*)' At present MIXCLUS will still function but you will'
        WRITE(*,*)' be unable to use features that incorporate random'
        WRITE(*,*)' numbers'
@@ -5435,10 +5435,10 @@ C      in future versions
        IER=40
 	   RETURN
 	   END
-	   
+
 	   FUNCTION RANDNUM()
 C          This is the function called by the program NMM. If you
-C          wish to use your own portable random number generator 
+C          wish to use your own portable random number generator
 C          then it should be used in place of this function.
 
 	   IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -5492,43 +5492,43 @@ C
       RETURN
       END
 
-C Subroutine based on the program HACLUS by I.Delacy U.Q 1981                   
-C Program to perform hierarchical agglomerative clustering.              
-C implements the algorithm of Wishart 1969 Biometrics.                 
-C clustering can be performed on:                                       
-C     either variance standardized or unstandardised data,              
-C Missing data is indicated by a value .LE.-90.0.                       
-C therefore data must be scaled to .LE.ABS(89.9)                         
-C                                                                       
+C Subroutine based on the program HACLUS by I.Delacy U.Q 1981
+C Program to perform hierarchical agglomerative clustering.
+C implements the algorithm of Wishart 1969 Biometrics.
+C clustering can be performed on:
+C     either variance standardized or unstandardised data,
+C Missing data is indicated by a value .LE.-90.0.
+C therefore data must be scaled to .LE.ABS(89.9)
+C
 C    The original program was written for general use as a clustering tool
-C    with many extra options that are redundant when used in this context 
+C    with many extra options that are redundant when used in this context
 C    so they have been removed eg optional data input as a dissimilarity matrix.
 C
 C These subroutines will most probably be replaced in future versions.
 
 
       SUBROUTINE HIER(NIND,NATT,NG,X,IDT,ISU,IS,BETA,IFAULT)
-C      The main controlling S/R for hierarchical clustering program          
-C      Parameters:                                                           
-C      IFIN : Y  finish; N  repeat cycle(reread data & cluster again)      
-C      CUT   IGE  : G  Clusters genotypes; E  Clusters environments. 
-C      ISU  : S  Standardize;  U  Don't standardize.                       
-C      IS   : Clustering strategy (see S/R Disq).                          
-C      BET  : BETA parameter for flexible sorting strategy.                
-C      NIND   : NO. of Taxa. (Observations)                                    
-C      NATT   : NO. of Attributes.                                           
+C      The main controlling S/R for hierarchical clustering program
+C      Parameters:
+C      IFIN : Y  finish; N  repeat cycle(reread data & cluster again)
+C      CUT   IGE  : G  Clusters genotypes; E  Clusters environments.
+C      ISU  : S  Standardize;  U  Don't standardize.
+C      IS   : Clustering strategy (see S/R Disq).
+C      BET  : BETA parameter for flexible sorting strategy.
+C      NIND   : NO. of Taxa. (Observations)
+C      NATT   : NO. of Attributes.
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       EXTERNAL CHECK
-       INCLUDE 'EMMIX-spher.max'
-      DIMENSION Z(LIMZ),X(MNIND,MNATT),IDT(MNIND) 
+       INCLUDE 'emmix/EMMIX-spher.max'
+      DIMENSION Z(LIMZ),X(MNIND,MNATT),IDT(MNIND)
       CHARACTER*5    H1(2,3),H2(2,3),H3(2,3),HH1(3),HH2(2)
       CHARACTER*5    HH4(5),HD(6),HS(7,6),FORM1(14),FORM3(11)
-C      Set up character arrays storing strings naming and describing the 
+C      Set up character arrays storing strings naming and describing the
 C      various clustering methods used
 
-      DATA (H1(1,J),J=1,3)/'GENOT','YPES ','     '/  
-      DATA (H1(2,J),J=1,3)/'ENVIR','ONMEN','TS   '/ 
+      DATA (H1(1,J),J=1,3)/'GENOT','YPES ','     '/
+      DATA (H1(2,J),J=1,3)/'ENVIR','ONMEN','TS   '/
       DATA (H2(1,J),J=1,3)/'UNSTA','NDARD','IZED '/
       DATA (H2(2,J),J=1,3)/'STAND','ARDIZ','ED   '/
       DATA (H3(1,J),J=1,3)/'MEANS','     ','     '/
@@ -5536,7 +5536,7 @@ C      various clustering methods used
       DATA HH1/'GROUP','S WIT','H    '/
       DATA HH2/'DATA ','ON   '/
       DATA HH4/'DISSI','MILAR','ITY M','EASUR','E    '/
-      DATA HD/'SQUAR','ED EU','CLIDI','AN DI','STANC','E    '/ 
+      DATA HD/'SQUAR','ED EU','CLIDI','AN DI','STANC','E    '/
       DATA (HS(1,J),J=1,4)/'NEARE','ST NE','IGHBO','UR   '/
       DATA (HS(2,J),J=1,4)/'FURTH','EST N','EIGHB','OUR  '/
       DATA (HS(3,J),J=1,3)/'GROUP',' AVER','AGE  '/
@@ -5545,102 +5545,102 @@ C      various clustering methods used
       DATA (HS(6,J),J=1,4)/'FLEXI','BLE S','ORTIN','G    '/
       DATA (HS(7,J),J=1,5)/'INCRE','MENTA','L SUM',' OF S','QUARE'/
 
-C                  CLUSTERING METHODS                           
-C         'Nearest Neighbour (Single Linkage)          =1              
-C         'Furthest Neighbour (Maximum Linkage)        =2              
-C         'Group Average (Average Linkage)             =3              
-C         'Median                                      =4              
-C         'Centriod                                    =5              
-C         'Flexible Sorting                            =6              
-C         'Incremental Sum of Squares (WARD''S Method) =7             
+C                  CLUSTERING METHODS
+C         'Nearest Neighbour (Single Linkage)          =1
+C         'Furthest Neighbour (Maximum Linkage)        =2
+C         'Group Average (Average Linkage)             =3
+C         'Median                                      =4
+C         'Centriod                                    =5
+C         'Flexible Sorting                            =6
+C         'Incremental Sum of Squares (WARD''S Method) =7
 
-      FAC = 1.0                                                         
-      NM=MAX0(NIND,NATT)                                                    
-      N1=1                                                              
-      N2=N1+NIND*NATT                                                       
-      N3=N2+NM                                                          
-      LIM=N3                                                            
-      IF(LIM.GT.LIMZ) GOTO 40                                          
-      DO 10 I=1,N3                                                      
-10      Z(I)=0.0                                                       
-15    CALL RCLUH(Z(N1),Z(N2),H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,          
-     &           ISU,FAC,X) 
-      ND=(NIND-1)*NIND/2                                                    
-      N3=N2+ND                                                          
-      N4=N3+NIND                                                          
-      N5=N4+NIND                                                          
-      N6=N5+2*NIND                                                        
-      LIM=N6                                                            
-      IF(LIM.GT.LIMZ) GOTO 40                                          
-      DO 20 I=N2,N3                                                     
-20      Z(I)=0.0                                                        
-      CALL DIST(Z(N1),Z(N2),NIND,NATT,FORM3,HD,HH4)                 
+      FAC = 1.0
+      NM=MAX0(NIND,NATT)
+      N1=1
+      N2=N1+NIND*NATT
+      N3=N2+NM
+      LIM=N3
+      IF(LIM.GT.LIMZ) GOTO 40
+      DO 10 I=1,N3
+10      Z(I)=0.0
+15    CALL RCLUH(Z(N1),Z(N2),H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,
+     &           ISU,FAC,X)
+      ND=(NIND-1)*NIND/2
+      N3=N2+ND
+      N4=N3+NIND
+      N5=N4+NIND
+      N6=N5+2*NIND
+      LIM=N6
+      IF(LIM.GT.LIMZ) GOTO 40
+      DO 20 I=N2,N3
+20      Z(I)=0.0
+      CALL DIST(Z(N1),Z(N2),NIND,NATT,FORM3,HD,HH4)
 cccccccccccccc
 c      CALL WSIM(Z(N2),Z(N3),NIND)
 ccccccccccccccc
-      DO 30 I=N3,N6                                                     
-30      Z(I)=0.0                                                        
-                                                                        
-      CALL AGHICL(Z(N2),Z(N3),Z(N4),Z(N5),NIND,BETA,IS)                   
+      DO 30 I=N3,N6
+30      Z(I)=0.0
+
+      CALL AGHICL(Z(N2),Z(N3),Z(N4),Z(N5),NIND,BETA,IS)
       CALL ALLOC(Z(N5),NIND,NATT,NG,ISU,IS,BETA,H2,HS,IDT)
       RETURN
-                                                                        
-40    WRITE(*,50) LIMZ,LIM                                             
-50    FORMAT(1X,'THE DIMENSIONS OF THE Z ARRAY ARE TOO SMALL'/          
-     &       1X,'THEY SHOULD BE INCREASED FROM',I6,'TO ',I6)                   
+
+40    WRITE(*,50) LIMZ,LIM
+50    FORMAT(1X,'THE DIMENSIONS OF THE Z ARRAY ARE TOO SMALL'/
+     &       1X,'THEY SHOULD BE INCREASED FROM',I6,'TO ',I6)
       IFAULT=9
-      RETURN                                                              
-      END                                                               
-                                                                        
-                                                                        
-      SUBROUTINE RCLUH(RC,TEMP,H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,        
-     &                 ISU,FAC,X)                                               
-C     Reads GXE matrix, stores as either GXE or EXG, standardizes &/0r     
-C     col. corrects if required.                                           
-                                                                        
+      RETURN
+      END
+
+
+      SUBROUTINE RCLUH(RC,TEMP,H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,
+     &                 ISU,FAC,X)
+C     Reads GXE matrix, stores as either GXE or EXG, standardizes &/0r
+C     col. corrects if required.
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
-      DIMENSION RC(*),X(MNIND,MNATT),TEMP(*)                           
+       INCLUDE 'emmix/EMMIX-spher.max'
+      DIMENSION RC(*),X(MNIND,MNATT),TEMP(*)
       CHARACTER*5 H1(2,3),H2(2,3),H3(2,3),HH1(*),HH2(*),FORM1(*)
-                                                                        
-      DO 110 I=4,6                                                        
-        I1=I-3                                                            
-        FORM1(I)=HH1(I1)                                                 
+
+      DO 110 I=4,6
+        I1=I-3
+        FORM1(I)=HH1(I1)
 110   CONTINUE
-      DO 120 I=10,11                                                      
-        I1=I-9                                                            
-        FORM1(I)=HH2(I1)                                                 
+      DO 120 I=10,11
+        I1=I-9
+        FORM1(I)=HH2(I1)
 120   CONTINUE
-      DO 130 IR=1,NIND                                                    
+      DO 130 IR=1,NIND
         DO 130 IC=1,NATT
-          M1=(IR-1)*NATT+IC                                                   
-          RC(M1)=X(IR,IC)*FAC                                             
+          M1=(IR-1)*NATT+IC
+          RC(M1)=X(IR,IC)*FAC
 130   CONTINUE
-      DO 140 I=1,3                                                       
-140     FORM1(I)=H1(1,I)                                                
-      DO 150 I=1,3                                                     
-        I1=I+11                                                           
-        FORM1(I1)=H3(1,I)                                               
+      DO 140 I=1,3
+140     FORM1(I)=H1(1,I)
+      DO 150 I=1,3
+        I1=I+11
+        FORM1(I1)=H3(1,I)
 150   CONTINUE
-      IF(ISU.EQ.1) THEN                                            
-        DO 170 I=1,3                                                     
-          I1=I+6                                                            
-          FORM1(I1)=H2(1,I)                                               
+      IF(ISU.EQ.1) THEN
+        DO 170 I=1,3
+          I1=I+6
+          FORM1(I1)=H2(1,I)
 170     CONTINUE
       ELSE
-        DO 180 I=1,3                                                       
-          I1=I+6                                                            
-          FORM1(I1)=H2(2,I)                                               
+        DO 180 I=1,3
+          I1=I+6
+          FORM1(I1)=H2(2,I)
 180     CONTINUE
-        CALL STAND(RC,NIND,NATT)                                              
+        CALL STAND(RC,NIND,NATT)
       ENDIF
 
       DO 190 II=1,NIND
         DO 190 JJ=1,NATT
-          TEMP((II-1)*NATT+JJ)=X(II,JJ) 
+          TEMP((II-1)*NATT+JJ)=X(II,JJ)
 190   CONTINUE
-      RETURN                                                          
-      END                                                               
+      RETURN
+      END
 
        SUBROUTINE WSIM(D,T,NR)
 C
@@ -5671,436 +5671,436 @@ C
 
 
 
-      SUBROUTINE STAND(A,NIND,NATT)                                         
-C     Col. standardizes the A matrix by standard deviation.                
-                                                                        
+      SUBROUTINE STAND(A,NIND,NATT)
+C     Col. standardizes the A matrix by standard deviation.
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      DIMENSION A(*)                                                    
-                                                                        
+      DIMENSION A(*)
+
       DO 220 IC=1,NATT
-        N=0.0                                                             
-        X=0.0                                                             
-        XX=0.0                                                            
-        DO 200 IR=1,NIND                                                     
-          M=(IR-1)*NATT+IC                                                    
-          IF(A(M).LE.-90.0) GOTO 200 
-          XX=XX+A(M)**2                                                     
-          X=X+A(M)                                                          
-          N=N+1.0                                                           
-200      CONTINUE                                                        
-        XX=SQRT((XX-X**2/N)/(N-1.))                                       
-        DO 210 IR=1,NIND                                                     
-          M=(IR-1)*NATT+IC                                                    
-          IF(A(M).LE.-90.0) GOTO 210                                         
-          A(M)=A(M)/XX                                                      
-210      CONTINUE                                                        
-220    CONTINUE                                                        
-      RETURN                                                            
-      END                                                               
-                                                                        
+        N=0.0
+        X=0.0
+        XX=0.0
+        DO 200 IR=1,NIND
+          M=(IR-1)*NATT+IC
+          IF(A(M).LE.-90.0) GOTO 200
+          XX=XX+A(M)**2
+          X=X+A(M)
+          N=N+1.0
+200      CONTINUE
+        XX=SQRT((XX-X**2/N)/(N-1.))
+        DO 210 IR=1,NIND
+          M=(IR-1)*NATT+IC
+          IF(A(M).LE.-90.0) GOTO 210
+          A(M)=A(M)/XX
+210      CONTINUE
+220    CONTINUE
+      RETURN
+      END
 
-      SUBROUTINE DEL(A,NIND,NATT)                                           
-C     Corrects each row  by mean of row                                    
-                                                                        
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      DIMENSION A(*)                                                    
-      REAL N                                                            
-                                                                        
-      DO 320 IR=1,NIND                                                     
-        X=0.0                                                             
-        N=0.0                                                             
-        DO 300 IC=1,NATT                                                     
-          M=(IR-1)*NATT+IC                                                    
-          IF(A(M).LE.-90.0) GOTO 300                                         
-          X=X+A(M)                                                          
-          N=N+1.0                                                           
-300     CONTINUE                                                        
-        X=X/N                                                             
-        DO 310 IC=1,NATT                                                     
-          M=(IR-1)*NATT+IC                                                    
-          IF(A(M).LE.-90.0) GOTO 310                                         
-          A(M)=A(M)-X                                                       
-310     CONTINUE                                                        
-320   CONTINUE                                                        
-      RETURN                                                            
-      END                                                               
- 
 
-      SUBROUTINE DIST(RC,DIST1,NIND,NATT,FORM3,HD,HH4)              
-C     Calculates the dissimilarity matrix as required.                     
-C     only squared Euclidean distance implemented;                
-                                                                        
+      SUBROUTINE DEL(A,NIND,NATT)
+C     Corrects each row  by mean of row
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      DIMENSION RC(*),DIST1(*)                                          
-      CHARACTER*5              FORM3(*),HD(*),HH4(*)                    
-                                                                        
-      DO 400 I=1,5                                                       
-400     FORM3(I)=HH4(I)                                                 
-      DO 410 I=1,6                                                       
-        I1=I+5                                                            
-        FORM3(I1)=HD(I)                                                 
+      DIMENSION A(*)
+      REAL N
+
+      DO 320 IR=1,NIND
+        X=0.0
+        N=0.0
+        DO 300 IC=1,NATT
+          M=(IR-1)*NATT+IC
+          IF(A(M).LE.-90.0) GOTO 300
+          X=X+A(M)
+          N=N+1.0
+300     CONTINUE
+        X=X/N
+        DO 310 IC=1,NATT
+          M=(IR-1)*NATT+IC
+          IF(A(M).LE.-90.0) GOTO 310
+          A(M)=A(M)-X
+310     CONTINUE
+320   CONTINUE
+      RETURN
+      END
+
+
+      SUBROUTINE DIST(RC,DIST1,NIND,NATT,FORM3,HD,HH4)
+C     Calculates the dissimilarity matrix as required.
+C     only squared Euclidean distance implemented;
+
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION RC(*),DIST1(*)
+      CHARACTER*5              FORM3(*),HD(*),HH4(*)
+
+      DO 400 I=1,5
+400     FORM3(I)=HH4(I)
+      DO 410 I=1,6
+        I1=I+5
+        FORM3(I1)=HD(I)
 410   CONTINUE
-      CALL SED(RC,DIST1,NIND,NATT)                                          
-      RETURN                                                            
-      END                                                               
- 
+      CALL SED(RC,DIST1,NIND,NATT)
+      RETURN
+      END
 
-      SUBROUTINE SED(RC,DIST1,NIND,NATT)                                    
-C     Requires an NIND by NATT matrix of data & calculates the SED             
-C     dissimilarity matrix between the nind individuals & stores them       
-C     in the array DIST.                                                   
-C     missing data is denoted by a value .LE.-90.0.                        
-                                                                        
+
+      SUBROUTINE SED(RC,DIST1,NIND,NATT)
+C     Requires an NIND by NATT matrix of data & calculates the SED
+C     dissimilarity matrix between the nind individuals & stores them
+C     in the array DIST.
+C     missing data is denoted by a value .LE.-90.0.
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      DIMENSION RC(*),DIST1(*)                                          
-                                                                        
-      I1F=NIND-1                                                          
-      DO 510 I1=1,I1F                                                    
-        I2S=I1+1                                                          
-        DO 510 I2=I2S,NIND                                                   
-          M1=(I2-1)*(I2-2)/2+I1                                             
-          DIV=NATT                                                            
-          DO 500 J=1,NATT                                                      
-            M2=(I1-1)*NATT+J                                                    
-            M3=(I2-1)*NATT+J                       
-	    IF ((RC(M2).LE.-90.0).OR.(RC(M3).LE.-90.0)) THEN    
-              DIV=DIV-1.0                                                     
-            ELSE
-             DIST1(M1)=DIST1(M1)+(RC(M2)-RC(M3))**2                            
-            ENDIF 
-500        CONTINUE                                                        
-          DIST1(M1)=DIST1(M1)/DIV                                         
-510    CONTINUE
-      RETURN                                                            
-      END                                                               
- 
+      DIMENSION RC(*),DIST1(*)
 
-      SUBROUTINE AGHICL(D,N,M,MEMB,NT,BET,IS)  
-C     Requires the dissimilarity matrix (D), the number of individuals         
-C     to be classified (NT), and the nominated BETA value (BET) for        
-C     flexible sorting if required.                                        
-C      N; Stores the NO. of members in the groups.                         
-C      M; Stores group names.                                              
-C     Returns memb which stores the hierarchy for further use.             
-C     clusters the NT taxa by any one of the nominated agglomerative       
-C     hierarchical clustering strategies (IS) & writes the hierarchy        
-C     & dissimilarity measure on fusion.                                   
-                                                                        
+      I1F=NIND-1
+      DO 510 I1=1,I1F
+        I2S=I1+1
+        DO 510 I2=I2S,NIND
+          M1=(I2-1)*(I2-2)/2+I1
+          DIV=NATT
+          DO 500 J=1,NATT
+            M2=(I1-1)*NATT+J
+            M3=(I2-1)*NATT+J
+	    IF ((RC(M2).LE.-90.0).OR.(RC(M3).LE.-90.0)) THEN
+              DIV=DIV-1.0
+            ELSE
+             DIST1(M1)=DIST1(M1)+(RC(M2)-RC(M3))**2
+            ENDIF
+500        CONTINUE
+          DIST1(M1)=DIST1(M1)/DIV
+510    CONTINUE
+      RETURN
+      END
+
+
+      SUBROUTINE AGHICL(D,N,M,MEMB,NT,BET,IS)
+C     Requires the dissimilarity matrix (D), the number of individuals
+C     to be classified (NT), and the nominated BETA value (BET) for
+C     flexible sorting if required.
+C      N; Stores the NO. of members in the groups.
+C      M; Stores group names.
+C     Returns memb which stores the hierarchy for further use.
+C     clusters the NT taxa by any one of the nominated agglomerative
+C     hierarchical clustering strategies (IS) & writes the hierarchy
+C     & dissimilarity measure on fusion.
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION N(*),M(*),MEMB(*)
-      DIMENSION D(*)               
-                                                                        
-      DO 600 I=1,NT                                                       
-        N(I)=1                                                            
-        M(I)=I                                                           
+      DIMENSION D(*)
+
+      DO 600 I=1,NT
+        N(I)=1
+        M(I)=I
 600   CONTINUE
-                                                                        
-      IF=NT-1                                                           
-      DO 610 I=1,IF                                                      
-        CALL MIND(D,N,IMIN,JMIN,DMIN,NT)                                  
-        M1=(I-1)*2+1                                                      
-        M2=M1+1                                                           
-        MEMB(M1)=M(IMIN)                                                  
-        MEMB(M2)=M(JMIN)                                                  
-        NTI=NT+I                                                          
-        CALL DISTO(D,N,IMIN,JMIN,NT,BET,IS)                               
-        N(IMIN)=N(IMIN)+N(JMIN)                                           
-        N(JMIN)=0                                                         
-        M(IMIN)=NT+I                                                      
-610    CONTINUE                                                        
-      RETURN                                                            
-      END                                                               
- 
 
-      SUBROUTINE MIND(D,N,IMIN,JMIN,DMIN,NT)                            
-C     Requires the GP.-GP. dissimilarity matrix D & the array of           
-C     number of members in groups (N).                                     
-C     returns the names of the two GPS. (IMIN & JMIN) with the             
-C     smallest dissimilarity between them & this dissimilarity             
-C     (DMIN).                                                              
-C     NT = NO. of taxa being clustered                                     
-                                                                        
+      IF=NT-1
+      DO 610 I=1,IF
+        CALL MIND(D,N,IMIN,JMIN,DMIN,NT)
+        M1=(I-1)*2+1
+        M2=M1+1
+        MEMB(M1)=M(IMIN)
+        MEMB(M2)=M(JMIN)
+        NTI=NT+I
+        CALL DISTO(D,N,IMIN,JMIN,NT,BET,IS)
+        N(IMIN)=N(IMIN)+N(JMIN)
+        N(JMIN)=0
+        M(IMIN)=NT+I
+610    CONTINUE
+      RETURN
+      END
+
+
+      SUBROUTINE MIND(D,N,IMIN,JMIN,DMIN,NT)
+C     Requires the GP.-GP. dissimilarity matrix D & the array of
+C     number of members in groups (N).
+C     returns the names of the two GPS. (IMIN & JMIN) with the
+C     smallest dissimilarity between them & this dissimilarity
+C     (DMIN).
+C     NT = NO. of taxa being clustered
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION N(*)
-      DIMENSION D(*)                                             
-                                                                        
-      DMIN=1.0E+20                                                      
-      I1F=NT-1                                                          
-      DO 700 I1=1,I1F                                                    
-        I2S=I1+1                                                          
-        DO 700 I2=I2S,NT                                                   
+      DIMENSION D(*)
+
+      DMIN=1.0E+20
+      I1F=NT-1
+      DO 700 I1=1,I1F
+        I2S=I1+1
+        DO 700 I2=I2S,NT
           IF(N(I1).EQ.0) GOTO 700
-          IF(N(I2).EQ.0) GOTO 700 
-          M1=(I2-1)*(I2-2)/2+I1                                             
+          IF(N(I2).EQ.0) GOTO 700
+          M1=(I2-1)*(I2-2)/2+I1
           IF(DMIN.LT.D(M1)) GOTO 700
-          DMIN=D(M1)                                                        
-          IMIN=I1                                                           
-          JMIN=I2                                                           
-700   CONTINUE                                                        
-      RETURN                                                            
-      END                                                               
+          DMIN=D(M1)
+          IMIN=I1
+          JMIN=I2
+700   CONTINUE
+      RETURN
+      END
 
 
-      SUBROUTINE DISTO(D,N,IMIN,JMIN,NT,BET,IS)                         
-C     Calculates the new GP.-GP. distances between the new GP. formed      
-C     when GPS. IMIN & JMIN FUSE & all other GPS.                          
-C      BET; Nominated value for flexible sorting if required.              
-C      IS ; Code for strategy of clustering.                               
-                                                                        
+      SUBROUTINE DISTO(D,N,IMIN,JMIN,NT,BET,IS)
+C     Calculates the new GP.-GP. distances between the new GP. formed
+C     when GPS. IMIN & JMIN FUSE & all other GPS.
+C      BET; Nominated value for flexible sorting if required.
+C      IS ; Code for strategy of clustering.
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION N(*)
-      DIMENSION D(*)                                              
-                                                                        
-      DO 800 K=1,NT                                                      
-        IF ((N(K).NE.0).AND.(K.NE.IMIN).AND.(K.NE.JMIN)) THEN     
-          K1=K                                                              
-          CALL DISTQ(D,N,IMIN,JMIN,DISS,K1,BET,IS)                          
-          IF(IMIN.GT.K) THEN                                             
-            M1=(IMIN-1)*(IMIN-2)/2+K                                        
+      DIMENSION D(*)
+
+      DO 800 K=1,NT
+        IF ((N(K).NE.0).AND.(K.NE.IMIN).AND.(K.NE.JMIN)) THEN
+          K1=K
+          CALL DISTQ(D,N,IMIN,JMIN,DISS,K1,BET,IS)
+          IF(IMIN.GT.K) THEN
+            M1=(IMIN-1)*(IMIN-2)/2+K
           ELSE
-            M1=(K-2)*(K-1)/2+IMIN                                             
+            M1=(K-2)*(K-1)/2+IMIN
           ENDIF
-          D(M1)=DISS                                                      
+          D(M1)=DISS
         ENDIF
-800   CONTINUE                                                        
-      RETURN                                                            
-      END                                                               
- 
-      SUBROUTINE DISTQ(D,N,IMIN,JMIN,DISS,K,BET,IS)                     
-C     Calculates new GP.-GP. Dissimilarity between new GP. formed          
-C     when GPS. IMIN & JMIN Fuse & other GPS.                              
-C       IS = 1; NEAREST NEIGHBOUR (SINGLE LINKAGE)                         
-C          = 2; FURTHEST NEIGHBOUR (MAXIMUM LINKAGE)                       
-C          = 3; GROUP AVERAGE (AVERAGE LINKAGE)                            
-C          = 4; MEDIAN                                                     
-C          = 5; CENTROID                                                   
-C          = 6; FLEXIBLE SORTING (BET NEEDS TO BE SPECIFIED)               
-C          = 7; INCREMENTAL SUM OF SQUARES (BURR'S METHOD OR WARD'S        
-C               METHOD)                                                    
-C                                                                       
-C     See WISHART 1971; BIOMETRICS 25: PP165-70:  For algorithm on         
-C     all strategies except flexible sorting:  whence lance &              
-C     WILLIAMS 1967; COMPUTER J.: 9 : PP373-80.                            
-                                                                        
+800   CONTINUE
+      RETURN
+      END
+
+      SUBROUTINE DISTQ(D,N,IMIN,JMIN,DISS,K,BET,IS)
+C     Calculates new GP.-GP. Dissimilarity between new GP. formed
+C     when GPS. IMIN & JMIN Fuse & other GPS.
+C       IS = 1; NEAREST NEIGHBOUR (SINGLE LINKAGE)
+C          = 2; FURTHEST NEIGHBOUR (MAXIMUM LINKAGE)
+C          = 3; GROUP AVERAGE (AVERAGE LINKAGE)
+C          = 4; MEDIAN
+C          = 5; CENTROID
+C          = 6; FLEXIBLE SORTING (BET NEEDS TO BE SPECIFIED)
+C          = 7; INCREMENTAL SUM OF SQUARES (BURR'S METHOD OR WARD'S
+C               METHOD)
+C
+C     See WISHART 1971; BIOMETRICS 25: PP165-70:  For algorithm on
+C     all strategies except flexible sorting:  whence lance &
+C     WILLIAMS 1967; COMPUTER J.: 9 : PP373-80.
+
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION N(*)
-      DIMENSION D(*)                                            
-      REAL NI,NJ,NK,NM                                               
-                                                                        
-      NI=N(IMIN)                                                        
-      NJ=N(JMIN)                                                        
-      NK=N(K)                                                           
-      NR=NI+NJ                                                          
-      NM=NR+NK                                                          
-                                                                        
+      DIMENSION D(*)
+      REAL NI,NJ,NK,NM
+
+      NI=N(IMIN)
+      NJ=N(JMIN)
+      NK=N(K)
+      NR=NI+NJ
+      NM=NR+NK
+
       IF(IMIN.GT.K) THEN
-        M1=(IMIN-1)*(IMIN-2)/2+K                                        
+        M1=(IMIN-1)*(IMIN-2)/2+K
       ELSE
-        M1=(K-1)*(K-2)/2+IMIN                                             
-      ENDIF                                                          
+        M1=(K-1)*(K-2)/2+IMIN
+      ENDIF
 
       IF(JMIN.GT.K) THEN
-        M2=(JMIN-1)*(JMIN-2)/2+K                                        
-      ELSE                                     
-        M2=(K-2)*(K-1)/2+JMIN                                             
+        M2=(JMIN-1)*(JMIN-2)/2+K
+      ELSE
+        M2=(K-2)*(K-1)/2+JMIN
       ENDIF
-      M3=(JMIN-1)*(JMIN-2)/2+IMIN                                     
-                                                                        
-      DIK=D(M1)                                                         
-      DJK=D(M2)                                                         
-      DIKJK=ABS(DIK-DJK)                                                
-      DIJ=D(M3)                                                         
-                                                                        
-      GO TO (1,2,3,4,5,6,7)IS                                           
-                                                                        
-C  Nearest neighbour                                                    
-1      ALA=0.5                                                          
-      ALB=0.5                                                           
-      BETA=0.0                                                          
-      GAM=-0.5                                                          
-      GO TO 10                                                          
+      M3=(JMIN-1)*(JMIN-2)/2+IMIN
 
-C  Furthest neighbour                                                   
-2      ALA=0.5                                                          
-      ALB=0.5                                                           
-      BETA=0.0                                                          
-      GAM=0.5                                                           
-      GO TO 10                                                          
-                                                                        
-C  Group average                                                        
-3      ALA=NI/NR                                                        
-      ALB=NJ/NR                                                         
-      BETA=0.0                                                          
-      GAM=0.0                                                           
-      GO TO 10                                                          
-                                                                        
-C  Median                                                               
-4      ALA=0.5                                                          
-      ALB=0.5                                                           
-c      BETA=0.0                                                          
-c      GAM=-0.25                                                         
-       GAM=0.0                                                          
-       BETA=-0.25                                                         
-      GO TO 10                                                          
-                                                                        
-C  Centroid                                                             
-5      ALA=NI/NR                                                        
-      ALB=NJ/NR                                                       
-      BETA=-1*ALA*ALB                                                      
-      GAM=0.0                                                           
-      GO TO 10                                                          
-                                                                        
-C  Flexible sorting                                                     
-6      ALA=(1.0-BET)/2.0                                                
-      ALB=ALA                                                           
-      BETA=BET                                                          
-      GAM=0.0                                                           
-      GO TO 10                                                          
-                                                                        
-C  Incremental sum of squares                                           
-7      ALA=(NI+NK)/NM                                                   
-      ALB=(NJ+NK)/NM                                                    
-      BETA=(-NK)/NM                                                       
-      GAM=0.0                                                           
-                                                                        
-C  Calculate DISS Depending on strategy                                 
-10      DISS=ALA*DIK+ALB*DJK+BETA*DIJ+GAM*DIKJK                         
-      RETURN                                                            
-      END                                                               
-                                                                        
-      
+      DIK=D(M1)
+      DJK=D(M2)
+      DIKJK=ABS(DIK-DJK)
+      DIJ=D(M3)
+
+      GO TO (1,2,3,4,5,6,7)IS
+
+C  Nearest neighbour
+1      ALA=0.5
+      ALB=0.5
+      BETA=0.0
+      GAM=-0.5
+      GO TO 10
+
+C  Furthest neighbour
+2      ALA=0.5
+      ALB=0.5
+      BETA=0.0
+      GAM=0.5
+      GO TO 10
+
+C  Group average
+3      ALA=NI/NR
+      ALB=NJ/NR
+      BETA=0.0
+      GAM=0.0
+      GO TO 10
+
+C  Median
+4      ALA=0.5
+      ALB=0.5
+c      BETA=0.0
+c      GAM=-0.25
+       GAM=0.0
+       BETA=-0.25
+      GO TO 10
+
+C  Centroid
+5      ALA=NI/NR
+      ALB=NJ/NR
+      BETA=-1*ALA*ALB
+      GAM=0.0
+      GO TO 10
+
+C  Flexible sorting
+6      ALA=(1.0-BET)/2.0
+      ALB=ALA
+      BETA=BET
+      GAM=0.0
+      GO TO 10
+
+C  Incremental sum of squares
+7      ALA=(NI+NK)/NM
+      ALB=(NJ+NK)/NM
+      BETA=(-NK)/NM
+      GAM=0.0
+
+C  Calculate DISS Depending on strategy
+10      DISS=ALA*DIK+ALB*DJK+BETA*DIJ+GAM*DIKJK
+      RETURN
+      END
+
+
       SUBROUTINE ALLOC(IHIE,NIND,NATT,NG,ISU,IS,BETA,H2,HS,IDT)
 C     This subroutine takes the hierarchical form and determines a partition
 C     of the data set into NG groups
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-       INCLUDE 'EMMIX-spher.max'
+       INCLUDE 'emmix/EMMIX-spher.max'
       DOUBLE PRECISION IHIE(MNIND)
       DIMENSION NAME(MNIND),IDT(MNIND),
-     &          NUMB(MNIND),MEMB(MNIND)              
-      CHARACTER*5 H2(2,3),HS(7,6),HEAD(9)                                  
+     &          NUMB(MNIND),MEMB(MNIND)
+      CHARACTER*5 H2(2,3),HS(7,6),HEAD(9)
 
-      DO 900 I=1,3                                                       
-900     HEAD(I)=H2(ISU,I)                                                    
-      DO 910 I=1,6                                                       
-910    HEAD(I+3)=HS(IS,I)                                                   
-      IF (IS.NE.6) BETA=0.0                                             
+      DO 900 I=1,3
+900     HEAD(I)=H2(ISU,I)
+      DO 910 I=1,6
+910    HEAD(I+3)=HS(IS,I)
+      IF (IS.NE.6) BETA=0.0
       CALL FUSE(NAME,NUMB,MEMB,IHIE,NIND,NIND,NG)
-      IG1=0       
-      DO 920 IF=1,NG                                                     
-        DO 920 IG=1,NUMB(IF)                                               
-           IG1=IG1+1                                                         
-           IG2=MEMB(IG1)                                                     
-           IDT(IG2)=IF                                                         
+      IG1=0
+      DO 920 IF=1,NG
+        DO 920 IG=1,NUMB(IF)
+           IG1=IG1+1
+           IG2=MEMB(IG1)
+           IDT(IG2)=IF
 920   CONTINUE
 c      CALL CHECK(NG,NIND,IDT)
       RETURN
       END
 
-      SUBROUTINE FUSE(NAME,NUMB,MEMB,IHIE,NIND,NGPS,NGPF)                 
-C     Four single dimensional arrays containing                         
-C      NAME  :Group names                                               
-C      NUMB  :NO. in each group                                         
-C      MEMB  :Membership of each group                                  
-C      IHIE  :Hierarchy from agglomerative clustering                  
-C                                                                       
-C      IG1   :Name of first group to fuse at a level                    
-C      IG2   :Name of 2nd.    "    "  "   "  "  "                       
-C      NGL   :NO. of GPS. before fusion at that level                   
-C      NENG  :Name of new GRP.                                          
-C      NB1   :Number of memb's. in GPS. before GP. IG1                  
-C      NB2   :  "    "    "     "   "     "     "  IG2                  
-C      IP1   :POSITION OF GP1 IN NAME & NUMB                            
-C      IP2   :  "      "  GP2  "  "   "  "                              
-C      NS1   :NO. OF MEMB'S. OF GP1 OF FUSION                           
-C      NS2   : "  "   "      "  GP2 "    "                              
-C      NNG   : "  "   "      "  NEW GP. AFTER FUSION                    
+      SUBROUTINE FUSE(NAME,NUMB,MEMB,IHIE,NIND,NGPS,NGPF)
+C     Four single dimensional arrays containing
+C      NAME  :Group names
+C      NUMB  :NO. in each group
+C      MEMB  :Membership of each group
+C      IHIE  :Hierarchy from agglomerative clustering
+C
+C      IG1   :Name of first group to fuse at a level
+C      IG2   :Name of 2nd.    "    "  "   "  "  "
+C      NGL   :NO. of GPS. before fusion at that level
+C      NENG  :Name of new GRP.
+C      NB1   :Number of memb's. in GPS. before GP. IG1
+C      NB2   :  "    "    "     "   "     "     "  IG2
+C      IP1   :POSITION OF GP1 IN NAME & NUMB
+C      IP2   :  "      "  GP2  "  "   "  "
+C      NS1   :NO. OF MEMB'S. OF GP1 OF FUSION
+C      NS2   : "  "   "      "  GP2 "    "
+C      NNG   : "  "   "      "  NEW GP. AFTER FUSION
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION IHIE(*)
       DIMENSION NAME(*),NUMB(*),
-     &          MEMB(*)               
-                                                                        
+     &          MEMB(*)
+
       DO 1000 I=1,NIND
-        NAME(I)=I                                                         
-        NUMB(I)=1                                                         
-        MEMB(I)=I                                                         
+        NAME(I)=I
+        NUMB(I)=1
+        MEMB(I)=I
 1000  CONTINUE
 
-      DO 1020 I=NGPS,NGPF+1,-1                                            
-        NGP=I                                                             
-        NF=NIND-NGP                                                         
-        NAGP=NIND+NF                                                        
-        NAGPN=NAGP+1                                                      
-        IP=NF*2+1                                                         
-        IG1=IHIE(IP)                                                      
-        IG2=IHIE(IP+1)                                                    
-        CALL FUSEL(NAME,NUMB,MEMB,IG1,IG2,NGP,NAGPN,NIND)                   
-        NGP=NGP-1                                                         
-        NF=NF+1                                                           
-1020  CONTINUE                                                          
-      RETURN                                                            
-      END                                                               
+      DO 1020 I=NGPS,NGPF+1,-1
+        NGP=I
+        NF=NIND-NGP
+        NAGP=NIND+NF
+        NAGPN=NAGP+1
+        IP=NF*2+1
+        IG1=IHIE(IP)
+        IG2=IHIE(IP+1)
+        CALL FUSEL(NAME,NUMB,MEMB,IG1,IG2,NGP,NAGPN,NIND)
+        NGP=NGP-1
+        NF=NF+1
+1020  CONTINUE
+      RETURN
+      END
 
 
-      SUBROUTINE FUSEL (NAME,NUMB,MEMB,IG1,IG2,NGL,NEWG,NIND)             
+      SUBROUTINE FUSEL (NAME,NUMB,MEMB,IG1,IG2,NGL,NEWG,NIND)
 C
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      DIMENSION NAME(*),NUMB(*),MEMB(*)                           
-C     Finding place of grps. to fuse in name & numb array     
-      DO 1100 I=1,NGL                                                     
-        IF(NAME(I).EQ.IG1)IP1=I                                           
-        IF(NAME(I).EQ.IG2)IP2=I                                           
-1100  CONTINUE                                                          
-      IPL=MAX0(IP1,IP2)                                                 
-      IPS=MIN0(IP1,IP2)                                                 
-C     Finding place in membership array of members                      
-C     of groups to fuse                                                 
-      NB1=0                                                             
-      DO 1110 I=1,IPL-1                                                   
-1110    NB1=NB1+NUMB(I)                                                   
-      NB2=0                                                             
-      DO 1120 I=1,IPS-1                                                   
-1120    NB2=NB2+NUMB(I)                                                   
-C     No. of members of gps. to fuse                                    
-      IPS=MIN0(IP1,IP2)                                                 
-      NS1=NUMB(IPL)                                                     
-      NS2=NUMB(IPS)                                                     
-      NNG=NS1+NS2                                                       
-C     Shifting positions of names & numbers in groups                   
-C     to positions after fusion                                         
-      DO 1130 I=IPL,NGL-1                                                 
-        NAME(I)=NAME(I+1)                                                 
-        NUMB(I)=NUMB(I+1)                                                 
-1130  CONTINUE                                                 
-      DO 1140 I=IPS,NGL-1                                                 
-        NAME(I)=NAME(I+1)                                                 
-        NUMB(I)=NUMB(I+1)                                                 
+      DIMENSION NAME(*),NUMB(*),MEMB(*)
+C     Finding place of grps. to fuse in name & numb array
+      DO 1100 I=1,NGL
+        IF(NAME(I).EQ.IG1)IP1=I
+        IF(NAME(I).EQ.IG2)IP2=I
+1100  CONTINUE
+      IPL=MAX0(IP1,IP2)
+      IPS=MIN0(IP1,IP2)
+C     Finding place in membership array of members
+C     of groups to fuse
+      NB1=0
+      DO 1110 I=1,IPL-1
+1110    NB1=NB1+NUMB(I)
+      NB2=0
+      DO 1120 I=1,IPS-1
+1120    NB2=NB2+NUMB(I)
+C     No. of members of gps. to fuse
+      IPS=MIN0(IP1,IP2)
+      NS1=NUMB(IPL)
+      NS2=NUMB(IPS)
+      NNG=NS1+NS2
+C     Shifting positions of names & numbers in groups
+C     to positions after fusion
+      DO 1130 I=IPL,NGL-1
+        NAME(I)=NAME(I+1)
+        NUMB(I)=NUMB(I+1)
+1130  CONTINUE
+      DO 1140 I=IPS,NGL-1
+        NAME(I)=NAME(I+1)
+        NUMB(I)=NUMB(I+1)
 1140  CONTINUE
-      NAME(NGL-1)=NEWG                                                  
-      NUMB(NGL-1)=NNG                                                   
-C     Shifting MEMBS. of GPS. to appropriate position of                
-C     Memb array                                                        
-      CALL SHIFT(MEMB,NB1,NS1,NIND)                                       
-      CALL SHIFT(MEMB,NB2,NS2,NIND)                                       
-      RETURN                                                            
-      END                                                               
- 
+      NAME(NGL-1)=NEWG
+      NUMB(NGL-1)=NNG
+C     Shifting MEMBS. of GPS. to appropriate position of
+C     Memb array
+      CALL SHIFT(MEMB,NB1,NS1,NIND)
+      CALL SHIFT(MEMB,NB2,NS2,NIND)
+      RETURN
+      END
 
-      SUBROUTINE SHIFT(MEMB,NB,NS,NG)                                   
-C     Shifts membership of MEMB according to fusion                     
+
+      SUBROUTINE SHIFT(MEMB,NB,NS,NG)
+C     Shifts membership of MEMB according to fusion
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      DIMENSION MEMB(*)                                               
-                                                                        
-      DO 1210 I=1,NS                                                      
-        IT=MEMB(NB+1)                                                     
-        DO 1200 J=NB+2,NG                                                   
-1200       MEMB(J-1)=MEMB(J)                                                 
-        MEMB(NG)=IT                                                       
+      DIMENSION MEMB(*)
+
+      DO 1210 I=1,NS
+        IT=MEMB(NB+1)
+        DO 1200 J=NB+2,NG
+1200       MEMB(J-1)=MEMB(J)
+        MEMB(NG)=IT
 1210  CONTINUE
-      RETURN                                                            
-      END                                                               
+      RETURN
+      END
 
       FUNCTION IC(I,J)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
