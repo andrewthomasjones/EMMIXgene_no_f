@@ -7,12 +7,12 @@
 using namespace Rcpp;
 
 // call_emmix_sel
-arma:: vec call_emmix_sel(arma:: vec t, int row, int col, int g);
+arma::vec call_emmix_sel(arma::vec t, int row, int col, int g);
 RcppExport SEXP _EMMIXgene_call_emmix_sel(SEXP tSEXP, SEXP rowSEXP, SEXP colSEXP, SEXP gSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma:: vec >::type t(tSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type t(tSEXP);
     Rcpp::traits::input_parameter< int >::type row(rowSEXP);
     Rcpp::traits::input_parameter< int >::type col(colSEXP);
     Rcpp::traits::input_parameter< int >::type g(gSEXP);

@@ -43,12 +43,12 @@ bool tabcompare(const tab &a, const tab &b)
 //&tl, &sm, &er
 
 // [[Rcpp::export]]
- arma:: vec call_emmix_sel( arma:: vec t, int row, int col, int g){
+ arma::vec call_emmix_sel( arma::vec t, int row, int col, int g){
   double fl1, fl2;
   int group1[MAX_TISSUES], group2[MAX_TISSUES];
   int comp[MAX_TISSUES], x, y = 0, a1, a2, i;
-   arma:: vec s =  zeros(col);
-   arma:: vec ret =  zeros(3);
+   arma::vec s =  arma::zeros(col);
+   arma::vec ret =  arma::zeros(3);
   double tl, sm, er;
 
   if (g == 1){
@@ -126,9 +126,9 @@ int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double
   int rc, r1, k1, clus;
   int genecount = 0;
 
-   arma::mat  sg =  zeros<mat>(MAX_GENES,col);
-   arma::mat  f4 =  zeros<mat>(MAX_GENES,col);
-   arma::mat  f3 =  zeros<mat>(row,3);
+   arma::mat  sg =  arma::zeros<arma::mat>(MAX_GENES,col);
+   arma::mat  f4 =  arma::zeros<arma::mat>(MAX_GENES,col);
+   arma::mat  f3 =  arma::zeros<arma::mat>(row,3);
 
   //struct tab gtab[MAX_SELECTED_GENES];	/* for our cut-down genes and -2 log \lambdas */
   std::vector<tab> gtab;
@@ -136,7 +136,7 @@ int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double
 
   for(int rc=0;rc<row;rc++)
   {
-     arma::vec t =   zeros(col);
+     arma::vec t =   arma::zeros(col);
     double last;
     int sm, er;
     double tl;
@@ -156,7 +156,7 @@ int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double
     {
       if (sm >= b2)		/* if smaller groups exceeds b_2 cutoff */
       {
-         arma::vec temp =  zeros(3);
+         arma::vec temp =  arma::zeros(3);
         temp(0) = rc;
         temp(1) = tl;
         temp(2) = sm;
@@ -179,7 +179,7 @@ int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double
 
         if (tl > b1)
         {
-          arma::vec temp =  zeros(3);
+          arma::vec temp =  arma::zeros(3);
           temp(0) = rc;
           temp(1) = tl;
           temp(2) = sm;
@@ -202,7 +202,7 @@ int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double
 
 
   // save data
-  arma::vec tmp = zeros(3);
+  arma::vec tmp = arma::zeros(3);
 
   for(int j=0;j<genecount;j++){
     f4.row(j)=sg.row(gtab[j].nu);

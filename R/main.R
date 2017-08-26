@@ -11,7 +11,7 @@ add <- function(x, y) {
 }
 
 
-select_genes_dat<-function(filename, g=1, k =, random_starts=5, ll_thresh = 0.001, min_clust_size = 3){
+select_genes_dat<-function(filename, g=1, k =1, random_starts=5, ll_thresh = 0.001, min_clust_size = 3){
     data<-read.delim(filename, sep=" ", header=F)
     row<-dim(x)[1]
     col<-dim(x)[2]
