@@ -1,6 +1,6 @@
-      PROGRAM EMMIXlite
+      SUBROUTINE EMMIX_F2
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-C     INCLUDE 'emmix/EMMIX-f2.max'
+      INCLUDE 'emmix/EMMIX-f2.max'
 C     INCLUDE 'EMFAC.max'
 
       INTEGER NIND,      ! Number of sample points
@@ -28,9 +28,9 @@ C     INCLUDE 'EMFAC.max'
 
 
 C    Check to see if the random number generator works (try two formats)
-      CALL DETERRANDOM(IER)
+      CALL DETERRANDOM_F2(IER)
 
-      CALL SETUP(NIND,NATT,NCOV,NG0,NG1,NKMEANS,NRANDS,RDSB,INFYLE,
+      CALL SETUP_F2(NIND,NATT,NCOV,NG0,NG1,NKMEANS,NRANDS,RDSB,INFYLE,
      & OFYLE,MFYLE,OPTION,START,TOLS,SUB,SCAL,FACT,NATTQ,REV,IER)
 
       OPEN (UNIT=21,FILE=INFYLE,STATUS = 'OLD',ERR=505)
@@ -46,9 +46,9 @@ C    Check to see if the random number generator works (try two formats)
       WRITE(22,*) '--------------------------------------'
       WRITE(22,*)
 
-      CALL READX(NIND,NATT,X,SUB,REV)
+      CALL READX_F2(NIND,NATT,X,SUB,REV)
       IF (SCAL.EQ.1) THEN
-	CALL KSTAND(NIND,NATT,X,XM,XVR)
+	CALL KSTAND_F2(NIND,NATT,X,XM,XVR)
         DO 220 KK=1,NIND
           DO 220 J=1,NATT
            X(KK,J)=(DBLE(X(KK,J))-XM(J))/SQRT(XVR(J))
@@ -56,14 +56,14 @@ C    Check to see if the random number generator works (try two formats)
       ENDIF
 
       IF (START.EQ.2) THEN
-        CALL READPARA(NATT,NG0,XMU,XVAR,T,SUB)
+        CALL READPARA_F2(NATT,NG0,XMU,XVAR,T,SUB)
       ELSEIF (START.EQ.1) THEN
         NATT=SUB(2)
-        CALL READALLOC(NIND,NATT,NG0,XMU,XVAR,T,X)
+        CALL READALLOC_F2(NIND,NATT,NG0,XMU,XVAR,T,X)
       ENDIF
 
       NATT=SUB(2)
-      CALL MAIN(NIND,NATT,NCOV,X,NG0,NG1,XMU,XVAR,T,MAXITS,
+      CALL MAIN_F2(NIND,NATT,NCOV,X,NG0,NG1,XMU,XVAR,T,MAXITS,
      & TOLS,AIT,OPTION,START,NRANDS,NKMEANS,FACT,RDSB,NATTQ)
 
       CLOSE(21)
@@ -72,7 +72,7 @@ C    Check to see if the random number generator works (try two formats)
       END
 
 
-      SUBROUTINE READX(NIND,NATT,X,SUB,REV)
+      SUBROUTINE READX_F2(NIND,NATT,X,SUB,REV)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
         REAL X(MNIND,MNATT)
@@ -112,7 +112,7 @@ C    Check to see if the random number generator works (try two formats)
          COUNT=0
          DO 100 I=1,NIND
           READ(21,*) (TEMP(J),J=1,NATT)
-          R=RANDNUM()
+          R=RANDNUM_F2()
           IF (R*100.0.LT.FLOAT(SUB(1))) THEN
             COUNT=COUNT+1
             IF (SUB(2).NE.NATT) THEN
@@ -137,7 +137,7 @@ C    Check to see if the random number generator works (try two formats)
 	RETURN
       END
 
-      SUBROUTINE READPARA(NATT,NG,XMU,XVAR,T,SUB)
+      SUBROUTINE READPARA_F2(NATT,NG,XMU,XVAR,T,SUB)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
       INTEGER NATT,      ! Number of attributes/variables/dimensions
@@ -151,7 +151,7 @@ C    Check to see if the random number generator works (try two formats)
         write (*,*) '  - Read in mean for group ',K
         write (22,*) '  - Read in mean for group ',K
         DO 404 I=1,NATT
-         READ (21,*) (XVAR(K,IC(I,J)),J=1,I)
+         READ (21,*) (XVAR(K,IC2(I,J)),J=1,I)
 404     CONTINUE
         write (*,*) '  - Read in covariance matrix for group ',K
         write (22,*) '  - Read in covariance matrix for group ',K
@@ -164,7 +164,7 @@ C    Check to see if the random number generator works (try two formats)
 	RETURN
 	END
 
-      SUBROUTINE READALLOC(NIND,NATT,NG0,XMU,XVAR,T,X)
+      SUBROUTINE READALLOC_F2(NIND,NATT,NG0,XMU,XVAR,T,X)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
       REAL X(MNIND,MNATT)
@@ -180,7 +180,7 @@ C    Check to see if the random number generator works (try two formats)
 	      DO 224 I=1,NATT
 	       XMU(K,I)=0.0
 	       DO 224 L=1,I
-               XVAR(K,IC(I,L))=0.0
+               XVAR(K,IC2(I,L))=0.0
 224        CONTINUE
 
 
@@ -190,7 +190,7 @@ C    Check to see if the random number generator works (try two formats)
 	      DO 226 J=1,NATT
 	       XMU(IDT,J)=XMU(IDT,J)+DBLE(X(I,J))
 	       DO 226 L=1,J
-	         XVAR(IDT,IC(J,L))=XVAR(IDT,IC(J,L))+DBLE(X(I,J)*X(I,L))
+	         XVAR(IDT,IC2(J,L))=XVAR(IDT,IC2(J,L))+DBLE(X(I,J)*X(I,L))
 226          CONTINUE
 227        CONTINUE
          DO 213 KK=1,NG0
@@ -198,16 +198,16 @@ C    Check to see if the random number generator works (try two formats)
              DO 213 JJ=1,NATT
               XMU(KK,JJ)=XMU(KK,JJ)/(FLOAT(N(KK)))
               DO 213 II=1,JJ
-                XVAR(KK,IC(JJ,II))=
-     &          XVAR(KK,IC(JJ,II))-(XMU(KK,II)*XMU(KK,JJ)*FLOAT(N(KK)))
-                XVAR(KK,IC(JJ,II))=XVAR(KK,IC(JJ,II))/FLOAT(N(KK)-1)
+                XVAR(KK,IC2(JJ,II))=
+     &          XVAR(KK,IC2(JJ,II))-(XMU(KK,II)*XMU(KK,JJ)*FLOAT(N(KK)))
+                XVAR(KK,IC2(JJ,II))=XVAR(KK,IC2(JJ,II))/FLOAT(N(KK)-1)
 212       CONTINUE
 213       CONTINUE
         WRITE (*,*)  ' - Read in of allocation sucessful'
         WRITE (22,*) ' - Read in of allocation sucessful'
 	RETURN
 	END
-      SUBROUTINE MAIN(NIND,NATT,NCOV,X,NG0,NG1,XMU,XVAR,T,MAXITS,
+      SUBROUTINE MAIN_F2(NIND,NATT,NCOV,X,NG0,NG1,XMU,XVAR,T,MAXITS,
      & TOLS,AIT,OPTION,START,NRANDS,NKMEANS,FACT,RDSB,NATTQ)
 
 C   PURPOSE
@@ -249,34 +249,34 @@ C   INPUT PARAMETERS
          MODE=2
 	 SETUPON=1
 	 FORMOT=1
-         CALL EM(NIND,NATT,NG1,NCOV,X,XMU,XVAR,T,TXML,TOLS(2),
+         CALL EM2(NIND,NATT,NG1,NCOV,X,XMU,XVAR,T,TXML,TOLS(2),
      &          MAXITS(2),MODE,FACT,B,D,NATTQ,FORMOT,SETUPON,IER)
          RETURN
        ENDIF
 
        IF (OPTION.EQ.2) THEN
          IF (START.EQ.3) THEN
-          CALL AUTO(NIND,NATT,NCOV,X,NG1,XMU,XVAR,T,MAXITS(1),
+          CALL AUTO_F2(NIND,NATT,NCOV,X,NG1,XMU,XVAR,T,MAXITS(1),
      &              NRANDS,NKMEANS,TOLS(1),AIT,RDSB,FACT,B,D,NATTQ)
          ENDIF
          MODE=2
 	 SETUPON=0
 	 FORMOT=1
-         CALL EM(NIND,NATT,NG1,NCOV,X,XMU,XVAR,T,TXML,TOLS(2),
+         CALL EM2(NIND,NATT,NG1,NCOV,X,XMU,XVAR,T,TXML,TOLS(2),
      &          MAXITS(2),MODE,FACT,B,D,NATTQ,FORMOT,SETUPON,IER)
-         CALL ESTEP(NIND,NATT,NCOV,NG1,X,XMU,V,DV,T,W,
+         CALL ESTEP_F2(NIND,NATT,NCOV,NG1,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
 
 
 
        ELSEIF (OPTION.EQ.3) THEN
         DO 200 K=NG0,NG1
-           CALL AUTO(NIND,NATT,NCOV,X,K,XMU,XVAR,T,MAXITS(1),
+           CALL AUTO_F2(NIND,NATT,NCOV,X,K,XMU,XVAR,T,MAXITS(1),
      &      NRANDS,NKMEANS,TOLS(1),AIT,RDSB,FACT,B,D,NATTQ)
            MODE=2
 	 SETUPON=0
 	  FORMOT=1
-           CALL EM(NIND,NATT,K,NCOV,X,XMU,XVAR,T,TXML,TOLS(2),
+           CALL EM2(NIND,NATT,K,NCOV,X,XMU,XVAR,T,TXML,TOLS(2),
      &      MAXITS(2),MODE,FACT,B,D,NATTQ,FORMOT,SETUPON,IER)
 200     CONTINUE
        ENDIF
@@ -286,7 +286,7 @@ C   INPUT PARAMETERS
        RETURN
        END
 
-      SUBROUTINE AUTO(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,MAXIT,
+      SUBROUTINE AUTO_F2(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,MAXIT,
      &         NRANDS,NKMEANS,TOL,AIT,RDSB,FACT,B,D,NATTQ)
 C    Constants that define array sizes at compilation time.
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -309,9 +309,9 @@ C    Constants that define array sizes at compilation time.
           write (*,*) '  Calling Random Start ',I
 	  write (22,*) '  Random Start ',I
           write (22,*) '     Seeds ', IX,IY,IZ
-	  CALL RANDCON(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2
+	  CALL RANDCON_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2
      &             ,RDSB)
-	  CALL FIT(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
+	  CALL FIT_F2(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
      &   	   TOL,MAXIT,AIT,XLIKE,TLIKE,TMP,FACT,B,D,NATTQ,IER)
           write(22,*)'     Log Likelihhod = ',TLIKE
 	  write (22,*) '  --------------------------'
@@ -329,8 +329,8 @@ c	  write (22,*) 'End of Random start ',I
           write (*,*) '  Calling K-means Start ',I
           write (22,*) '  K-means Start ',I
           write (22,*) '     Seeds ', IX,IY,IZ
-	  CALL KMEANS(NIND,NATT,NCOV,NG,X,XMU2,XVAR2,T2,IER)
-	  CALL FIT(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
+	  CALL KMEANS_F2(NIND,NATT,NCOV,NG,X,XMU2,XVAR2,T2,IER)
+	  CALL FIT_F2(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
      &	           TOL,MAXIT,AIT,XLIKE,TLIKE,TMP,FACT,B,D,NATTQ,IER)
           write(22,*)'     Log Likelihhod = ',TLIKE
 	  write (22,*) '  --------------------------'
@@ -351,7 +351,7 @@ c	  write (22,*) 'End of K-means start ',I
 	END
 
 
-      SUBROUTINE UPDSOL(NG,NATT,NCOV,XMU,XMU2,XVAR,XVAR2,T,
+      SUBROUTINE UPDSOL_F2(NG,NATT,NCOV,XMU,XMU2,XVAR,XVAR2,T,
      &                  T2,B,D,BT,DT,FACT,NATTQ)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
@@ -408,7 +408,7 @@ C    Constants that define array sizes at compilation time.
 
 
 
-	SUBROUTINE RANDCON(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,
+	SUBROUTINE RANDCON_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,
      &                   RDSB)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
@@ -418,14 +418,14 @@ C    Constants that define array sizes at compilation time.
 	DIMENSION XMU2(MAXNG,MNATT),
      &            XVAR2(MAXNG,MNATT*(MNATT+1)/2),T2(MAXNG)
 	IF ((NCOV.EQ.1).OR.(NCOV.EQ.2)) THEN
-	  CALL RANDSTD(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
+	  CALL RANDSTD_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
 	ELSEIF ((NCOV.EQ.3).OR.(NCOV.EQ.4)) THEN
-	  CALL RANDDIAG(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
+	  CALL RANDDIAG_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
         ENDIF
         RETURN
 	END
 
-      SUBROUTINE RANDSTD(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,
+      SUBROUTINE RANDSTD_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,
      &                   RDSB)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
@@ -447,7 +447,7 @@ C    Constants that define array sizes at compilation time.
 177     CONTINUE
         IF (RDSB.EQ.100) THEN
          DO 111 I=1,NIND
-          R=RANDNUM()
+          R=RANDNUM_F2()
           JG=INT(R*FLOAT(NG))+1
           N(JG)=N(JG)+1
           DO 1091 JJ=1,NATT
@@ -461,8 +461,8 @@ C    Constants that define array sizes at compilation time.
         ELSE
          IPTS=INT(RDSB/100.0*FLOAT(NIND))
          DO 211 I=1,IPTS
-           P=INT(RANDNUM()*FLOAT(NIND))+1
-          R=RANDNUM()
+           P=INT(RANDNUM_F2()*FLOAT(NIND))+1
+          R=RANDNUM_F2()
           JG=INT(R*FLOAT(NG))+1
           N(JG)=N(JG)+1
           DO 2091 JJ=1,NATT
@@ -488,7 +488,7 @@ C    Constants that define array sizes at compilation time.
 	END
 
 
-      SUBROUTINE RANDDIAG(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
+      SUBROUTINE RANDDIAG_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2,RDSB)
 c         Have to modify
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
@@ -509,8 +509,8 @@ C    Constants that define array sizes at compilation time.
 177     CONTINUE
         IPTS=INT(RDSB/100.0*FLOAT(NIND))
         DO 111 I=1,IPTS
-          P=INT(RANDNUM()*FLOAT(NIND))+1
-          R=RANDNUM()
+          P=INT(RANDNUM_F2()*FLOAT(NIND))+1
+          R=RANDNUM_F2()
           JG=INT(R*FLOAT(NG))+1
           N(JG)=N(JG)+1
           DO 1091 JJ=1,NATT
@@ -532,7 +532,7 @@ C    Constants that define array sizes at compilation time.
 
 
 
-	SUBROUTINE KMEANCON(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2)
+	SUBROUTINE KMEANCON_F2(NIND,NATT,NCOV,X,NG,XMU2,XVAR2,T2)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
       INCLUDE 'emmix/EMMIX-f2.max'
@@ -545,7 +545,7 @@ C    Constants that define array sizes at compilation time.
 	RETURN
 	END
 
-      SUBROUTINE FIT(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
+      SUBROUTINE FIT_F2(NIND,NATT,NCOV,X,NG,XMU,XVAR,T,XMU2,XVAR2,T2,
      &               TOL,MAXIT,AIT,XLIKE,TLIKE,TMP,FACT,B,D,NATTQ,IER)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
@@ -564,7 +564,7 @@ C    Constants that define array sizes at compilation time.
 	SETUPON=1
 	FORMOT=0
         write (*,*) 'Calling EM from Fit'
-        CALL EM(NIND,NATT,NG,NCOV,X,XMU2,XVAR2,T2,TLIKE,
+        CALL EM2(NIND,NATT,NG,NCOV,X,XMU2,XVAR2,T2,TLIKE,
      &    TOL,MAXIT,MODE,FACT,BT,DT,NATTQ,FORMOT,SETUPON,IER)
         write (*,*) 'Return to fit from EM '
 
@@ -574,7 +574,7 @@ C    Constants that define array sizes at compilation time.
 	IF ((TLIKE.GT.XLIKE).OR.(TMP.EQ.1.0)) THEN
          write (*,*) 'Update'
 	 XLIKE=TLIKE
-	 CALL UPDSOL(NG,NATT,NCOV,XMU,XMU2,XVAR,XVAR2,T,T2,
+	 CALL UPDSOL_F2(NG,NATT,NCOV,XMU,XMU2,XVAR,XVAR2,T,T2,
      &	 B,D,BT,DT,FACT,NATTQ)
          TMP=0.0
 	ENDIF
@@ -584,7 +584,7 @@ C    Constants that define array sizes at compilation time.
 	END
 
 
-      SUBROUTINE SETUP(NIND,NATT,NCOV,NG0,NG1,NKMEANS,NRANDS,RDSB,
+      SUBROUTINE SETUP_F2(NIND,NATT,NCOV,NG0,NG1,NKMEANS,NRANDS,RDSB,
      &  INFYLE,OFYLE,MFYLE,OPTION,START,TOLS,SUB,SCAL,FACT,NATTQ,
      &  REV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -605,15 +605,15 @@ C        READ (*,*) FACT(1)
         WRITE(*,*)'      VERSION OF EMMIX TO FIT MIXTURES'
         WRITE(*,*)'            OF FACTORS ANALYZERS'
         WRITE(*,*)'      ---------------------------------'
-C	CALL GETOPT(OPTION)
+C	CALL GETOPT_F2(OPTION)
        OPTION=2.0
-       CALL GETIO(INFYLE,OFYLE,IER)
+       CALL GETIO_F2(INFYLE,OFYLE,IER)
 	write (*,*) 'What is the name of the matlab file'
 	write (*,*) 'you wish to output to (must end  in .m)'
         READ (*,'(A)') MFYLE
 	IF (IER.NE.0) RETURN
-       CALL GETNIND(NIND,SUB)
-       CALL GETNATT(NATT,SUB)
+       CALL GETNIND_F2(NIND,SUB)
+       CALL GETNATT_F2(NATT,SUB)
        WRITE (*,*) 'Do you wish to transpose the data'
        WRITE (*,*) ' so that you cluster the columns'
        WRITE (*,*) ' (0=No ,1=Yes)'
@@ -622,11 +622,11 @@ C	CALL GETOPT(OPTION)
        READ (*,*) NATTQ
        WRITE (*,*) 'Scale Data (0-No,1-Yes)'
        READ (*,*) SCAL
-	CALL GETNG(NG0,NG1,OPTION)
-	CALL GETNCOV(NCOV)
-        CALL GETST(START)
+	CALL GETNG_F2(NG0,NG1,OPTION)
+	CALL GETNCOV_F2(NCOV)
+        CALL GETST_F2(START)
 	IF (START.EQ.3) THEN
- 	 CALL GETSRCH(NRANDS,NKMEANS,RDSB)
+ 	 CALL GETSRCH_F2(NRANDS,NKMEANS,RDSB)
         ENDIF
 	write (*,*) 'Use 0-Factors or 1-PPA'
 	READ (*,*) FACT(2)
@@ -639,7 +639,7 @@ C	write (*,*) 'What form do you want the output'
 C	write (*,*) ' (0-Parameters, 1-Partition, 3-Both)'
 C	read (*,*) FORMOT
 
-	CALL GETSEEDS(IX,IY,IZ)
+	CALL GETSEEDS_F2(IX,IY,IZ)
 
 
 
@@ -667,7 +667,7 @@ c	IZ=3
       RETURN
       END
 
-      SUBROUTINE GETNIND(NIND,SUB)
+      SUBROUTINE GETNIND_F2(NIND,SUB)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
       INCLUDE 'emmix/EMMIX-f2.max'
@@ -684,7 +684,7 @@ C      READ (*,*) SUB(1)
       RETURN
       END
 
-      SUBROUTINE GETNATT(NATT,SUB)
+      SUBROUTINE GETNATT_F2(NATT,SUB)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C    Constants that define array sizes at compilation time.
       INCLUDE 'emmix/EMMIX-f2.max'
@@ -707,7 +707,7 @@ C    Constants that define array sizes at compilation time.
       END
 
 
-      SUBROUTINE GETIO(INFYLE,OFYLE,IER)
+      SUBROUTINE GETIO_F2(INFYLE,OFYLE,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       CHARACTER*255 INFYLE
       CHARACTER*255 OFYLE
@@ -734,7 +734,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       RETURN
       END
 
-      SUBROUTINE GETOPT(OPTION)
+      SUBROUTINE GETOPT_F2(OPTION)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       WRITE(*,519)
 519   FORMAT(
@@ -754,7 +754,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       RETURN
       END
 
-      SUBROUTINE GETNG(NG0,NG1,OPTION)
+      SUBROUTINE GETNG_F2(NG0,NG1,OPTION)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       IF (OPTION.EQ.3) THEN
 502    WRITE(*,*)'What is the minimum number of groups you want to fit'
@@ -774,7 +774,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       END
 
 
-      SUBROUTINE GETST(START)
+      SUBROUTINE GETST_F2(START)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 520   WRITE(*,*) 'Switch for initialisation'
       WRITE(*,*)'    1 = initial partition of data,'
@@ -789,7 +789,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       RETURN
       END
 
-      SUBROUTINE GETNCOV(NCOV)
+      SUBROUTINE GETNCOV_F2(NCOV)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 510   WRITE(*,*)'Covariance matrix option (1 = equal,2 = unrestricted,'
       WRITE(*,*)'   3 = diagonal equal,4 = diagonal unrestricted): '
@@ -801,7 +801,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
       RETURN
       END
 
-	SUBROUTINE GETSRCH(NRANDS,NKMEANS,RDSB)
+	SUBROUTINE GETSRCH_F2(NRANDS,NKMEANS,RDSB)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 	WRITE (*,*) 'How many Random starts'
 	READ (*,*) NRANDS
@@ -812,7 +812,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
 	RETURN
 	END
 
-	SUBROUTINE GETSEEDS(IX,IY,IZ)
+	SUBROUTINE GETSEEDS_F2(IX,IY,IZ)
 	IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 	WRITE (*,*) 'Enter 0 to auto seed'
 	WRITE (*,*) 'Random Seed 1'
@@ -828,7 +828,7 @@ c     OPEN (UNIT=22,FILE=OFYLE,STATUS = 'UNKNOWN')
 	RETURN
 	END
 C
-      SUBROUTINE EM(NIND,NATT,NG,NCOV,X,XMU,XVAR,T,
+      SUBROUTINE EM2(NIND,NATT,NG,NCOV,X,XMU,XVAR,T,
      &       TLIKE,TOL,MAXIT,MODE,FACT,B,D,NATTQ,FORMOT,SETUPON,IER)
 C      The purpose of the subroutine is to implement the EM algorithm
 C      of Dempster et al. (1977).
@@ -860,7 +860,7 @@ C
       IOUNT=0
       IF (FACT(1).EQ.1) THEN
       write (*,*) 'Calling Initial Factor Setup'
-      CALL FSASET2(NIND,NATT,NG,NCOV,X,DV,XVAR,V,
+      CALL FSASET2_F2(NIND,NATT,NG,NCOV,X,DV,XVAR,V,
      &             D,B,XMU,NATTQ,MODE,FACT,SETUPON,IER)
       ENDIF
 
@@ -875,11 +875,11 @@ C    MAIN ITERATIVE LOOP ENTRY POINT
 
       IOUNT=IOUNT+1
       IF (FACT(1).EQ.1) THEN
-       CALL ESTEP(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
+       CALL ESTEP_F2(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
-       CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,XMU,T,W,FACT,IER)
+       CALL MSTEP_F2(NIND,NATT,NG,NCOV,X,XVAR,V,DV,XMU,T,W,FACT,IER)
       ELSE
-       CALL ESTEP(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
+       CALL ESTEP_F2(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
       ENDIF
       IF (IER.GT.0) RETURN
@@ -888,12 +888,12 @@ C    MAIN ITERATIVE LOOP ENTRY POINT
       IF (MODE.EQ.2) THEN
       write (22,*) 'Log-Likelihood at iteration',IOUNT,' = ',TXML(IOUNT)
       ENDIF
-      IF (XIT(IOUNT,MAXIT,TOL,TXML,XLA).EQ.1) GOTO 1099
+      IF (XIT_F2(IOUNT,MAXIT,TOL,TXML,XLA).EQ.1) GOTO 1099
       IF (FACT(1).EQ.1) THEN
-       CALL FSAMSP(NIND,NATT,NG,NCOV,XVAR,V,D,B,
+       CALL FSAMSP_F2(NIND,NATT,NG,NCOV,XVAR,V,D,B,
      &                XMU,GAMM,NATTQ,DV,IER)
       ELSE
-       CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,XMU,T,W,FACT,IER)
+       CALL MSTEP_F2(NIND,NATT,NG,NCOV,X,XVAR,V,DV,XMU,T,W,FACT,IER)
       ENDIF
       IF (IER.GT.0) GOTO 1099
 
@@ -902,7 +902,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 1099  CONTINUE
       TLIKE=TXML(IOUNT)
-       CALL ESTEP(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
+       CALL ESTEP_F2(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
 C        OUTPUT
          IF (FORMOT.GT.0) THEN
@@ -958,7 +958,7 @@ C      Calculate multivariate density of each point for every group
       END
 
 
-      SUBROUTINE ESTEP(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
+      SUBROUTINE ESTEP_F2(NIND,NATT,NCOV,NG,X,XMU,V,DV,T,W,
      &            XLOGL,IER)
 C     This Subroutine implements the E-step of the EM algorithm
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1001,12 +1001,12 @@ C      Calculate multivariate density of each point for every group
 CCC            DO 910 J=1,NATT
             DO 905 J=1,I-1
               XJJJ=DBLE(X(JJ,J))
-CCC              AL(K)=AL(K)+ALTEMP*V(K,IC(I,J))*
+CCC              AL(K)=AL(K)+ALTEMP*V(K,IC2(I,J))*
 CCC     &              (XJJJ-XMU(K,J))
-              AL(K)=AL(K)+2.0*ALTEMP*V(K,IC(I,J))*
+              AL(K)=AL(K)+2.0*ALTEMP*V(K,IC2(I,J))*
      &              (XJJJ-XMU(K,J))
 905         CONTINUE
-	    AL(K)=AL(K)+ALTEMP*ALTEMP*V(K,IC(I,I))
+	    AL(K)=AL(K)+ALTEMP*ALTEMP*V(K,IC2(I,I))
 910       CONTINUE
 C         Check as if AL(K) too large under flow may occur
           IF (AL(K).GT.DENMAX) THEN
@@ -1048,7 +1048,7 @@ CC      write (*,*) 'Det=',DV(1),DV(2)
       RETURN
       END
 
-      FUNCTION IC(I,J)
+      FUNCTION IC2(I,J)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       IF (I.LE.J) THEN
         IC=J*(J-1)/2+I
@@ -1059,7 +1059,7 @@ CC      write (*,*) 'Det=',DV(1),DV(2)
       END
 
 
-      SUBROUTINE MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
+      SUBROUTINE MSTEP_F2(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,T,W,FACT,IER)
 C     This Subroutine implements the M-step of the EM algorithm
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1080,17 +1080,17 @@ C     This Subroutine implements the M-step of the EM algorithm
       DIMENSION W(MNIND,MAXNG),DV(MAXNG)
          IER=0
 C     Compute new estimates of mixing proportions
-         CALL CALC_T(NIND,NATT,NG,W,T,IER)
+         CALL CALC_F2(NIND,NATT,NG,W,T,IER)
          IF (IER.NE.0) RETURN
 C     Compute new estimates of group means
-         CALL CALC_XMU(NIND,NATT,NG,X,W,XMU,T)
+         CALL CALC_XM2(NIND,NATT,NG,X,W,XMU,T)
          IF (IER.NE.0) RETURN
 C     Compute new estimates of covariance matrices
-         CALL CALC_XVAR(NIND,NATT,NG,NCOV,X,W,XMU,T,XVAR)
+         CALL CALC_XVAR2(NIND,NATT,NG,NCOV,X,W,XMU,T,XVAR)
 
       IER=0
 	IF (FACT(1).EQ.0) THEN
-      CALL GDET(NCOV,NATT,NG,XVAR,V,DV,IER)
+      CALL GDET_F2(NCOV,NATT,NG,XVAR,V,DV,IER)
        IF (IER.NE.0) THEN
         write (*,*) '  ERROR: Problem Inverting Covariance Matrix'
 	RETURN
@@ -1099,7 +1099,7 @@ C     Compute new estimates of covariance matrices
          RETURN
          END
 
-      SUBROUTINE CALC_XMU(NIND,NATT,NG,X,W,XMU,T)
+      SUBROUTINE CALC_XM2(NIND,NATT,NG,X,W,XMU,T)
 C     This Subroutine calculates estimates of the group means
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
@@ -1121,7 +1121,7 @@ C     Compute new estimates of group means (XMU)
       RETURN
       END
 
-      SUBROUTINE CALC_XVAR(NIND,NATT,NG,NCOV,X,W,XMU,T,XVAR)
+      SUBROUTINE CALC_XVAR2(NIND,NATT,NG,NCOV,X,W,XMU,T,XVAR)
 C     This Subroutine calculates estimates of the group covariances
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
@@ -1137,11 +1137,11 @@ C     Compute new estimate of covariance matrix for each group
        IF (NCOV.EQ.4) THEN
         DO 60 K=1,NG
           DO 20 I=1,NATT
-              XVAR(K,IC(I,I))=0.0
+              XVAR(K,IC2(I,I))=0.0
 20        CONTINUE
           DO 40 JJ=1,NIND
            DO 30 I=1,NATT
-       XVAR(K,IC(I,I))=XVAR(K,IC(I,I))+(DBLE(X(JJ,I))-XMU(K,I))**2
+       XVAR(K,IC2(I,I))=XVAR(K,IC2(I,I))+(DBLE(X(JJ,I))-XMU(K,I))**2
      &                  *W(JJ,K)/(T(K)*FLOAT(NIND))
 30          CONTINUE
 40        CONTINUE
@@ -1150,21 +1150,21 @@ C     Compute new estimate of covariance matrix for each group
        ELSEIF (NCOV.EQ.3) THEN
         DO 160 K=1,NG
           DO 120 I=1,NATT
-              XVAR(K,IC(I,I))=0.0
+              XVAR(K,IC2(I,I))=0.0
 120       CONTINUE
           DO 140 JJ=1,NIND
            DO 130 I=1,NATT
-      XVAR(K,IC(I,I))=XVAR(K,IC(I,I))+(DBLE(X(JJ,I))-XMU(K,I))**2
+      XVAR(K,IC2(I,I))=XVAR(K,IC2(I,I))+(DBLE(X(JJ,I))-XMU(K,I))**2
      &                  *W(JJ,K)/(T(K)*FLOAT(NIND))
 130         CONTINUE
 140       CONTINUE
 160     CONTINUE
         DO 180 I=1,NATT
-        XVAR(1,IC(I,I))=XVAR(1,IC(I,I))*FLOAT(NIND)
+        XVAR(1,IC2(I,I))=XVAR(1,IC2(I,I))*FLOAT(NIND)
           DO 170 K=2,NG
-        XVAR(1,IC(I,I))=XVAR(1,IC(I,I))+XVAR(K,IC(I,I))*FLOAT(NIND)
+        XVAR(1,IC2(I,I))=XVAR(1,IC2(I,I))+XVAR(K,IC2(I,I))*FLOAT(NIND)
 170       CONTINUE
-        XVAR(1,IC(I,I))=XVAR(1,IC(I,I))/FLOAT(NIND)
+        XVAR(1,IC2(I,I))=XVAR(1,IC2(I,I))/FLOAT(NIND)
 180     CONTINUE
 
 
@@ -1173,12 +1173,12 @@ C     Compute new estimate of covariance matrix for each group
         DO 260 K=1,NG
           DO 220 J=1,NATT
             DO 220 I=1,J
-              XVAR(K,IC(I,J))=0.0
+              XVAR(K,IC2(I,J))=0.0
 220       CONTINUE
           DO 240 JJ=1,NIND
             DO 230 J=1,NATT
              DO 230 I=1,J
-        XVAR(K,IC(I,J))=XVAR(K,IC(I,J))+(DBLE(X(JJ,I))-XMU(K,I))
+        XVAR(K,IC2(I,J))=XVAR(K,IC2(I,J))+(DBLE(X(JJ,I))-XMU(K,I))
      &        *(DBLE(X(JJ,J))-XMU(K,J))*W(JJ,K)/(T(K)*FLOAT(NIND))
 230         CONTINUE
 240       CONTINUE
@@ -1189,12 +1189,12 @@ C     Compute new estimate of covariance matrix for each group
         DO 360 K=1,NG
           DO 320 J=1,NATT
             DO 320 I=1,J
-              XVAR(K,IC(I,J))=0.0
+              XVAR(K,IC2(I,J))=0.0
 320       CONTINUE
           DO 340 JJ=1,NIND
             DO 330 J=1,NATT
               DO 330 I=1,J
-         XVAR(K,IC(I,J))=XVAR(K,IC(I,J))+(DBLE(X(JJ,I))-XMU(K,I))
+         XVAR(K,IC2(I,J))=XVAR(K,IC2(I,J))+(DBLE(X(JJ,I))-XMU(K,I))
      &             *(DBLE(X(JJ,J))-XMU(K,J))*W(JJ,K)
 330         CONTINUE
 340       CONTINUE
@@ -1202,11 +1202,11 @@ C     Compute new estimate of covariance matrix for each group
 
         DO 390 J=1,NATT
           DO 390 I=1,J
-            XVAR(1,IC(I,J))=XVAR(1,IC(I,J))*FLOAT(NIND)
+            XVAR(1,IC2(I,J))=XVAR(1,IC2(I,J))*FLOAT(NIND)
             DO 380 K=2,NG
-       XVAR(1,IC(I,J))=XVAR(1,IC(I,J))+XVAR(K,IC(I,J))*FLOAT(NIND)
+       XVAR(1,IC2(I,J))=XVAR(1,IC2(I,J))+XVAR(K,IC2(I,J))*FLOAT(NIND)
 380         CONTINUE
-        XVAR(1,IC(I,J))=XVAR(1,IC(I,J))/NIND
+        XVAR(1,IC2(I,J))=XVAR(1,IC2(I,J))/NIND
 390     CONTINUE
 
       ENDIF
@@ -1216,7 +1216,7 @@ C     Compute new estimate of covariance matrix for each group
 
 
 
-      SUBROUTINE CALC_T(NIND,NATT,NG,W,T,IER)
+      SUBROUTINE CALC_F2(NIND,NATT,NG,W,T,IER)
 C     This Subroutine calculates estimates of the mixing proportions
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
@@ -1249,7 +1249,7 @@ C       Calculate mixing proportion for group K
 
 
 C
-      FUNCTION XIT(IOUNT,MAXIT,TOL,TXML,XLA)
+      FUNCTION XIT_F2(IOUNT,MAXIT,TOL,TXML,XLA)
 C     Test for exit from EM Algorithm
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1308,7 +1308,7 @@ C      ENDIF
       END
 
 
-      SUBROUTINE GDET(NCOV,NATT,NG,XVAR,V,DV,IER)
+      SUBROUTINE GDET_F2(NCOV,NATT,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -1319,10 +1319,10 @@ C     for each covariance matrix in turn.
      &          DV(MAXNG)
 
       IER=0
-	IF (NCOV.EQ.1) CALL GDET1(NATT,NG,XVAR,V,DV,IER)
-	IF (NCOV.EQ.2) CALL GDET2(NATT,NG,XVAR,V,DV,IER)
-	IF (NCOV.EQ.3) CALL GDET3(NATT,NG,XVAR,V,DV,IER)
-	IF (NCOV.EQ.4) CALL GDET4(NATT,NG,XVAR,V,DV,IER)
+	IF (NCOV.EQ.1) CALL GDET1_F2(NATT,NG,XVAR,V,DV,IER)
+	IF (NCOV.EQ.2) CALL GDET2_F2(NATT,NG,XVAR,V,DV,IER)
+	IF (NCOV.EQ.3) CALL GDET3_F2(NATT,NG,XVAR,V,DV,IER)
+	IF (NCOV.EQ.4) CALL GDET4_F2(NATT,NG,XVAR,V,DV,IER)
 
 	IF (IER.NE.0) THEN
 895   FORMAT (/2X,'Terminal error in matrix inversion for group ',I3,
@@ -1336,7 +1336,7 @@ c      WRITE (*,895)  K, IER
       END
 
 
-      SUBROUTINE GDET1(NATT,NG,XVAR,V,DV,IER)
+      SUBROUTINE GDET1_F2(NATT,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -1371,7 +1371,7 @@ c         WRITE(FYLENO,*)'  Determinant is equal to zero for common cov.'
       RETURN
 	END
 
-      SUBROUTINE GDET2(NATT,NG,XVAR,V,DV,IER)
+      SUBROUTINE GDET2_F2(NATT,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -1407,7 +1407,7 @@ c         WRITE (FYLENO,*)'  Determinant is equal to zero for grp ',K
       RETURN
 	END
 
-      SUBROUTINE GDET3(NATT,NG,XVAR,V,DV,IER)
+      SUBROUTINE GDET3_F2(NATT,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -1430,7 +1430,7 @@ C     for each covariance matrix in turn.
 	END
 
 
-      SUBROUTINE GDET4(NATT,NG,XVAR,V,DV,IER)
+      SUBROUTINE GDET4_F2(NATT,NG,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -1453,7 +1453,7 @@ C     for each covariance matrix in turn.
       RETURN
 	END
 
-      SUBROUTINE SYMINV(KNG,XVAR,N,V,NULLTY,IFAULT,RMAX,DV,
+      SUBROUTINE SYMINV_F2(KNG,XVAR,N,V,NULLTY,IFAULT,RMAX,DV,
      &                  TOL,NG)
 C       Modified from
 C       Algorithm AS7, Applied Statistics, Vol.17, 1968.
@@ -1489,7 +1489,7 @@ C       Latest revision - 18 April 1981
         IF(NROW.LE.0) GO TO 100
         IFAULT=0
 C       Cholesky factorization of A, result in C
-        CALL CHOLA(KNG,XVAR,NROW,V,NULLTY,IFAULT,RMAX,W,TOL)
+        CALL CHOLA_F2(KNG,XVAR,NROW,V,NULLTY,IFAULT,RMAX,W,TOL)
         IF(IFAULT.NE.0) GO TO 100
 C       Invert C & form the product (CINV)'*CINV, where CINV is the inverse
 C       of C, row by row starting with the last row.
@@ -1542,7 +1542,7 @@ cc200       CMY(IMY)=V(KNG,IMY)
         END
 
 
-        SUBROUTINE CHOLA(KNG,XVAR,N,V,NULLTY,IFAULT,
+        SUBROUTINE CHOLA_F2(KNG,XVAR,N,V,NULLTY,IFAULT,
      &                   RMAX,R,TOL)
 C       Modified from
 C       Algorithm AS6, Applied Statistics, Vol.17, 1968, with
@@ -1625,7 +1625,7 @@ C         End of row, estimate relative accuracy of diagonal element.
         END
 
 
-      SUBROUTINE GDETQ(NATT,XVAR,V,DV,IER)
+      SUBROUTINE GDETQ_F2(NATT,XVAR,V,DV,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -1637,10 +1637,10 @@ C     for each covariance matrix in turn.
 	IT=0
 	TOL=0.0
 	DO 810 I=1,NATT
-	  TOL=TOL+SQRT(XVAR(IC(I,I)))
+	  TOL=TOL+SQRT(XVAR(IC2(I,I)))
 810     CONTINUE
 	TOL=(TOL/NATT)*0.000001
-	CALL SYMINVQ(XVAR,NATT,V,NULL,IER,RMAX,DV,TOL,NG)
+	CALL SYMINVQ_F2(XVAR,NATT,V,NULL,IER,RMAX,DV,TOL,NG)
 	IF (IER.GT.0) RETURN
 	IF (NULL.NE.0) THEN
 	  write (*,*) 'NULL=',NULL
@@ -1658,7 +1658,7 @@ C     for each covariance matrix in turn.
       RETURN
       END
 
-      SUBROUTINE SYMINVQ(XVAR,N,V,NULLTY,IFAULT,RMAX,DV,
+      SUBROUTINE SYMINVQ_F2(XVAR,N,V,NULLTY,IFAULT,RMAX,DV,
      &                  TOL,NG)
 C       Modified from
 C       Algorithm AS7, Applied Statistics, Vol.17, 1968.
@@ -1693,7 +1693,7 @@ C       Latest revision - 18 April 1981
         IF(NROW.LE.0) GO TO 100
         IFAULT=0
 C       Cholesky factorization of A, result in C
-        CALL CHOLAQ(XVAR,NROW,V,NULLTY,IFAULT,RMAX,W,TOL)
+        CALL CHOLAQ_F2(XVAR,NROW,V,NULLTY,IFAULT,RMAX,W,TOL)
         IF(IFAULT.NE.0) GO TO 100
 C       Invert C & form the product (CINV)'*CINV, where CINV is the inverse
 C       of C, row by row starting with the last row.
@@ -1746,7 +1746,7 @@ cc200       CMY(IMY)=V(IMY)
         END
 
 
-        SUBROUTINE CHOLAQ(XVAR,N,V,NULLTY,IFAULT,
+        SUBROUTINE CHOLAQ_F2(XVAR,N,V,NULLTY,IFAULT,
      &                   RMAX,R,TOL)
 C       Modified from
 C       Algorithm AS6, Applied Statistics, Vol.17, 1968, with
@@ -1832,12 +1832,12 @@ C
 C   This group of subroutines deal with generating random numbers
 C
 C   The subroutines in this file  basically act as a interface between
-C   how this program calls the random number generator ( R=RANDNUM(SEED)
+C   how this program calls the random number generator ( R=RANDNUM_F2(SEED)
 C
 
 C   D.Peel Nov 1995
 
-       SUBROUTINE DETERRANDOM(IER)
+       SUBROUTINE DETERRANDOM_F2(IER)
 C      This subroutine is called at the very beginning of the program
 C      to determine if the random number generator is working
 C
@@ -1859,7 +1859,7 @@ C      in future versions
            IZ=54367
            XISEEDS(1)=.435543
            DO 106 I=2,1000
-             XISEEDS(I)=RANDOM(IX,IY,IZ)
+             XISEEDS(I)=RANDOM_F2(IX,IY,IZ)
              IF (XISEEDS(I).EQ.0) GO TO 107
              DO 105 J=1,I-1
                IF (XISEEDS(I).EQ.XISEEDS(J)) GO TO 107
@@ -1885,7 +1885,7 @@ C      in future versions
 	   RETURN
 	   END
 
-	   FUNCTION RANDNUM()
+	   FUNCTION RANDNUM_F2()
 C          This is the function called by the program NMM. If you
 C          wish to use your own portable random number generator
 C          then it should be used in place of this function.
@@ -1893,7 +1893,7 @@ C          then it should be used in place of this function.
 	   IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 	   COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
 	   IF (RANDTYPE.EQ.1) THEN
-             RANDNUM=RANDOM(IX,IY,IZ)
+             RANDNUM=RANDOM_F2(IX,IY,IZ)
 	   ELSE
       WRITE(*,*)'ERROR: As previously described due to random number'
       WRITE(*,*)'       generator problems features utilising'
@@ -1903,7 +1903,7 @@ C          then it should be used in place of this function.
            RETURN
 	   END
 
-      DOUBLE PRECISION FUNCTION RANDOM(IX,IY,IZ)
+      DOUBLE PRECISION FUNCTION RANDOM_F2(IX,IY,IZ)
 C
 C     Algorithm AS 183 Appl. Statist. (1982) vol.31, no.2
 C
@@ -1946,7 +1946,7 @@ C
 C  This group of subroutines implements the K-means Clustering algorithm.
 C  Implemented by David Peel May 1994
 
-      SUBROUTINE KMEANS(NIND,NATT,NCOV,NG,X,XMU2,XVAR2,T2,IER)
+      SUBROUTINE KMEANS_F2(NIND,NATT,NCOV,NG,X,XMU2,XVAR2,T2,IER)
 C      Main subroutine
 
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1970,15 +1970,15 @@ C      Main subroutine
        DO 1 I=1,NATT
 	XMU2(K,I)=0.0
 1     CONTINUE
-      CALL KSTAND(NIND,NATT,X,XM,XVR)
-      CALL KSEED(NIND,NATT,NG,X,XKOLD,XM,XVR,IER)
+      CALL KSTAND_F2(NIND,NATT,X,XM,XVR)
+      CALL KSEED_F2(NIND,NATT,NG,X,XKOLD,XM,XVR,IER)
 
       DO 19 KK=1,NIND
         DO 17 J=1,NATT
           XSTAN(J)=(DBLE(X(KK,J))-XM(J))/SQRT(XVR(J))
 17      CONTINUE
-       CALL WINNER(NATT,NG,XSTAN,XKOLD,GRP,IER)
-       CALL INIT(NIND,NATT,NG,XSTAN,XMU2,GRP,N,IER)
+       CALL WINNER_F2(NATT,NG,XSTAN,XKOLD,GRP,IER)
+       CALL INIT_F2(NIND,NATT,NG,XSTAN,XMU2,GRP,N,IER)
        IF (IER.NE.0) RETURN
 19    CONTINUE
       DO 30 T=1,MAXKM
@@ -1994,11 +1994,11 @@ C      Main subroutine
           DO 220 J=1,NATT
             XSTAN(J)=(DBLE(X(KK,J))-XM(J))/SQRT(XVR(J))
 220       CONTINUE
-          CALL WINNER(NATT,NG,XSTAN,XKOLD,GRP,IER)
-          CALL INIT(NIND,NATT,NG,XSTAN,XMU2,GRP,N,IER)
+          CALL WINNER_F2(NATT,NG,XSTAN,XKOLD,GRP,IER)
+          CALL INIT_F2(NIND,NATT,NG,XSTAN,XMU2,GRP,N,IER)
 	  IF (IER.NE.0) RETURN
 20      CONTINUE
-          ET=RULE(NG,NATT,XKOLD,XMU2)
+          ET=RULE_F2(NG,NATT,XKOLD,XMU2)
           IF (ET.LE.TOLKM) GO TO 99
 30    CONTINUE
 
@@ -2010,11 +2010,11 @@ C      Main subroutine
 	 XKOLD(K,I)=XMU2(K,I)
          XMU2(K,I)=XMU2(K,I)*SQRT(XVR(I))+XM(I)
 300    CONTINUE
-      CALL CALC_PARA(NIND,NATT,NCOV,NG,X,XMU2,XKOLD,XVAR2,T2,XM,XVR)
+      CALL CALC_PARA_F2(NIND,NATT,NCOV,NG,X,XMU2,XKOLD,XVAR2,T2,XM,XVR)
       RETURN
       END
 
-      SUBROUTINE CALC_PARA(NIND,NATT,NCOV,NG,X,
+      SUBROUTINE CALC_PARA_F2(NIND,NATT,NCOV,NG,X,
      &               XMU2,XKOLD,XVAR2,T2,XM,XVR)
 C     This Subroutine calculates estimates of the group covariance
 C      and mixing proportions.
@@ -2033,21 +2033,21 @@ C      and mixing proportions.
        T2(K)=0.0
        DO 300 I=1,NATT
         DO 300 J=1,I
-         XVAR2(K,IC(I,J))=0.0
+         XVAR2(K,IC2(I,J))=0.0
 300   CONTINUE
 
       DO 410 KK=1,NIND
        DO 400 II=1,NATT
         XUS(II)=(DBLE(X(KK,II))-XM(II))/SQRT(XVR(II))
 400    CONTINUE
-       CALL WINNER(NATT,NG,XUS,XKOLD,GRP,IER)
+       CALL WINNER_F2(NATT,NG,XUS,XKOLD,GRP,IER)
        T2(GRP)=T2(GRP)+1.0
        DO 401 II=1,NATT
         XUS(II)=DBLE(X(KK,II))
 401    CONTINUE
        DO 330 J=1,NATT
 	 DO 330 I=1,J
-	  XVAR2(GRP,IC(I,J))=XVAR2(GRP,IC(I,J))+(XUS(I)
+	  XVAR2(GRP,IC2(I,J))=XVAR2(GRP,IC2(I,J))+(XUS(I)
      &            	 -XMU2(GRP,I))*(XUS(J)-XMU2(GRP,J))
 330    CONTINUE
 
@@ -2056,7 +2056,7 @@ C      and mixing proportions.
       DO 500 K=1,NG
        DO 499 I=1,NATT
         DO 499 J=1,I
-	 XVAR2(K,IC(I,J))=XVAR2(K,IC(I,J))/T2(K)
+	 XVAR2(K,IC2(I,J))=XVAR2(K,IC2(I,J))/T2(K)
 499    CONTINUE
        T2(K)=T2(K)/FLOAT(NIND)
 500   CONTINUE
@@ -2069,7 +2069,7 @@ C      and mixing proportions.
 
 
 
-      SUBROUTINE KSTAND(NIND,NATT,X,XM,XVR)
+      SUBROUTINE KSTAND_F2(NIND,NATT,X,XM,XVR)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-f2.max'
       REAL X(MNIND,MNATT)
@@ -2088,7 +2088,7 @@ C      and mixing proportions.
       RETURN
       END
 
-      SUBROUTINE KSEED(NIND,NATT,NG,X,XK,XM,XVR,IER)
+      SUBROUTINE KSEED_F2(NIND,NATT,NG,X,XK,XM,XVR,IER)
 c     This Subroutine chooses the initial K seeds (Means of clusters)
 c     for the algorithm. At present they are chosen from data set at
 c     random.
@@ -2102,7 +2102,7 @@ c     random.
       DIMENSION XK(MAXNG,MNATT)
       DIMENSION  XVR(MNATT),XM(MNATT)
       DO 210 I=1,NG
-        R=RANDNUM()
+        R=RANDNUM_F2()
         R=R*NIND
 c       Convert CHOICE to integer
 	CHOICE=INT(R)+1
@@ -2113,7 +2113,7 @@ c       Convert CHOICE to integer
       RETURN
       END
 
-      SUBROUTINE WINNER(NATT,NG,XSTAN,XK,GRP,IER)
+      SUBROUTINE WINNER_F2(NATT,NG,XSTAN,XK,GRP,IER)
 c     This subroutine determines the allocation of the KKth point
 c     ie which mean is closest to the given data point (Euclidean).
 
@@ -2134,7 +2134,7 @@ c     ie which mean is closest to the given data point (Euclidean).
       RETURN
       END
 
-      SUBROUTINE INIT(NIND,NATT,NG,XSTAN,XK,GRP,N,IER)
+      SUBROUTINE INIT_F2(NIND,NATT,NG,XSTAN,XK,GRP,N,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-f2.max'
       DIMENSION XK(MAXNG,MNATT),
@@ -2149,7 +2149,7 @@ c         Update rules
       RETURN
       END
 
-      SUBROUTINE UPDATE(NIND,NATT,NG,XSTAN,XK,GRPOLD,GRP,N,IER)
+      SUBROUTINE UPDATE_F2(NIND,NATT,NG,XSTAN,XK,GRPOLD,GRP,N,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-f2.max'
        DIMENSION XSTAN(MNATT),N(MAXNG)
@@ -2173,7 +2173,7 @@ c         Update rules
       END
 
 
-      FUNCTION RULE(NG,NATT,XKOLD,XK)
+      FUNCTION RULE_F2(NG,NATT,XKOLD,XK)
 c     This function returns the value used to determine if the algorithm
 c     has converged it is a measure of the change in the nodes from iteration
 c     to iteration.
@@ -2190,7 +2190,7 @@ c     to iteration.
       RETURN
       END
 
-      SUBROUTINE FACTE(NIND,NATT,NG,X,W,GAMM,XMU,NATTQ)
+      SUBROUTINE FACTE_F2(NIND,NATT,NG,X,W,GAMM,XMU,NATTQ)
 C     This Subroutine determine the factor weights `e'
 C     that can be plotted
       implicit double precision (a-h,o-z)
@@ -2218,7 +2218,7 @@ C     that can be plotted
       END
 
 
-      SUBROUTINE FSAMSP(NIND,NATT,NG,NCOV,XVAR,V2,D,B,
+      SUBROUTINE FSAMSP_F2(NIND,NATT,NG,NCOV,XVAR,V2,D,B,
      &                XMU,GAMM,NATTQ,DV2,IER)
 C     This Subroutine implements the M-step of the EM algorithm
       implicit double precision (a-h,o-z)
@@ -2246,7 +2246,7 @@ C	CALL VMULT(V2,0,B,0,NATT,NATT,NATTQ,NG,GAMM)       !inv(SigmaN)*B
 	  DO 10 I=1,NATT
             GAMM(K,I,L)=0.0D0
  	    DO 10 J=1,NATT
-	      GAMM(K,I,L)=GAMM(K,I,L)+V2(K,IC(I,J))*B(K,J,L)
+	      GAMM(K,I,L)=GAMM(K,I,L)+V2(K,IC2(I,J))*B(K,J,L)
 10     CONTINUE
 C--------------------------------------------------------------
 C      Calculate Alpha
@@ -2256,15 +2256,15 @@ C	CALL MULT(B,1,V2,0,NATTQ,NATT,NATT,NG,TEMP1)       ! (B'*SigmaN
 	  DO 20 I=1,NATTQ
             TEMP1(L,I)=0.0D0
  	    DO 20 J=1,NATT
-	      TEMP1(L,I)=TEMP1(L,I)+B(K,J,I)*V2(K,IC(J,L))
+	      TEMP1(L,I)=TEMP1(L,I)+B(K,J,I)*V2(K,IC2(J,L))
 20     CONTINUE
 C--------------------------------------------------------------
 C	CALL MULT(ALPA,0,B,0,NATTQ,NATT,NATTQ,NG,TEMP)    !  *B)
 	DO 30 L=1,NATTQ
 	  DO 30 I=1,NATTQ
-            ALPA(IC(I,L))=0.0D0
+            ALPA(IC2(I,L))=0.0D0
  	    DO 30 J=1,NATT
-	      ALPA(IC(I,L))=ALPA(IC(I,L))+TEMP1(J,I)*B(K,J,L)
+	      ALPA(IC2(I,L))=ALPA(IC2(I,L))+TEMP1(J,I)*B(K,J,L)
 30     CONTINUE
 
 C--------------------------------------------------------------
@@ -2272,9 +2272,9 @@ C	CALL EYEmA(TEMP,NATTQ,NG,ALPA)                    ! I- ^
 	DO 40 I=1,NATTQ
 	 DO 40 J=1,I
 	   IF (I.EQ.J) THEN
-	    ALPA(IC(I,J))=1.0D0-ALPA(IC(I,J))
+	    ALPA(IC2(I,J))=1.0D0-ALPA(IC2(I,J))
 	   ELSE
-	    ALPA(IC(I,J))=-ALPA(IC(I,J))
+	    ALPA(IC2(I,J))=-ALPA(IC2(I,J))
 	   ENDIF
 40      CONTINUE
 C--------------------------------------------------------------
@@ -2285,26 +2285,26 @@ C	CALL MULT(GAMM,1,XVAR,0,NATTQ,NATT,NATT,NG,B)  !(Gamm'*Sigma
 	  DO 50 I=1,NATTQ
             B(K,L,I)=0.0D0
  	    DO 50 J=1,NATT
-	      B(K,L,I)=B(K,L,I)+GAMM(K,J,I)*XVAR(K,IC(J,L))
+	      B(K,L,I)=B(K,L,I)+GAMM(K,J,I)*XVAR(K,IC2(J,L))
 50     CONTINUE
 C--------------------------------------------------------------
 C	CALL MULT(B,0,GAMM,0,NATTQ,NATT,NATTQ,NG,TEMP)    ! *Gamm)
 	DO 55 L=1,NATTQ
 	  DO 55 I=1,NATTQ
-            TEMP2(IC(I,L))=0.0D0
+            TEMP2(IC2(I,L))=0.0D0
  	    DO 55 J=1,NATT
-	      TEMP2(IC(I,L))=TEMP2(IC(I,L))+B(K,J,I)*GAMM(K,J,L)
+	      TEMP2(IC2(I,L))=TEMP2(IC2(I,L))+B(K,J,I)*GAMM(K,J,L)
 55     CONTINUE
 C--------------------------------------------------------------
 C	CALL ADD(TEMP,0,ALPA,0,NATTQ,NATTQ,NG,B)             ! +alpha
 	DO 60 I=1,NATTQ
 	  DO 60 J=1,I
-            TEMP2(IC(I,J))=TEMP2(IC(I,J))+ALPA(IC(I,J))
+            TEMP2(IC2(I,J))=TEMP2(IC2(I,J))+ALPA(IC2(I,J))
 60      CONTINUE
 C--------------------------------------------------------------
 C       Invert result
 	  IER=0
-	  CALL GDETQ(NATTQ,TEMP2,TEMP3,DV,IER)
+	  CALL GDETQ_F2(NATTQ,TEMP2,TEMP3,DV,IER)
 	  IF (IER.GT.0) THEN
 	    WRITE (*,*) 'ERROR inverting matrix to calculate B'
 	    RETURN
@@ -2315,7 +2315,7 @@ C	CALL MULT(TEMP,0,GAMM,1,NATTQ,NATTQ,NATT,NG,B)   ! ^ *Gamm'
          DO 70 I=1,NATTQ
           TEMP1(L,I)=0.0D0
           DO 70 J=1,NATTQ
-           TEMP1(L,I)=TEMP1(L,I)+TEMP3(IC(I,J))*GAMM(K,L,J)
+           TEMP1(L,I)=TEMP1(L,I)+TEMP3(IC2(I,J))*GAMM(K,L,J)
 70      CONTINUE
 C--------------------------------------------------------------
 C	CALL MULT(B,0,XVAR,0,NATTQ,NATT,NATT,NG,TEMP)     ! *Sigma
@@ -2323,7 +2323,7 @@ C	CALL MULT(B,0,XVAR,0,NATTQ,NATT,NATT,NG,TEMP)     ! *Sigma
          DO 80 I=1,NATT
           B(K,I,L)=0.0D0
  	  DO 80 J=1,NATT
-           B(K,I,L)=B(K,I,L)+XVAR(K,IC(J,I))*TEMP1(J,L)
+           B(K,I,L)=B(K,I,L)+XVAR(K,IC2(J,I))*TEMP1(J,L)
 80      CONTINUE
 
 C--------------------------------------------------------------
@@ -2338,21 +2338,21 @@ C	CALL MULT(XVAR,0,GAMM,0,NATT,NATT,NATTQ,NG,TEMP)  ! (Sigma*Gamm
          DO 90 I=1,NATT
           TEMP1(I,L)=0.0D0
 	  DO 90 J=1,NATT
-           TEMP1(I,L)=TEMP1(I,L)+XVAR(K,IC(I,J))*GAMM(K,J,L)
+           TEMP1(I,L)=TEMP1(I,L)+XVAR(K,IC2(I,J))*GAMM(K,J,L)
 90      CONTINUE
 C--------------------------------------------------------------
 C	CALL MULT(TEMP,0,B,1,NATT,NATTQ,NATT,NG,D)        !  *B)
         DO 95 L=1,NATT
          DO 95 I=1,NATT
-          V2(K,IC(I,L))=0.0D0
+          V2(K,IC2(I,L))=0.0D0
 	  DO 95 J=1,NATTQ
-           V2(K,IC(I,L))=V2(K,IC(I,L))+TEMP1(I,J)*B(K,L,J)
+           V2(K,IC2(I,L))=V2(K,IC2(I,L))+TEMP1(I,J)*B(K,L,J)
 95      CONTINUE
 C--------------------------------------------------------------
 C	CALL MINUS(XVAR,0,D,0,NATT,NATT,NG,TEMP)          ! Sigma - ^
 C	CALL DIAG(TEMP,0,NATT,NG,D)                       ! diag{ ^ }
 	DO 100 I=1,NATT
-         D(K,I)=XVAR(K,IC(I,I))-V2(K,IC(I,I))
+         D(K,I)=XVAR(K,IC2(I,I))-V2(K,IC2(I,I))
 100     CONTINUE
 C--------------------------------------------------------------
 
@@ -2388,18 +2388,18 @@ C	CALL MULT(BD,0,B,0,NATTQ,NATT,NATTQ,NG,V2)    !   ^ * B
 C       CALL MULT2V(TEMP2,1,B,0,NATTQ,NATT,NATTQ,NG,V2)    !   ^ * B
 	DO 265 L=1,NATTQ
          DO 265 I=1,L
-	   TEMP2(IC(L,I))=0.0D0
+	   TEMP2(IC2(L,I))=0.0D0
            DO 265 J=1,NATT
-            TEMP2(IC(L,I))=TEMP2(IC(L,I))+TEMP1(J,I)*B(K,J,L)
+            TEMP2(IC2(L,I))=TEMP2(IC2(L,I))+TEMP1(J,I)*B(K,J,L)
 265     CONTINUE
 C--------------------------------------------------------------
 C	CALL EYEaA(V2,NATTQ,NG,TEMP)                  ! I + ^
         DO 266 I=1,NATTQ
-	   TEMP2(IC(I,I))=1.0D0+TEMP2(IC(I,I))
+	   TEMP2(IC2(I,I))=1.0D0+TEMP2(IC2(I,I))
 266     CONTINUE
 C--------------------------------------------------------------
 	  IER=0
-	  CALL GDETQ(NATTQ,TEMP2,TEMP3,DV,IER)
+	  CALL GDETQ_F2(NATTQ,TEMP2,TEMP3,DV,IER)
 
 	  IF (IER.GT.0) THEN
 	   WRITE (*,*) 'ERROR inverting Sigma New matrix in Mstep'
@@ -2411,24 +2411,24 @@ C	  CALL MULT(BD,1,V2,0,NATT,NATTQ,NATT,NG,TEMP)
            DO 120 L=1,NATTQ
 	    TEMP4(I,L)=0.0D0
 	    DO 120 J=1,NATTQ
-CC	     TEMP4(I,L)=TEMP4(I,L)+TEMP1(J,I)*V2(K,IC(J,L))
-	     TEMP4(I,L)=TEMP4(I,L)+TEMP1(I,J)*TEMP3(IC(J,L))
+CC	     TEMP4(I,L)=TEMP4(I,L)+TEMP1(J,I)*V2(K,IC2(J,L))
+	     TEMP4(I,L)=TEMP4(I,L)+TEMP1(I,J)*TEMP3(IC2(J,L))
 120     CONTINUE
 C--------------------------------------------------------------
 C	  CALL MULT(TEMP,0,BD,0,NATT,NATTQ,NATT,NG,V2)
 	  DO 130 I=1,NATT
            DO 130 L=1,I
-	    V2(K,IC(I,L))=0.0D0
+	    V2(K,IC2(I,L))=0.0D0
 	    DO 130 J=1,NATTQ
-	     V2(K,IC(I,L))=V2(K,IC(I,L))+TEMP4(I,J)*TEMP1(L,J)
+	     V2(K,IC2(I,L))=V2(K,IC2(I,L))+TEMP4(I,J)*TEMP1(L,J)
 130     CONTINUE
 C--------------------------------------------------------------
 	  DO 270 I=1,NATT
 	   DO 270 J=1,I
 	    IF (I.EQ.J) THEN
-	     V2(K,IC(I,J))=1.0/D(K,J)-V2(K,IC(I,J))
+	     V2(K,IC2(I,J))=1.0/D(K,J)-V2(K,IC2(I,J))
 	    ELSE
-	     V2(K,IC(I,J))=-1*V2(K,IC(I,J))
+	     V2(K,IC2(I,J))=-1*V2(K,IC2(I,J))
 	    ENDIF
 270       CONTINUE
 C--------------------------------------------------------------
@@ -2440,28 +2440,28 @@ C	  CALL MULT(B,1,V2,0,NATTQ,NATT,NATT,NG,BD)    !B'*inv(B'B+D)
            DO 140 L=1,NATT
 	    TEMP1(L,I)=0.0D0
 	    DO 140 J=1,NATT
-	     TEMP1(L,I)=TEMP1(L,I)+B(K,J,I)*V2(K,IC(J,L))
+	     TEMP1(L,I)=TEMP1(L,I)+B(K,J,I)*V2(K,IC2(J,L))
 140     CONTINUE
 C--------------------------------------------------------------
 C	  CALL MULT(BD,0,B,0,NATTQ,NATT,NATTQ,NG,TEMP)  !B'*inv(B'B+D)*B
 	  DO 150 I=1,NATTQ
            DO 150 L=1,I
-	    TEMP2(IC(I,L))=0.0D0
+	    TEMP2(IC2(I,L))=0.0D0
 	    DO 150 J=1,NATT
-	     TEMP2(IC(I,L))=TEMP2(IC(I,L))+TEMP1(J,I)*B(K,J,L)
+	     TEMP2(IC2(I,L))=TEMP2(IC2(I,L))+TEMP1(J,I)*B(K,J,L)
 150     CONTINUE
 C--------------------------------------------------------------
 C	  CALL EYEmA(TEMP,NATTQ,NG,BD)               !I-B'*inv(B'B+D)*B
 	  DO 170 I=1,NATTQ
 	   DO 160 J=1,I
-	    TEMP2(IC(I,J))=-TEMP2(IC(I,J))
+	    TEMP2(IC2(I,J))=-TEMP2(IC2(I,J))
 160        CONTINUE
-	   TEMP2(IC(I,I))=1.0+TEMP2(IC(I,I))
+	   TEMP2(IC2(I,I))=1.0+TEMP2(IC2(I,I))
 170       CONTINUE
 C--------------------------------------------------------------
 	  IER=0
 
-	  CALL GDETQ(NATTQ,TEMP2,TEMP3,DV,IER)
+	  CALL GDETQ_F2(NATTQ,TEMP2,TEMP3,DV,IER)
 	  DV2(K)=DV
 	  IF (IER.GT.0) THEN
 	   WRITE (*,*) 'ERROR Calculating det of Sigma New'
@@ -2478,7 +2478,7 @@ C         calculate det of D
       RETURN
       END
 
-      SUBROUTINE FSASET2(NIND,NATT,NG,NCOV,X,DV2,XVAR,V2,
+      SUBROUTINE FSASET2_F2(NIND,NATT,NG,NCOV,X,DV2,XVAR,V2,
      &                  D,B,XMU,NATTQ,MODE,FACT,SETUPON,IER)
 C     This Subroutine implements the M-step of the EM algorithm
       implicit double precision (a-h,o-z)
@@ -2505,17 +2505,17 @@ C     This Subroutine implements the M-step of the EM algorithm
 C     Initialse method by B=0 and D= diag(component covariances)
        IF (FACT(3).EQ.1) THEN
 	write (22,*) 'Using Random'
-	CALL GDET(NCOV,NATT,NG,XVAR,V2,DV2,IER)
+	CALL GDET_F2(NCOV,NATT,NG,XVAR,V2,DV2,IER)
         DPROD=1
         DO 1200 K=1,NG
  	 DO 1110 I=1,NATT
-	  D(K,I)=V2(K,IC(I,I))
+	  D(K,I)=V2(K,IC2(I,I))
          DPROD=DPROD*D(K,I)/FLOAT(NATT)
 1110     CONTINUE
          DO 1200 I=1,NATT
           DO 1200 J=1,NATTQ
-           XR=RANDNUM()
-           CALL NORM(B(K,I,J),XR)
+           XR=RANDNUM_F2()
+           CALL NORM_F2(B(K,I,J),XR)
            IER=0
            B(K,I,J)=B(K,I,J)*SQRT(DPROD)**(1/FLOAT(NATT))/FLOAT(NATTQ)
 1200     CONTINUE
@@ -2525,12 +2525,12 @@ C     Initialse method by B=0 and D= diag(component covariances)
 	DO 3000 K=1,NG
 C--------------------------------------------------------------
  	 DO 110 I=1,NATT
-	  D(K,I)=XVAR(K,IC(I,I))
+	  D(K,I)=XVAR(K,IC2(I,I))
 110      CONTINUE
 C--------------------------------------------------------------
 	 DO 100 I=1,NATT
 	  DO 100 J=1,I
-	   V2(K,IC(I,J))=XVAR(K,IC(I,J))*SQRT((1.0/D(K,I))*(1.0/D(K,J)))
+	   V2(K,IC2(I,J))=XVAR(K,IC2(I,J))*SQRT((1.0/D(K,I))*(1.0/D(K,J)))
 100      CONTINUE
 C--------------------------------------------------------------
 	 CALL TDIAG(NATT,K,V2,EIGVAL,EIG,EIGVEC,IER)
@@ -2580,18 +2580,18 @@ C--------------------------------------------------------------
 C	CALL MULT2V(TEMP2,1,B,0,NATTQ,NATT,NATTQ,NG,V2)    !   ^ * B
  	DO 265 L=1,NATTQ
          DO 265 I=1,L
-          TEMP5(IC(L,I))=0.0D0
+          TEMP5(IC2(L,I))=0.0D0
           DO 265 J=1,NATT
-	   TEMP5(IC(L,I))=TEMP5(IC(L,I))+TEMP2(J,I)*B(K,J,L)
+	   TEMP5(IC2(L,I))=TEMP5(IC2(L,I))+TEMP2(J,I)*B(K,J,L)
 265     CONTINUE
 C--------------------------------------------------------------
 C	CALL EYEaV(V2,NATTQ,NG,TEMP5)                  ! I + ^
 	DO 266 I=1,NATTQ
-           TEMP5(IC(I,I))=1.0D0+TEMP5(IC(I,I))
+           TEMP5(IC2(I,I))=1.0D0+TEMP5(IC2(I,I))
 266     CONTINUE
 C--------------------------------------------------------------
 	  IER=0
-	  CALL GDETQ(NATTQ,TEMP5,TEMP3,DV,IER)
+	  CALL GDETQ_F2(NATTQ,TEMP5,TEMP3,DV,IER)
 	  IF (IER.GT.0) THEN
 	   WRITE (*,*) 'ERROR inverting Sigma New matrix in Mstep'
 	   RETURN
@@ -2602,24 +2602,24 @@ C	  CALL MULTV(TEMP2,0,TEMP3,0,NATT,NATTQ,NATTQ,TEMP4)
            DO 267 I=1,NATT
             TEMP4(I,L)=0.0D0
             DO 267 J=1,NATTQ
-             TEMP4(I,L)=TEMP4(I,L)+TEMP2(I,J)*TEMP3(IC(J,L))
+             TEMP4(I,L)=TEMP4(I,L)+TEMP2(I,J)*TEMP3(IC2(J,L))
 267     CONTINUE
 C--------------------------------------------------------------
 C	  CALL VMULT(TEMP,0,BD,0,NATT,NATTQ,NATT,NG,V2)
 C	  CALL VMULT(TEMP4,0,TEMP2,1,NATT,NATTQ,NATT,NG,V2)****
 	DO 268 L=1,NATT
           DO 268 I=1,NATT
-            V2(K,IC(I,L))=0.0D0
+            V2(K,IC2(I,L))=0.0D0
             DO 268 J=1,NATTQ
-	     V2(K,IC(I,L))=V2(K,IC(I,L))+TEMP4(I,J)*TEMP2(L,J)
+	     V2(K,IC2(I,L))=V2(K,IC2(I,L))+TEMP4(I,J)*TEMP2(L,J)
 268     CONTINUE
 C--------------------------------------------------------------
 	  DO 270 I=1,NATT
 	   DO 270 J=1,I
 	    IF (I.EQ.J) THEN
-	     V2(K,IC(I,J))=1.0/D(K,J)-V2(K,IC(I,J))
+	     V2(K,IC2(I,J))=1.0/D(K,J)-V2(K,IC2(I,J))
 	    ELSE
-	     V2(K,IC(I,J))=-1*V2(K,IC(I,J))
+	     V2(K,IC2(I,J))=-1*V2(K,IC2(I,J))
 	    ENDIF
 270       CONTINUE
 C--------------------------------------------------------------
@@ -2630,16 +2630,16 @@ C	  CALL MULTV(V2,1,B,0,NATT,NATT,NATTQ,NG,TEMP2)    !B'*(B'B+D)
             DO 271 I=1,NATT
              TEMP2(I,L)=0.0D0
              DO 271 J=1,NATT
-              TEMP2(I,L)=TEMP2(I,L)+V2(K,IC(I,J))*B(K,J,L)
+              TEMP2(I,L)=TEMP2(I,L)+V2(K,IC2(I,J))*B(K,J,L)
 271       CONTINUE
 C--------------------------------------------------------------
 C	  CALL MULT(BD,0,B,0,NATTQ,NATT,NATT,NG,TEMP3)  !B'*(B'B+D)*B
 C	  CALL VMULT(TEMP2,1,B,0,NATTQ,NATT,NATT,NG,TEMP3)  !B'*(B'B+D)*B
 	   DO 272 L=1,NATTQ
             DO 272 I=1,NATTQ
-             TEMP3(IC(I,L))=0.0D0
+             TEMP3(IC2(I,L))=0.0D0
              DO 272 J=1,NATT
-              TEMP3(IC(I,L))=TEMP3(IC(I,L))+TEMP2(J,I)*B(K,J,L)
+              TEMP3(IC2(I,L))=TEMP3(IC2(I,L))+TEMP2(J,I)*B(K,J,L)
 272       CONTINUE
 C--------------------------------------------------------------
 C	  CALL EYEmA(TEMP,NATTQ,NG,BD)               !I-B'*(B'B+D)*B
@@ -2647,15 +2647,15 @@ C	  CALL EYEmV(TEMP3,NATTQ,NG,TEMP5)               !I-B'*(B'B+D)*B
 	  DO 273 I=1,NATTQ
 	   DO 273 J=1,I
 	    IF (I.EQ.J) THEN
-	     TEMP3(IC(I,J))=1.0-TEMP3(IC(I,J))
+	     TEMP3(IC2(I,J))=1.0-TEMP3(IC2(I,J))
 	    ELSE
-	     TEMP3(IC(I,J))=-1*TEMP3(IC(I,J))
+	     TEMP3(IC2(I,J))=-1*TEMP3(IC2(I,J))
 	    ENDIF
 273       CONTINUE
 C--------------------------------------------------------------
 	  IER=0
 
-	  CALL GDETQ(NATTQ,TEMP3,TEMP5,DV,IER)
+	  CALL GDETQ_F2(NATTQ,TEMP3,TEMP5,DV,IER)
 	  DV2(K)=DV
 	  IF (IER.GT.0) THEN
 	   WRITE (*,*) 'ERROR Calculating det of Sigma New'
@@ -2677,36 +2677,36 @@ c     &   WL,W,XUU,USA,TOLS,NATTQ,B,D)
 c      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 cC     This subroutine uses the EM algorithm from a specified starting
 cC     value to find a solution of the likelihood equation.
-c         CALL FSASET2(NIND,NATT,NG,NCOV,X,XVAR,DV,DV2,V2,D,B,
+c         CALL FSASET2_F2(NIND,NATT,NG,NCOV,X,XVAR,DV,DV2,V2,D,B,
 c     &               XMU,NATTQ,IER)
 c
 cCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 cC       MAIN ITERATIVE LOOP
 cCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 c       IF ((FLAGS(22).EQ.100).OR.(FLAGS(23).EQ.2)) THEN
-c       CALL ESTEP(NIND,NATT,NG,X,XMU,V2,T,DEN,WL,W,XUU,USA,DV2,
+c       CALL ESTEP_F2(NIND,NATT,NG,X,XMU,V2,T,DEN,WL,W,XUU,USA,DV2,
 c     &            XLOGL,IOUNT,XMAH,IER)
 cC       RE-Calculate Mu and Pi and XVAR
-c      CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
+c      CALL MSTEP_F2(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
 c     &           XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 c       ELSE
-c       CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+c       CALL ESTEP_F2(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
 c     &            XLOGL,IOUNT,XMAH,IER)
 c       ENDIF
 c
 c      IF ((FLAGS(22).EQ.100).OR.(FLAGS(23).EQ.2)) THEN
 c        IER=0
-c        CALL FSAMSP(NIND,NATT,NG,NCOV,XVAR,V2,D,B,
+c        CALL FSAMSP_F2(NIND,NATT,NG,NCOV,XVAR,V2,D,B,
 c     &                XMU,GAMM,NATTQ,DV2,IER)
 c        IF (IER.NE.0) RETURN
 c       KK=1
 c13010   CONTINUE
 c13020   CONTINUE
 c      ELSE
-c      CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
+c      CALL MSTEP_F2(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
 c     &           XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 cccc      ENDIF
-      SUBROUTINE TDIAG (N,KK,A,D,E,Z,IFAULT)
+      SUBROUTINE TDIAG_F2(N,KK,A,D,E,Z,IFAULT)
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
 C
        INCLUDE 'emmix/EMMIX-f2.max'
@@ -2740,7 +2740,7 @@ C
       IFAULT=0
       DO 10 I=1,N
         DO 10 J=1,I
- 10     Z(I,J)=A(KK,IC(I,J))
+ 10     Z(I,J)=A(KK,IC2(I,J))
       I=N
       DO 110 I1=2,N
         L=I-2
@@ -2827,7 +2827,7 @@ C
       END
 C
 C
-      SUBROUTINE LRVT (N,D,E,Z,IFAULT)
+      SUBROUTINE LRVT_F2(N,D,E,Z,IFAULT)
 
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
        INCLUDE 'emmix/EMMIX-f2.max'
@@ -2938,32 +2938,32 @@ C
       IFAULT=0
       RETURN
       END
-      SUBROUTINE NORM(Q,R)
+      SUBROUTINE NORM_F2(Q,R)
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       REAL X,Y,G3X,V1,V2,SS,CL,Z
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM,R
-      R=RANDNUM()
+      R=RANDNUM_F2()
       IF(R.LE..8638D0) THEN
-10       R=RANDNUM()
+10       R=RANDNUM_F2()
          X=R
-         R=RANDNUM()
+         R=RANDNUM_F2()
          X=R+X
-         R=RANDNUM()
+         R=RANDNUM_F2()
          X=X+R
          Z=2.0D0*(X-1.50D0)
       ELSEIF(R.LE.0.9745D0) THEN
-         R=RANDNUM()
+         R=RANDNUM_F2()
          X=R
-         R=RANDNUM()
+         R=RANDNUM_F2()
          X=X+R
          Z=1.5D0*(X-1.D0)
       ELSEIF(R.LE.0.9973002039D0) THEN
-20       R=RANDNUM()
+20       R=RANDNUM_F2()
          X=6.0D0*R-3.0D0
          R=X
-         Y=0.358D0*RANDNUM()
+         Y=0.358D0*RANDNUM_F2()
          R=X
          IF(ABS(X).LT.1.0D0) THEN
           G3X=17.49731196D0*DEXP(-0.5D0*X*X)-4.73570326D0*(3D0-X*X)
@@ -2982,8 +2982,8 @@ C
 30       CONTINUE
          Z=X
         ELSE
-40      V1=RANDNUM()
-        V2=RANDNUM()
+40      V1=RANDNUM_F2()
+        V2=RANDNUM_F2()
         V1=2.0D0*V1-1.0D0
         V2=2.0D0*V2-1.0D0
         SS=V1*V1+V2*V2

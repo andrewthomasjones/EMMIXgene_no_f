@@ -1,4 +1,4 @@
-      PROGRAM EMMIX
+      SUBROUTINE EMMIX
 
 C      Version 1.3 1999
 

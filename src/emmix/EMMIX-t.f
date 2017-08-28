@@ -1,4 +1,4 @@
-      PROGRAM EMMIX
+      SUBROUTINE EMMIX_T
 
 C      Version 1.3 1999
 
@@ -30,7 +30,7 @@ C     the main loop of the program + the user interface
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 
 C    Constants that define array sizes at compilation time.
-C      INCLUDE 'emmix/EMMIX-t.max'
+     INCLUDE 'emmix/EMMIX-t.max'
 
 C    Global Parameters
       COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
@@ -160,13 +160,13 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 
 C    Check to see if the random number generator works (try two formats)
-      CALL DETERRANDOM(IER)
+      CALL DETERRANDOM_T(IER)
 
 C -------------------- Snip Here ----------------------------------
 C    For DLL remove this section
 
 C    Read in parameters and options from the user
-      CALL SETUP(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
+      CALL SETUP_T(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
      &   RV,RNATT,SIG,TXUU,TXMU,TXVAR,TT,TIDT,W,IER)
       IF (IER.GT.0) THEN
 c      ERROR as the input file may be in the wrong format of the
@@ -177,7 +177,7 @@ c      specified parameters do not match the input file.
 C -------------------- End Snip -----------------------------------
 
 C    Call the main control section of the program
-      CALL MAIN(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
+      CALL MAIN_T(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
      &   RV,RNATT,SIG,TXUU,TXMU,TXVAR,TT,TIDT,W,
      &   XMUS,XVARS,TS,XUU,AIC,BIC,AWE,TLL,PVAL,IDTS,SET,SEU,SEV,IER)
 
@@ -187,7 +187,7 @@ C    Call the main control section of the program
 C
 C
 C
-      SUBROUTINE SETUP(NIND,NATT,NG0,NG1,NCOV,X,TOLS,
+      SUBROUTINE SETUP_T(NIND,NATT,NG0,NG1,NCOV,X,TOLS,
      &         USA,RV,RNATT,SIG,XUU,TXMU,TXVAR,TT,TIDT,W,IER)
 C      Read in main parameters and set options with interactive
 C      questions with the user (or alternatively from a file)
@@ -596,7 +596,7 @@ CCCCCCCc      IF (FLAGS(8).LE.4) THEN
        READ (THING,'(A)') ANSWER
        IF   ((ANSWER.EQ.'yes').OR.(ANSWER.EQ.'YES')
      &  .OR.(ANSWER.EQ.'y').OR.(ANSWER.EQ.'Y')) THEN
-      CALL EXOPT(NG1,TOLS,XUU,NCOV,NEDRAN)
+      CALL EXOPT_T(NG1,TOLS,XUU,NCOV,NEDRAN)
       ENDIF
       ENDIF
 
@@ -619,27 +619,27 @@ CCCCCCCc      IF (FLAGS(8).LE.4) THEN
       WRITE(*,535)
 535    FORMAT (////////////////////////)
         FI=6
-        CALL SUMRY(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
+        CALL SUMRY_T(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
      &             RV,RNATT)
         IF (FLAGS(8).EQ.1) THEN
           IF (FLAGS(17).GT.0) THEN
              FI=26
-        CALL SUMRY(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
+        CALL SUMRY_T(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
      &             RV,RNATT)
           ENDIF
           IF (FLAGS(10).GT.0) THEN
             FI=25
-        CALL SUMRY(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
+        CALL SUMRY_T(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
      &             RV,RNATT)
           ENDIF
         ELSE
           FI=22
-        CALL SUMRY(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
+        CALL SUMRY_T(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
      &             RV,RNATT)
         ENDIF
 
 C      Output to screen the form of the input file required
-        CALL INPSUM(NIND,NATT,NG0)
+        CALL INPSUM_T(NIND,NATT,NG0)
 
 597     CONTINUE
 
@@ -694,12 +694,12 @@ C     Setup partial user allocation
        ENDIF
 
       IF (FLAGS(23).EQ.1) THEN
-       CALL USRPARAMETERS(NIND,NATT,NG0,NCOV,TXMU,TXVAR,
+       CALL USRPARAMETERS_T(NIND,NATT,NG0,NCOV,TXMU,TXVAR,
      &           TT,RNATT,RV)
       ENDIF
 
        IF (FLAGS(24).EQ.1) THEN
-        CALL USRALLOC(NIND,NATT,NG0,TIDT,IER)
+        CALL USRALLOC_T(NIND,NATT,NG0,TIDT,IER)
         IF (IER.EQ.6) RETURN
        ENDIF
 
@@ -710,7 +710,7 @@ C       Read in posterior probabilities from input file
 24      CONTINUE
          write (*,*) ' Read in Posterior Probs.'
 C       Correct posterior probabilities for classified data
-        CALL PARCORR(NIND,NATT,NG0,USA,W)
+        CALL PARCORR_T(NIND,NATT,NG0,USA,W)
        ENDIF
 
 599    RETURN
@@ -718,7 +718,7 @@ C       Correct posterior probabilities for classified data
 
 
 
-      SUBROUTINE EXOPT(NG1,TOLS,XUU,NCOV,NEDRAN)
+      SUBROUTINE EXOPT_T(NG1,TOLS,XUU,NCOV,NEDRAN)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO,THING,TEMP
@@ -995,7 +995,7 @@ C         Option in New version
 600       RETURN
           END
 
-      SUBROUTINE USRPARAMETERS(NIND,NATT,NG,NCOV,XMU,XVAR,
+      SUBROUTINE USRPARAMETERS_T(NIND,NATT,NG,NCOV,XMU,XVAR,
      &           T,RNATT,RV)
 C     This section is appropriate for FLAGS(4) = 2
 C     where the user has supplied starting parameters for the EM
@@ -1054,17 +1054,17 @@ C     Test if a common covariance matrix is specified (NCOV = 1)
 
 C    Variable subset
       IF (FLAGS(19).EQ.2) THEN
-        CALL REDUCE(NATT,NG,NCOV,XMU,XVAR,DV,V,RNATT,RV)
+        CALL REDUCE_T(NATT,NG,NCOV,XMU,XVAR,DV,V,RNATT,RV)
         WRITE(FYLENO,*)
         WRITE(FYLENO,*) ' Subset parameters'
-        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+        CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
       ENDIF
 
       RETURN
       END
 
 
-      SUBROUTINE USRALLOC(NIND,NATT,NG,IDT,IER)
+      SUBROUTINE USRALLOC_T(NIND,NATT,NG,IDT,IER)
 C     This subroutine sets up the initialisation for the EM algorithm
 C     when an initial partition is given by the user (FLAGS(4) = 1)
 C
@@ -1106,13 +1106,13 @@ c      specified parameters do not match the input file.
 C
 C
 C
-      SUBROUTINE PRED(NIND,NATT,NCOV,NG,X,XMU,XVAR,V,DV,T,USA,WL,IER)
+      SUBROUTINE PRED_T(NIND,NATT,NCOV,NG,X,XMU,XVAR,V,DV,T,USA,WL,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
       INTEGER USA(MNIND)
       COMMON /STORE2/ FLAGS,FYLENO
-      EXTERNAL AUTOPARTITION
+      EXTERNAL AUTOPARTITION_T
       EXTERNAL RANDNUM,DETERRANDOM
       DOUBLE PRECISION RANDNUM
       DIMENSION X(MNIND,MNATT),XVAR(MAXNG,MNATT,MNATT),T(MAXNG),
@@ -1122,7 +1122,7 @@ C
      &         XMAH(MNIND,MAXNG)
        IER=0
        IOUNT=1
-      CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+      CALL ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
       WRITE (FYLENO,*) ' Log Likelihood is ',XLOGL(IOUNT)
       IF (IER.EQ.-111) THEN
@@ -1130,20 +1130,20 @@ C
         WRITE(*,*) '         (will denote with 0 in grouping)'
         IER=0
       ENDIF
-      CALL OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
+      CALL OUTLOOP_T(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
      &                   W,IDT,X,DEN,USA,U)
 
       RETURN
       END
 
 
-      SUBROUTINE DISC(NIND,NATT,NCOV,NG,X,XMU,XVAR,V,DV,T,USA,WL,IER)
+      SUBROUTINE DISC_T(NIND,NATT,NCOV,NG,X,XMU,XVAR,V,DV,T,USA,WL,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
       INTEGER USA(MNIND)
           COMMON /STORE2/ FLAGS,FYLENO
-      EXTERNAL AUTOPARTITION
+      EXTERNAL AUTOPARTITION_T
       EXTERNAL RANDNUM,DETERRANDOM
       DOUBLE PRECISION RANDNUM
       DIMENSION X(MNIND,MNATT),XVAR(MAXNG,MNATT,MNATT),T(MAXNG),
@@ -1158,12 +1158,12 @@ C     Initialisation of partition to zero for discrimination option
 2      CONTINUE
 
 C      Calculate parameter estimates
-       CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,DV,
+       CALL ESTIMATES_T(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,DV,
      &                  T,USA,IER)
        WRITE(FYLENO,*) '    Parameters from classified data'
        WRITE(FYLENO,*) '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 C      Write parameter estimates to output file
-       CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+       CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
 
        IF (IER.GT.0) THEN
          WRITE (FYLENO,*)'  Unable to continue covariance singular'
@@ -1171,7 +1171,7 @@ C      Write parameter estimates to output file
          RETURN
        ENDIF
       IOUNT=1
-      CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+      CALL ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
 
       WRITE (FYLENO,*) ' Log Likelihood is ',XLOGL(IOUNT)
@@ -1180,7 +1180,7 @@ C      Write parameter estimates to output file
        WRITE(FYLENO,*) '         (will denote with 0 in grouping)'
        WRITE(*,*) 'Warning : Some points have zero Likelihood'
       ENDIF
-       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+       CALL CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
       WRITE(FYLENO,*)
       WRITE(FYLENO,*) '     *******************************'
       WRITE(FYLENO,*) '    FIT USING PARTIAL CLASSIFIED DATA'
@@ -1191,18 +1191,18 @@ C      Write parameter estimates to output file
         WRITE(FYLENO,1177) (IDT(III),III=1,NIND)
         WRITE (FYLENO,*)
 1177    FORMAT (2X,10I4)
-        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+        CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
         FLAGS(12)=0
-        CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+        CALL ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &  XLOGL,IOUNT,XMAH,IER)
         IF (IER.GT.0) RETURN
         XTMP=1
-        CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
+        CALL MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,WTOT,T,W,XUU,XMAH,XTMP,U,IER)
         IF (IER.GT.0) RETURN
         FLAGS(12)=1
         WRITE(FYLENO,*)
-        CALL OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
+        CALL OUTLOOP_T(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
      &               W,IDT,X,DEN,USA,U)
 
       RETURN
@@ -1210,7 +1210,7 @@ C      Write parameter estimates to output file
 C
 C
 C
-      SUBROUTINE MAIN(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
+      SUBROUTINE MAIN_T(NIND,NATT,NG0,NG1,NCOV,X,TOLS,USA,
      &   RV,RNATT,SIG,TXUU,TXMU,TXVAR,TT,TIDT,W,
      &   XMUS,XVARS,TS,XUU,AIC,BIC,AWE,TLL,PVAL,IDTS,SET,SEU,SEV,IER)
 
@@ -1288,22 +1288,22 @@ C     Store random seeds for the record
 
 C    Variable subset
       IF (FLAGS(19).EQ.2) THEN
-        CALL REDUCE(NATT,NG0,NCOV,TXMU,TXVAR,DV,V,RNATT,RV)
+        CALL REDUCE_T(NATT,NG0,NCOV,TXMU,TXVAR,DV,V,RNATT,RV)
         WRITE(FYLENO,*)
         WRITE(FYLENO,*) ' Subset parameters'
-        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,TXMU,V,TXVAR,DV,TT,TXUU)
+        CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,TXMU,V,TXVAR,DV,TT,TXUU)
       ENDIF
 
 C    Invert user supplied covariance matrices
       IF (FLAGS(23).EQ.1) THEN
-        CALL INVRT(NATT,NCOV,NG0,TXVAR,V,DV,IER,NULL)
+        CALL INVRT_T(NATT,NCOV,NG0,TXVAR,V,DV,IER,NULL)
       ENDIF
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C     Generate a sample (OPTION 0)
       IF (FLAGS(8).EQ.0) THEN
         FYLENO=22
-        CALL MVNG(NIND,NATT,NG0,TXMU,TXVAR,TT,X,IDT,IER)
+        CALL MVNG_T(NIND,NATT,NG0,TXMU,TXVAR,TT,X,IDT,IER)
 C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C     Stand alone bootstrap or SE analysis (OPTION 1)
@@ -1312,7 +1312,7 @@ C     Stand alone bootstrap or SE analysis (OPTION 1)
         FYLENO=22
 C       If using a bootstrap based method
         IF ((FLAGS(10).GT.0).OR.(FLAGS(18).NE.4)) THEN
-          CALL MMOUT(NIND,NATT,NG0,X,TXMU,TXVAR,TT,NCOV,TXUU,TOLS,
+          CALL MMOUT_T(NIND,NATT,NG0,X,TXMU,TXVAR,TT,NCOV,TXUU,TOLS,
      &    PVAL(1),TLL(1),USA,TIDT,SET,SEU,SEV,FSEED,RV,RNATT)
           FYLENO=22
           FLAGS(3)=1
@@ -1322,7 +1322,7 @@ C       The Information-Based SE estimation
          ITEMP=FYLENO
            IER=0
           FYLENO=26
-           CALL GDET(NATT,NG0,TXVAR,V,DV,IER,NULL)
+           CALL GDET_T(NATT,NG0,TXVAR,V,DV,IER,NULL)
            IF (IER.NE.0) THEN
             WRITE (FYLENO,*) '  Problem:'
             WRITE (FYLENO,*) '    Singular covariance matrix for'
@@ -1331,13 +1331,13 @@ C       The Information-Based SE estimation
            ELSE
 C        Calculate posterior probabilities W
          IOUNT=1
-         CALL ESTEP(NIND,NATT,NG0,X,TXMU,V,TT,DEN,WL,W,TXUU,USA,DV,
+         CALL ESTEP_T(NIND,NATT,NG0,X,TXMU,V,TT,DEN,WL,W,TXUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
 C        Calculate standard errors via Information-based method
-         CALL CALINFO(NIND,NATT,NG0,X,TXMU,V,W,TT,NCOV,TIDT,SET,SEU,SEV)
+         CALL CALIN_T(NIND,NATT,NG0,X,TXMU,V,W,TT,NCOV,TIDT,SET,SEU,SEV)
          ITEMP=FYLENO
 C        Display Standard Errors
-         CALL SEDISP(NATT,NG0,SEU,SEV,SET)
+         CALL SEDISP_T(NATT,NG0,SEU,SEV,SET)
          FYELNO=ITEMP
          ENDIF
         ENDIF
@@ -1364,7 +1364,7 @@ ccJK        ELSEIF ((FLAGS(8).EQ.2).OR.(FLAGS(8).EQ.5)) THEN
 
 c      Call main clustering subroutine
           IER=0
-          CALL NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,
+          CALL NMM_T(NIND,NATT,NG,NCOV,IDT,W,X,WL,
      &     TXML(ING),DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
           IF (IER.EQ.6) RETURN
 c         Store results
@@ -1376,7 +1376,7 @@ c         Store results
                 XVARS(ING,KK,II,JJ)=XVAR(KK,II,JJ)
 3816      CONTINUE
 c      Estimate criteria values AIC,BIC etc.
-          CALL CRITERIA(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),
+          CALL CRITERIA_T(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),
      &                  BIC(ING),AWE(ING))
              WRITE (FYLENO,*) 'Criteria for this Clustering are'
           WRITE (FYLENO,*) ' AIC  BIC'
@@ -1386,7 +1386,7 @@ c      Estimate criteria values AIC,BIC etc.
 1817       CONTINUE
          IF ((FLAGS(17).GT.0).AND.(FLAGS(18).NE.4)) THEN
 c            call Bootstrapping SE subroutine
-              CALL MMOUT(NIND,NATT,NG,X,XMU,XVAR,T,NCOV,XUU,TOLS,
+              CALL MMOUT_T(NIND,NATT,NG,X,XMU,XVAR,T,NCOV,XUU,TOLS,
      &   PVAL(ING),TLL(ING),USA,TIDT,SET,SEU,SEV,FSEED,RV,RNATT)
          ELSEIF (FLAGS(18).EQ.4) THEN
 C          Calculate standard errors via Information-based method
@@ -1394,17 +1394,17 @@ C          Calculate standard errors via Information-based method
            ITEMP=FYLENO
            FYLENO=26
            IER=0
-           CALL GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+           CALL GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
            IF (IER.NE.0) THEN
             WRITE (FYLENO,*) '  Problem:'
             WRITE (FYLENO,*) '    Singular covariance matrix for'
             WRITE (FYLENO,*) '    solution provided by EMMIX, unable'
             WRITE (FYLENO,*) '    to calculate standard errors.'
            ELSE
-           CALL CALINFO(NIND,NATT,NG0,X,XMU,V,W,T,NCOV,TIDT,SET,SEU,
+           CALL CALIN_T(NIND,NATT,NG0,X,XMU,V,W,T,NCOV,TIDT,SET,SEU,
      &                  SEV)
 C        Display Standard Errors
-         CALL SEDISP(NATT,NG0,SEU,SEV,SET)
+         CALL SEDISP_T(NATT,NG0,SEU,SEV,SET)
            FYLENO=ITEMP
            ENDIF
          ENDIF
@@ -1412,26 +1412,26 @@ C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C      Discriminant rule with densities (OPTION 4)
       ELSEIF (FLAGS(8).EQ.4) THEN
-       CALL DISC(NIND,NATT,NCOV,NG0,X,TXMU,TXVAR,V,DV,TT,USA,WL,IER)
+       CALL DISC_T(NIND,NATT,NCOV,NG0,X,TXMU,TXVAR,V,DV,TT,USA,WL,IER)
 C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C      Prediction (OPTION 5)
       ELSEIF (FLAGS(8).EQ.5) THEN
-       CALL PRED(NIND,NATT,NCOV,NG0,X,TXMU,TXVAR,V,DV,TT,USA,WL,IER)
+       CALL PRED_T(NIND,NATT,NCOV,NG0,X,TXMU,TXVAR,V,DV,TT,USA,WL,IER)
 C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C      Produce estimates from partition (OPTION 6)
       ELSEIF (FLAGS(8).EQ.6) THEN
         NG=NG0
 C       Calculate parameter estimates from allocation
-        CALL ESTIMATES(NIND,NATT,NG,X,TIDT,WL,NCOV,XMU,V,XVAR,DV,
+        CALL ESTIMATES_T(NIND,NATT,NG,X,TIDT,WL,NCOV,XMU,V,XVAR,DV,
      &                  T,USA,IER)
         IOUNT=1
-        CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+        CALL ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &  XLOGL,IOUNT,XMAH,IER)
         WRITE (FYLENO,*) 'Log_likelihood=',XLOGL(IOUNT)
 C       Display parameter estimates to output file if required
-         CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+         CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
          IF (IER.GT.0) THEN
            WRITE (FYLENO,*) 'ERROR: One or more of the resulting'
            WRITE (FYLENO,*) '       covariance matrices is singular'
@@ -1472,7 +1472,7 @@ C     Fit a mixture model for a range of NG0 to NG1 (Option 3)
 
 c         Call main clustering subroutine
           IER=0
-          CALL NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,
+          CALL NMM_T(NIND,NATT,NG,NCOV,IDT,W,X,WL,
      &     TXML(ING),DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
           IF (IER.EQ.6) RETURN
 c         Store results
@@ -1486,7 +1486,7 @@ c         Store results
 
 
 c         Calculate various criteria AIC,BIC etc
-          CALL CRITERIA(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),
+          CALL CRITERIA_T(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),
      &                BIC(ING),AWE(ING))
              WRITE (FYLENO,*) 'Criteria for this Clustering are'
           WRITE (FYLENO,*) ' AIC  BIC'
@@ -1506,7 +1506,7 @@ c          and/or estimate Standard errors of parameters
             IF ((FLAGS(10).GT.0).OR.(FLAGS(17).GT.0)) THEN
               FLAGS(3)=2
 c            call Bootstrapping subroutine
-              CALL MMOUT(NIND,NATT,NG-1,X,TXMU,TXVAR,TT,NCOV,XUU,TOLS,
+              CALL MMOUT_T(NIND,NATT,NG-1,X,TXMU,TXVAR,TT,NCOV,XUU,TOLS,
      &   PVAL(ING),TLL(ING),USA,TIDT,SET,SEU,SEV,FSEED,RV,RNATT)
               FYLENO=22
               WRITE (FYLENO,*) 'and P-value from bootstrap of',
@@ -1518,7 +1518,7 @@ c            call Bootstrapping subroutine
 c       Display Standard Errors if needed
           IF (((FLAGS(17).GT.0).AND.(ING.GT.1)).OR.
      &         FLAGS(18).EQ.4) THEN
-              CALL SEDISP(NATT,NG-1,SEU,SEV,SET)
+              CALL SEDISP_T(NATT,NG-1,SEU,SEV,SET)
           ENDIF
 
 C         Estimate standard errors for final NG in the range since
@@ -1539,14 +1539,14 @@ C           TFLAG=FLAGS(8)
             TFLAG=FLAGS(10)
             FLAGS(10)=0
 C           FLAGS(8)=1
-            CALL MMOUT(NIND,NATT,NG,X,TXMU,TXVAR,TT,NCOV,XUU,TOLS,
+            CALL MMOUT_T(NIND,NATT,NG,X,TXMU,TXVAR,TT,NCOV,XUU,TOLS,
      &    PVAL(ING),TLL(ING),USA,TIDT,SET,SEU,SEV,FSEED,RV,RNATT)
             FLAGS(3)=1
 C           FLAGS(8)=TFLAG
             FLAGS(10)=TFLAG
             FYLENO=22
 c           Display standard errors
-            CALL SEDISP(NATT,NG,SEU,SEV,SET)
+            CALL SEDISP_T(NATT,NG,SEU,SEV,SET)
            ENDIF
 
 c         Set p-value for G-1 versus G to 0 for G=1
@@ -1578,16 +1578,16 @@ C
 
 c     Display the a summary of the results to determine the number of groups
       IF (FLAGS(8).EQ.3) THEN
-        CALL ANASUM(NIND,NATT,NG0,NG1,NCOV,TXML,TLL,PVAL,AIC,BIC,AWE)
+        CALL ANASUM_T(NIND,NATT,NG0,NG1,NCOV,TXML,TLL,PVAL,AIC,BIC,AWE)
       ENDIF
 
 c     If required write output files for external plots
-      CALL EXPLOT(NIND,NATT,NG0,NG1,IDTS,X)
+      CALL EXPLOT_T(NIND,NATT,NG0,NG1,IDTS,X)
 
       RETURN
       END
 
-      SUBROUTINE ANASUM(NIND,NATT,NG0,NG1,NCOV,TXML,TLL,PVAL,AIC
+      SUBROUTINE ANASUM_T(NIND,NATT,NG0,NG1,NCOV,TXML,TLL,PVAL,AIC
      &                  ,BIC,AWE)
 c
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1619,7 +1619,7 @@ c
       ING=0
       DO 59 NG=NG0,NG1
         ING=ING+1
-C        CALL CRITERIA(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),BIC(ING),
+C        CALL CRITERIA_T(NG,TXML(ING),NIND,NATT,NCOV,AIC(ING),BIC(ING),
 C     &                AWE(ING))
         IF (FLAGS(10).EQ.0) THEN
           IF (TXML(ING).EQ.0) THEN
@@ -1661,7 +1661,7 @@ C     &                AWE(ING))
       END
 
 
-      SUBROUTINE EXPLOT(NIND,NATT,NG0,NG1,IDTS,X)
+      SUBROUTINE EXPLOT_T(NIND,NATT,NG0,NG1,IDTS,X)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
@@ -1685,7 +1685,7 @@ C     &                AWE(ING))
       END
 
 
-      SUBROUTINE SUMRY(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
+      SUBROUTINE SUMRY_T(NIND,NATT,NG0,NG1,NCOV,TOLS,NEDRAN,FI,
      &                 RV,RNATT)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
@@ -1850,7 +1850,7 @@ C     &                AWE(ING))
 
 
 
-      SUBROUTINE MMOUT(NIND,NATT,NG,X,XMU,XVAR,T,NCOV,XUU,TOLS,
+      SUBROUTINE MMOUT_T(NIND,NATT,NG,X,XMU,XVAR,T,NCOV,XUU,TOLS,
      &         PVAL,XVAL,USA,TIDT,SET,SEU,SEV,FSEED,RV,RNATT)
 c      This subroutine displays all the relevant information from the
 c      EM algorithm to the be used by the program MMresamp.
@@ -1897,9 +1897,9 @@ c      EM algorithm to the be used by the program MMresamp.
 
         OPEN(UNIT=25,FILE=OUTFLE,STATUS='UNKNOWN')
       ENDIF
-C      SEEDS(1,1)=RANDNUM()*30000
-C      SEEDS(1,2)=RANDNUM()*30000
-C      SEEDS(1,3)=RANDNUM()*30000
+C      SEEDS(1,1)=RANDNUM_T()*30000
+C      SEEDS(1,2)=RANDNUM_T()*30000
+C      SEEDS(1,3)=RANDNUM_T()*30000
        SEEDS(1,1)=FSEED(1)
        SEEDS(1,2)=FSEED(2)
        SEEDS(1,3)=FSEED(3)
@@ -1911,7 +1911,7 @@ C      SEEDS(1,3)=RANDNUM()*30000
       ELSE
         NREP=FLAGS(10)
       ENDIF
-      CALL RESAMP(NIND,NATT,NG,NCOV,X,XMU,XVAR,DVS,
+      CALL RESAMP_T(NIND,NATT,NG,NCOV,X,XMU,XVAR,DVS,
      & T,TIDT,NREP,SEEDS,LLAM,TXML,TOLS,USA,
      & SET,SEU,SEV,FSEED,XUU,IERS,IER)
       IF (IER.EQ.12) THEN
@@ -1927,7 +1927,7 @@ C      SEEDS(1,3)=RANDNUM()*30000
         IF (NREP.GT.1) THEN
             ITEMP=FYLENO
             FYLENO=26
-              CALL SEDISP(NATT,NG,SEU,SEV,SET)
+              CALL SEDISP_T(NATT,NG,SEU,SEV,SET)
             FYLENO=ITEMP
         ELSE
          WRITE (*,*) 'Cannot calculate SE with only 1 iteration'
@@ -1945,12 +1945,12 @@ C      SEEDS(1,3)=RANDNUM()*30000
         ENDIF
         IF (FLAGS(10).GT.0) THEN
           FI=25
-          CALL SUMRY(NIND,NATT,NG,NG+1,NCOV,TOLS,1,FI,RV,RNATT)
+          CALL SUMRY_T(NIND,NATT,NG,NG+1,NCOV,TOLS,1,FI,RV,RNATT)
         ENDIF
 C       Sort the results into descending order
 C       Call Sorting Subroutine
         WRITE(*,*) '  sorting ...'
-        CALL SORT(NREP,LLAM,IRANK)
+        CALL SORT_T(NREP,LLAM,IRANK)
 C       Write output to output file
         WRITE (25,55)
 55      FORMAT('INDEX',7X,'LIK_H0',8X,'LIK_H1',7X,
@@ -2016,7 +2016,7 @@ C         Find P-value of given statistic value
 
 C     The following auxiliary subroutines are used
 
-      SUBROUTINE SORT(N,IN,IRANK)
+      SUBROUTINE SORT_T(N,IN,IRANK)
 C     This subroutine, written by W.Whiten sorts a given array
 C     It is used to sort the replicated values of -2log(Lambda)
 
@@ -2074,7 +2074,7 @@ C             Not in order so move up
       END
 
 
-      SUBROUTINE SEDISP(NATT,NG,SEU,SEV,SET)
+      SUBROUTINE SEDISP_T(NATT,NG,SEU,SEV,SET)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
@@ -2107,7 +2107,7 @@ c       Display Standard Errors
           RETURN
           END
 
-        SUBROUTINE INPSUM(NIND,NATT,NG)
+        SUBROUTINE INPSUM_T(NIND,NATT,NG)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
@@ -2149,7 +2149,7 @@ c       Display Standard Errors
       RETURN
       END
 
-      SUBROUTINE REDUCE(NATT,NG,NCOV,XMU,XVAR,DV,V,RNATT,RV)
+      SUBROUTINE REDUCE_T(NATT,NG,NCOV,XMU,XVAR,DV,V,RNATT,RV)
 C      This subroutine is used when a subset of the variables are
 C      used for clustering but the parameter estimates read in
 C      from the input file are for all the variables.
@@ -2186,7 +2186,7 @@ C      estimates.
        RETURN
        END
 
-      SUBROUTINE INVRT(NATT,NCOV,NG,XVAR,V,DV,IER,NULL)
+      SUBROUTINE INVRT_T(NATT,NCOV,NG,XVAR,V,DV,IER,NULL)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
@@ -2195,7 +2195,7 @@ C      estimates.
      &  V(MAXNG,MNATT,MNATT)
 
          IF (NCOV.EQ.1) THEN
-          CALL GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+          CALL GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
           DO 4401 K=2,NG
            DV(K)=DV(1)
            DO 4401 J=1,NATT
@@ -2205,7 +2205,7 @@ C      estimates.
 4401     CONTINUE
 
         ELSE
-         CALL GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+         CALL GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
         ENDIF
          IF (IER.NE.0) THEN
           WRITE (FYLENO,*) '  Problem:'
@@ -2222,7 +2222,7 @@ C     for the EM algorithm.  This is done via various clustering methods plus
 C     random starts
 C     Written by D.Peel Oct 1994 based on program pkmmgen 1992
 
-      SUBROUTINE AUTOPARTITION(NIND,NATT,NG,NCOV,X,
+      SUBROUTINE AUTOPARTITION_T(NIND,NATT,NG,NCOV,X,
      &                  WBEST,WL,TOLS,XUU,USA,FSEED,IER)
 C      This subroutine is the main subroutine and controls the calling and
 C      interaction of the other subroutines to generate initial partitions
@@ -2254,7 +2254,7 @@ c       WRITE (FYLENO,109)
 15       FORMAT (2X,'------------------------------------'
      &                ,'------------------------------------')
         IF (HIRFLG.EQ.1) THEN
-         CALL HIERCON(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,NS,
+         CALL HIERCON_T(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,NS,
      &        MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
          IF (FLAGS(11).EQ.0) THEN
          WRITE(FYLENO,*)
@@ -2266,10 +2266,10 @@ c       WRITE (FYLENO,109)
          IY=FSEED(2)
          IZ=FSEED(3)
         ENDIF
-        CALL RANDST(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,
+        CALL RANDST_T(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,
      &    NS,MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
         IF (FLAGS(11).EQ.0) WRITE(FYLENO,15)
-        CALL KMEANCON(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,NS,
+        CALL KMEANCON_T(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,NS,
      &        MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
         WRITE(FYLENO,15)
 
@@ -2308,7 +2308,7 @@ C         Output the likelihood values
        END
 
 
-       SUBROUTINE RANDST(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,
+       SUBROUTINE RANDST_T(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,
      &     XML,NS,MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
 C      This subroutine controls the generation of random starts and for
 C      each random partition calls the subroutine FIT.
@@ -2370,7 +2370,7 @@ cc          ENDIF
 cc          WRITE(FYLENO,*)
           IF (FLAGS(1).EQ.100) THEN
              DO 110 I=1,NIND
-               R=RANDNUM()
+               R=RANDNUM_T()
                G=R*FLOAT(NG)
                JG=INT(G)+1
                IF (JG.GT.NG) JG=NG
@@ -2378,12 +2378,12 @@ cc          WRITE(FYLENO,*)
 110         CONTINUE
           ELSE
              DO 111 I=1,NIND
-               R=RANDNUM()
+               R=RANDNUM_T()
                XCUT=FLOAT(FLAGS(1))/100.00
                IF (R.GE.XCUT) THEN
                 IDT(I)=0
                ELSE
-                R=RANDNUM()
+                R=RANDNUM_T()
                 G=R*FLOAT(NG)
                 JG=INT(G)+1
                 IF (JG.GT.NG) JG=NG
@@ -2397,7 +2397,7 @@ C           Fit a multivariate normal mixture model to the data set X via
 C           the EM algorithm initialised with the partition from random
 C           assignment IDT
 c          FLAGS(9)=3
-          CALL FIT(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
+          CALL FIT_T(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
      &             IDT,WBEST,XML,XMLBEST,NS,MAXNS,TOLS,W,CORIND,FFG,IER)
         WRITE(FYLENO,685) XML(NS)
 685     FORMAT(2X,'Log Likelihood value from EM algorithm started',
@@ -2415,7 +2415,7 @@ c          FLAGS(9)=3
        END
 
 
-       SUBROUTINE HIERCON(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,
+       SUBROUTINE HIERCON_T(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,
      &    XML,NS,MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
 C     This subroutine calls the various Hierarchical clustering methods used
 C     and for each resulting grouping calls the subroutine FIT.
@@ -2471,7 +2471,7 @@ C       If input file hier.inp is not present these defaults are used
 c                   HIERARCHICAL STARTS
          DO 250 JJ=1,NH
 c          Determine Hierarchical grouping
-           CALL HIER(NIND,NATT,NG,X,IDT,ISU(JJ),IS(JJ),BETA(JJ),IFAULT)
+           CALL HI_T(NIND,NATT,NG,X,IDT,ISU(JJ),IS(JJ),BETA(JJ),IFAULT)
           IF (IFAULT.EQ.9) RETURN
 c          Display Hierarchical grouping
            IF (FLAGS(11).EQ.0) WRITE (FYLENO,235)
@@ -2493,7 +2493,7 @@ c          WRITE(FYLENO,*)'                ',H1(ISU(JJ))
            ENDIF
 C          Now we have the data and an IDT initial allocation
           NS=NS+1
-           CALL FIT(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
+           CALL FIT_T(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
      &           IDT,WBEST,XML,XMLBEST,NS,MAXNS,TOLS,W,CORIND,FFG,IER)
             WRITE(FYLENO,685) XML(NS)
 685     FORMAT(2X,'Log Likelihood value from EM algorithm started',
@@ -2505,7 +2505,7 @@ C          Now we have the data and an IDT initial allocation
 260      RETURN
       END
 
-      SUBROUTINE KMEANCON(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,
+      SUBROUTINE KMEANCON_T(NIND,NATT,NG,NCOV,X,WL,WBEST,XMLBEST,XML,
      &      NS,MAXNS,TOLS,NAMBEST,XUU,XUUBEST,USA,CORIND,FFG,IER)
 C     This subroutine calls the Subroutine KMEANS and for the resulting
 C     partition calls the subroutine FIT.
@@ -2542,7 +2542,7 @@ C     K-means Start
          ENDIF
         ENDIF
 
-        CALL KMEANS(NIND,NATT,NG,X,IDT,EPSILON,MKMEAN,IER)
+        CALL KMEANS_T(NIND,NATT,NG,X,IDT,EPSILON,MKMEAN,IER)
 
         IF (IER.EQ.-41) THEN
           WRITE (FYLENO,*)'  WARNING : K-means did not converge current'
@@ -2556,7 +2556,7 @@ C     K-means Start
         ENDIF
         NS=NS+1
 
-        CALL FIT(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
+        CALL FIT_T(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
      &           IDT,WBEST,XML,XMLBEST,NS,MAXNS,TOLS,W,CORIND,FFG,IER)
         WRITE(FYLENO,685) XML(NS)
 
@@ -2575,7 +2575,7 @@ C     K-means Start
        RETURN
       END
 
-       SUBROUTINE CHECK(NG,NIND,NATT,IDT,SWAPID)
+       SUBROUTINE CHECK_T(NG,NIND,NATT,IDT,SWAPID)
 C      This subroutine checks to see if the partition found has enough
 C      points in all of it's groups. If this is not so then the
 C      subroutine swap is called and points are taken from other groups.
@@ -2591,7 +2591,7 @@ C      subroutine swap is called and points are taken from other groups.
 420    CONTINUE
        DO 430 IF1=1,NG
            IF(NO(IF1).LT.NATT+1) THEN
-             CALL SWAP(IDT,NO,NIND,NATT,NG,IF1)
+             CALL SWAP_T(IDT,NO,NIND,NATT,NG,IF1)
              SWAPID=IF1
            ENDIF
 430    CONTINUE
@@ -2599,7 +2599,7 @@ C      subroutine swap is called and points are taken from other groups.
        END
 
 
-       SUBROUTINE SWAP(IDT,NO,NIND,NATT,NG,I)
+       SUBROUTINE SWAP_T(IDT,NO,NIND,NATT,NG,I)
 C     This subroutine moves points from one group to another
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
@@ -2626,7 +2626,7 @@ C     This subroutine moves points from one group to another
         RETURN
         END
 
-      SUBROUTINE FIT(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
+      SUBROUTINE FIT_T(NIND,NATT,NG,NCOV,X,WL,XUU,XUUBEST,USA,
      &    IDT,WBEST,XML,XMLBEST,NS,MAXNS,TOLS,W,CORIND,FFG,IER)
 C     This subroutine fits a mixture model to the sample contained in X
 C     via the EM algorithm (subroutine LOOP) started from the initial
@@ -2643,7 +2643,7 @@ C     partition contained in IDT
      &           TOLS(4),W(MNIND,MAXNG),XUU(MAXNG),
      &           XUUBEST(MAXNG),TXUU(MAXNG)
        SWAPID=0
-       CALL CHECK(NG,NIND,NATT,IDT,SWAPID)
+       CALL CHECK_T(NG,NIND,NATT,IDT,SWAPID)
        IF (SWAPID.GT.0) THEN
            WRITE(FYLENO,*)'  This grouping has too few points'
            WRITE(FYLENO,*)'  in group ',SWAPID,
@@ -2655,7 +2655,7 @@ C     partition contained in IDT
            WRITE(FYLENO,645)(IDT(MM),MM=1,NIND)
 645        FORMAT(2X,10I3)
        ENDIF
-       CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,
+       CALL ESTIMATES_T(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,
      &         XVAR,DV,T,USA,IER)
          IF (IER.NE.0) GOTO 660
 c         ENDIF
@@ -2670,14 +2670,14 @@ c         ENDIF
             ENDIF
 10101     CONTINUE
 
-          CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,TXUU)
+          CALL  TMOM_T(NIND,NATT,NG,X,XMU,XVAR,W,TXUU)
         ELSE
          DO 1999 II=1,NG
           TXUU(II)=XUU(II)
 1999     CONTINUE
         ENDIF
 
-        CALL LOOP(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,TXML,
+        CALL LOOP_T(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,TXML,
      &          IDT,WL,W,TXUU,USA,TOLS)
          IF (NS.GT.MAXNS) THEN
            NS=MAXNS
@@ -2747,7 +2747,7 @@ c         IF (XML(FLAGS(26)+NH+1).LT.XMLBEST) GOTO 583
 C
 C
 C
-       SUBROUTINE RESAMP(NIND,NATT,NG,NCOV,TX,TXMU,TXVAR,DVS,
+       SUBROUTINE RESAMP_T(NIND,NATT,NG,NCOV,TX,TXMU,TXVAR,DVS,
      &    TT,TIDT,NREP,SEEDS,LLAM,TXML,TOLS,USA,
      &    SET,SEU,SEV,FSEED,XUU,IERS,IER)
 C     Main subroutine for the program MMresamp written by D.Peel
@@ -2757,7 +2757,7 @@ C     Feb 1992
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     see head of driver file regarding this line
        INCLUDE 'emmix/EMMIX-t.max'
-      EXTERNAL NMM,BSAMP,AUTOPARTITION
+      EXTERNAL NMM,BSAMP,AUTOPARTITION_T
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM
       REAL LLAM
@@ -2788,7 +2788,7 @@ C     see head of driver file regarding this line
       IF ((FLAGS(18).GE.1).AND.(FLAGS(18).NE.4)) THEN
 C       Obtain inverse and determinant of each estimated covariance
 C       matrix
-        CALL GDET(NATT,NG,TXVAR,V,DV,IER,NULL)
+        CALL GDET_T(NATT,NG,TXVAR,V,DV,IER,NULL)
         IF (IER.NE.0) THEN
           WRITE (FYLENO,*) ' Problem inverting covariance matrix'
           WRITE (FYLENO,*) ' from current solution to calculate'
@@ -2800,7 +2800,7 @@ C       matrix
           WL(II)=1
 9       CONTINUE
         IOUNT=1
-        CALL ESTEP(NIND,NATT,NG,TX,TXMU,V,TT,DEN,WL,TW,XUU,USA,DV,
+        CALL ESTEP_T(NIND,NATT,NG,TX,TXMU,V,TT,DEN,WL,TW,XUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
        ENDIF
 
@@ -2836,7 +2836,7 @@ C        Standard Errors
                  OPEN(UNIT=43,FILE='SEsamp.out',STATUS='UNKNOWN')
           FYLENO=43
           BT=0
-          CALL BSAMP(NIND,NATT,NG,TXMU,TXVAR,TT,TX,X,WL,IDT,BT,IER)
+          CALL BSAMP_T(NIND,NATT,NG,TXMU,TXVAR,TT,TX,X,WL,IDT,BT,IER)
           CLOSE(43)
 
           IF (FLAGS(18).NE.0) THEN
@@ -2877,7 +2877,7 @@ C         to start.
 2715        CONTINUE
           ENDIF
 
-          CALL NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,TXML(1,I),
+          CALL NMM_T(NIND,NATT,NG,NCOV,IDT,W,X,WL,TXML(1,I),
      &                   DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
           SEIER(I)=IER
 
@@ -2903,7 +2903,7 @@ C         Generate a random sample for the parametric bootstrap
           BT=1
                  OPEN(UNIT=43,FILE='bsamp.out',STATUS='UNKNOWN')
           FYLENO=43
-          CALL BSAMP(NIND,NATT,NG,TXMU,TXVAR,TT,TX,X,WL,IDT,BT,IER)
+          CALL BSAMP_T(NIND,NATT,NG,TXMU,TXVAR,TT,TX,X,WL,IDT,BT,IER)
           IF (IER.NE.0) THEN
             TXML(1,I)=0
             TXML(2,I)=0
@@ -2937,7 +2937,7 @@ C         to start.
            IF ((FLAGS(17).EQ.0).OR.(FLAGS(18).EQ.4)) THEN
             FLAGS(21)=(-1)*FLAGS(21)
            ENDIF
-          CALL NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,
+          CALL NMM_T(NIND,NATT,NG,NCOV,IDT,W,X,WL,
      &           TXML(1,I),DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
 
            IF ((FLAGS(17).EQ.0).OR.(FLAGS(18).EQ.4)) THEN
@@ -2980,7 +2980,7 @@ C           Find an initial partition via various clustering methods
             OPEN(UNIT=42,FILE='respH1.out',STATUS='UNKNOWN')
             FLAGS(21)=(-1)*FLAGS(21)
 
-            CALL AUTOPARTITION(NIND,NATT,NG+1,NCOV,X,
+            CALL AUTOPARTITION_T(NIND,NATT,NG+1,NCOV,X,
      &                 W,WL,TOLS,XUU,USA,FSEED,IER)
 C           Detect if any errors have occurred, store error code and continue
             IF (IER.GT.0) THEN
@@ -2997,7 +2997,7 @@ C             Auto start unable to find start
               GOTO 840
             ENDIF
             IF (FLAGS(11).NE.2) THEN
-              CALL CAPART(NIND,NATT,NG+1,W,IDT,USA,XCC)
+              CALL CAPART_T(NIND,NATT,NG+1,W,IDT,USA,XCC)
               WRITE(FYLENO,*) '  Start found'
               WRITE(FYLENO,836) (IDT(MM),MM=1,NIND)
             ENDIF
@@ -3006,7 +3006,7 @@ C           Fit a Multivariate mixture model under H1:No groups = NG+1 to the
 C           generated sample (X) using various clustering methods.
             FYLENO=42
             FLAGS(3)=2
-            CALL NMM(NIND,NATT,NG+1,NCOV,IDT,W,X,WL,
+            CALL NMM_T(NIND,NATT,NG+1,NCOV,IDT,W,X,WL,
      &      TXML(2,I),DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
 
             FLAGS(21)=(-1)*FLAGS(21)
@@ -3124,7 +3124,7 @@ C           Calculate -2log(lambda)
       RETURN
       END
 
-      SUBROUTINE CALINFO(NIND,NATT,NG,X,XMU,V,W,T,NCOV,IDT,SET,SEU,SEV)
+      SUBROUTINE CALIN_T(NIND,NATT,NG,X,XMU,V,W,T,NCOV,IDT,SET,SEU,SEV)
 c      This subroutine displays all the relevant information from the
 c      EM algorithm to the be used by the program MMresamp.
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -3189,7 +3189,7 @@ c      EM algorithm to the be used by the program MMresamp.
 400   CONTINUE
 900   CONTINUE
 
-      CALL XINFOINV(ISIZE,NG,XINFO,VINFO,IER,NULL)
+      CALL XINFOINV_T(ISIZE,NG,XINFO,VINFO,IER,NULL)
       DO 902 K=1,NG
         SET(K)=0.0
         DO 902 I=1,NATT
@@ -3216,7 +3216,7 @@ c      EM algorithm to the be used by the program MMresamp.
       RETURN
       END
 
-      SUBROUTINE XINFOINV(ISIZE,NG,XINFO,VINFO,IER,NULL)
+      SUBROUTINE XINFOINV_T(ISIZE,NG,XINFO,VINFO,IER,NULL)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -3287,7 +3287,7 @@ C        TOL=(TOL/ISIZE)*0.000001
 C
 C
 C
-       SUBROUTINE NMM(NIND,NATT,NG,NCOV,IDT,W,X,WL,
+       SUBROUTINE NMM_T(NIND,NATT,NG,NCOV,IDT,W,X,WL,
      &     TXML,DV,V,TOLS,XMU,XVAR,T,XUU,USA,FSEED,IER)
 C     The purpose of these subroutines to fit a mixture model consisting of NG
 C     multivariate normal components
@@ -3305,7 +3305,7 @@ C
       COMMON /STORE2/ FLAGS,FYLENO
       COMMON /CHUI/   DEBUG
       INTEGER  DEBUG
-      EXTERNAL AUTOPARTITION
+      EXTERNAL AUTOPARTITION_T
       EXTERNAL RANDNUM,DETERRANDOM
       DOUBLE PRECISION RANDNUM
       DIMENSION X(MNIND,MNATT),XVAR(MAXNG,MNATT,MNATT),T(MAXNG),
@@ -3339,10 +3339,10 @@ C       Set Flag for final EM run and equal covariances
         TEMPNCOV=NCOV
         NCOV=1
 C       Calculate parameter estimates
-        CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,
+        CALL ESTIMATES_T(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,
      &               DV,T,USA,IER)
         IF (IER.GT.0) GOTO 60
-cc        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+cc        CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
         IF (FLAGS(7).EQ.4) THEN
          DO 20101 III=1,NIND
           DO 20100 KKK=1,NG
@@ -3350,13 +3350,13 @@ cc        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
 20100    CONTINUE
          W(III,IDT(III))=1
 20101    CONTINUE
-         CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
+         CALL  TMOM_T(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
          WRITE (FYLENO,*) '  Moment estimates of NU are '
          WRITE (FYLENO,*) '   ',(XUU(KKK),KKK=1,NG)
          ENDIF
 
 C       Execute the EM algorithm
-        CALL LOOP(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,
+        CALL LOOP_T(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,
      &            TXML,IDT,WL,W,XUU,USA,TOLS)
 C       Go to end of routine to output section
        GOTO 23
@@ -3366,25 +3366,25 @@ C       Go to end of routine to output section
 C    BOOTSTRAP fit from given posterior probabilities
       IF (FLAGS(3).EQ.2) THEN
 C      Correct posterior probabilities for classified data
-       CALL PARCORR(NIND,NATT,NG,USA,W)
+       CALL PARCORR_T(NIND,NATT,NG,USA,W)
 C      Calculate parameters from posterior probabilities
        TEMP=0
-       CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,
+       CALL MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,
      &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 C      Display parameter estimates to output file if required
        IF (FLAGS(11).EQ.0) THEN
-        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+        CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
         IF (IER.GT.0) GOTO 60
        ENDIF
 
       ELSEIF (FLAGS(3).EQ.3) THEN
        IF (FLAGS(11).EQ.0) THEN
-         CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+         CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
          IF (IER.GT.0) GOTO 60
        ENDIF
        FLAGS(3)=2
 C       Obtain inverse of this matrix
-          CALL GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+          CALL GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
           IF (IER.GT.0) RETURN
             DO 992 K=2,NG
               DV(K)=DV(1)
@@ -3397,30 +3397,30 @@ C       Obtain inverse of this matrix
 C    User supplied partition of the data
       ELSEIF (FLAGS(4).EQ.1) THEN
 C       Calculate parameter estimates from allocation
-        CALL ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,DV,
+        CALL ESTIMATES_T(NIND,NATT,NG,X,IDT,WL,NCOV,XMU,V,XVAR,DV,
      &                  T,USA,IER)
 C       Display parameter estimates to output file if required
         IF (FLAGS(11).EQ.0) THEN
-         CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+         CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
          IF (IER.GT.0) GOTO 60
         ENDIF
 
 C    Use automatic starts
       ELSEIF (FLAGS(4).EQ.3) THEN
 C       Generate maximum likelihood solution from various starts
-        CALL AUTOPARTITION(NIND,NATT,NG,NCOV,X,
+        CALL AUTOPARTITION_T(NIND,NATT,NG,NCOV,X,
      &         W,WL,TOLS,XUU,USA,FSEED,IER)
         IF (IER.EQ.2) GOTO 60
 
 C       Correct posterior probabilities for classified data
-        CALL PARCORR(NIND,NATT,NG,USA,W)
+        CALL PARCORR_T(NIND,NATT,NG,USA,W)
 C       Calculate parameters from posterior probabilities
         TEMP=0
 
         WRITE (*,*) 'xxx BEFORE CALLING MSTEP'
         WRITE (*,*) 'xxx NG=', NG
         DEBUG=0
-        CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,
+        CALL MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,
      &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
         DEBUG=0
         WRITE (*,*) 'xxx AFTER CALLING MSTEP'
@@ -3428,16 +3428,16 @@ C       Calculate parameters from posterior probabilities
 C       Display parameter estimates to output file if required
         IF (FLAGS(11).EQ.0) THEN
             WRITE (*,*) 'xxx BEFORE OUTESTIMATES NG=', NG
-            CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+            CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
             WRITE (*,*) 'xxx done calling OUTESTIMATES'
         ENDIF
         IF ((FLAGS(3).EQ.1).AND.(FLAGS(11).EQ.0)) THEN
-          CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+          CALL CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
           WRITE (*,*) '  Best Partition'
           WRITE (*,315) (IDT(JJ),JJ=1,NIND)
         ENDIF
         IF (FLAGS(11).EQ.0) THEN
-         CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+         CALL CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
          WRITE (FYLENO,*)
          WRITE (FYLENO,*) '  Starting Partition Found'
          WRITE (FYLENO,315) (IDT(JJ),JJ=1,NIND)
@@ -3449,7 +3449,7 @@ C    User posterior probabilities (weights,fuzzy partition)
       ELSEIF (FLAGS(4).EQ.4) THEN
 C      Calculate parameters from posterior probabilities
        TEMP=0
-       CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,
+       CALL MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,
      &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 
       ENDIF
@@ -3476,17 +3476,17 @@ C     Set flag to switch off the Stochastic EM
          W(III,IDT(III))=1
 10101    CONTINUE
 
-        CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
+        CALL  TMOM_T(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
         WRITE (FYLENO,*) '  Moment estimates of NU are '
         WRITE (FYLENO,*) '   ',(XUU(KKK),KKK=1,NG)
        ENDIF
 
 C    Call MAIN EM Algorithm loop
-      CALL LOOP(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,
+      CALL LOOP_T(NIND,NATT,NG,X,XMU,V,XVAR,DV,T,NCOV,IER,
      &          TXML,IDT,WL,W,XUU,USA,TOLS)
 
 23     CONTINUE
-      CALL FINOUT(NIND,NATT,NCOV,NG,XUU,XMU,XVAR,T,IDT,XCC)
+      CALL FINOUT_T(NIND,NATT,NCOV,NG,XUU,XMU,XVAR,T,IDT,XCC)
       IF (NG.EQ.1) NCOV=TEMPNCOV
       GOTO 99
 
@@ -3497,12 +3497,12 @@ C    Call MAIN EM Algorithm loop
       END
 
 
-      SUBROUTINE FINOUT(NIND,NATT,NCOV,NG,XUU,XMU,XVAR,T,IDT,XCC)
+      SUBROUTINE FINOUT_T(NIND,NATT,NCOV,NG,XUU,XMU,XVAR,T,IDT,XCC)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
-      EXTERNAL AUTOPARTITION
+      EXTERNAL AUTOPARTITION_T
       EXTERNAL RANDNUM,DETERRANDOM
       DOUBLE PRECISION RANDNUM
       DIMENSION XVAR(MAXNG,MNATT,MNATT),T(MAXNG),
@@ -3601,7 +3601,7 @@ C     Test if a common covariance matrix is specified (NCOV = 1)
 99    RETURN
       END
 
-      SUBROUTINE ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+      SUBROUTINE ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &                 XLOGL,IOUNT,XMAH,IER)
 C     This Subroutine implements the E-step of the EM algorithm
       implicit double precision (a-h,o-z)
@@ -3645,10 +3645,10 @@ c     to increase this limit modify the 'emmix/EMMIX-t.max' file
         IER=-53
       ENDIF
 c      IF (XUU(K).LT.300) THEN
-      AL(K)=EXP(GAMMLN(XUU(K)/2.0+FLOAT(NATT)/2.0))
+      AL(K)=EXP(GAMMLN_T(XUU(K)/2.0+FLOAT(NATT)/2.0))
       AL(K)=AL(K)/(SQRT(DV(K)))
       AL(K)=AL(K)/(3.14*XUU(K))**(FLOAT(NATT)/2.0)
-      AL(K)=AL(K)/EXP(GAMMLN(XUU(K)/2.0))
+      AL(K)=AL(K)/EXP(GAMMLN_T(XUU(K)/2.0))
       AL(K)=AL(K)/(1.0+XMAH(JJ,K)/XUU(K))**(1/2.0*(XUU(K)+FLOAT(NATT)))
 c      ELSE
 c        XUU(K)=300
@@ -3719,7 +3719,7 @@ C         Calculate Log-Likelihood contribution from point JJ
       RETURN
       END
 
-      SUBROUTINE MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,
+      SUBROUTINE MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,
      &                 DV,XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 C     This Subroutine implements the M-step of the EM algorithm
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
@@ -3759,7 +3759,7 @@ C     Arrays defined locally
 1369      CONTINUE
 1370    CONTINUE
         IF (FLAGS(7).GT.1) THEN
-          CALL TFREE(NIND,NATT,NG,XUU,U,W,1,IER)
+          CALL TFREE_T(NIND,NATT,NG,XUU,U,W,1,IER)
         ENDIF
       ELSE
 C       Compute new estimate of mixing proportion (T) for each group
@@ -3803,7 +3803,7 @@ C       Calculate mixing proportion for group K
 C     Compute new estimates of group means and covariance matrices
 c       Note: matrix V is not inverse here but used to as temp storage
 c             for un-inverted matrix
-         CALL LCAL(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
+         CALL LCAL_T(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
 C     Test if a common covariance matrix is specified (NCOV = 1)
 C     or common covariance matrix with diag matrices (NCOV = 3)
       IF ((NCOV.EQ.1).OR.(NCOV.EQ.3)) THEN
@@ -3830,7 +3830,7 @@ C       Compute new estimate of common covariance matrix
 991     CONTINUE
 
 C       Obtain inverse of this matrix
-        CALL GDET(NATT,1,XVAR,V,DV,IER,NULL)
+        CALL GDET_T(NATT,1,XVAR,V,DV,IER,NULL)
         IF (IER.GT.0) GO TO 1030
         DO 992 K=2,NG
           DV(K)=DV(1)
@@ -3849,7 +3849,7 @@ C       Obtain inverse of this matrix
          ENDIF
 C       Obtain inverse and determinant of each estimated covariance
 C       matrix
-        CALL GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+        CALL GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
         IF (IER.GT.0) GO TO 1030
       ENDIF
 
@@ -3872,7 +3872,7 @@ C       matrix
       RETURN
       END
 
-      SUBROUTINE PARCORR(NIND,NATT,NG,USA,W)
+      SUBROUTINE PARCORR_T(NIND,NATT,NG,USA,W)
 C      This subroutine corrects the posterior probabilities
 C      for classified data by reassigning the classified points
 C      to their prior groups
@@ -3894,7 +3894,7 @@ C      to their prior groups
         END
 
 
-      SUBROUTINE ESTIMATES(NIND,NATT,NG,X,IDT,WL,NCOV,
+      SUBROUTINE ESTIMATES_T(NIND,NATT,NG,X,IDT,WL,NCOV,
      &                     XMU,V,XVAR,DV,T,USA,IER)
 C     This Subroutine handles the estimation of the parameters
 C     of a multivariate normal mixture model given a sample X and an
@@ -3955,7 +3955,7 @@ C     proportion for each group
            RETURN
          ENDIF
 99       T(K)=WSUM(K)/WTOT
-       CALL LCAL(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
+       CALL LCAL_T(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
 C     Test if a common covariance matrix is specified (NCOV = 1)
 C     or common covariance matrix with diag matrices (NCOV = 3)
       IF ((NCOV.EQ.1).OR.(NCOV.EQ.3)) THEN
@@ -3981,7 +3981,7 @@ C       Compute pooled estimate of common covariance matrix
             XVAR(K,J,I)=XVAR(K,I,J)
 112     CONTINUE
 C       Obtain inverse of this matrix
-        CALL GDET(NATT,1,XVAR,V,DV,IER,NULL)
+        CALL GDET_T(NATT,1,XVAR,V,DV,IER,NULL)
         IF (IER.GT.0) RETURN
         DO 120 K=2,NG
           DV(K)=DV(1)
@@ -4000,7 +4000,7 @@ C       Obtain inverse of this matrix
        ENDIF
 C       Obtain inverse and determinant of each estimated covariance
 C       matrix
-        CALL GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+        CALL GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
       ENDIF
        IF ((FLAGS(8).EQ.4).AND.(FLAGS(12).GT.0)) THEN
         NIND=NTNIND
@@ -4008,7 +4008,7 @@ C       matrix
       RETURN
       END
 
-      SUBROUTINE OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+      SUBROUTINE OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
 C     This subroutine writes the estimates
 C     of the parameters to the outfile
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -4075,7 +4075,7 @@ C     &       T(MAXNG),V(MAXNG,MNATT,MNATT),DV(MAXNG),XUU(MAXNG)
       END
 
 
-      SUBROUTINE GDET(NATT,NG,XVAR,V,DV,IER,NULL)
+      SUBROUTINE GDET_T(NATT,NG,XVAR,V,DV,IER,NULL)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine reads all covariance matrices, then calls
 C     SYMINV, which inverts a matrix and calculates its determinant,
@@ -4138,7 +4138,7 @@ cc          WRITE (*,815) K, NULL
       END
 
 
-      SUBROUTINE LOOP(NIND,NATT,NG,X,XMU,V,XVAR,DV,
+      SUBROUTINE LOOP_T(NIND,NATT,NG,X,XMU,V,XVAR,DV,
      &                T,NCOV,IER,TXML,IDT,WL,W,XUU,USA,TOLS)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C     This subroutine uses the EM algorithm from a specified starting
@@ -4171,7 +4171,7 @@ c          W(III,KKK)=0
 c10100    CONTINUE
 c         W(III,IDT(III))=1
 c10101    CONTINUE
-c        CALL  TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
+c        CALL  TMOM_T(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
 c        WRITE (FYLENO,*) '  Moment estimates of NU are '
 c        WRITE (FYLENO,*) '   ',(XUU(KKK),KKK=1,NG)
 c        ENDIF
@@ -4206,15 +4206,15 @@ C     Display to screen determinants if required
          WRITE (FYLENO,*) (DV(K),K=1,NG)
          IF (FLAGS(8).EQ.2) WRITE (*,*) (DV(K),K=1,NG)
        ENDIF
-       CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+       CALL ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &            XLOGL,IOUNT,XMAH,IER)
 c       IF (IER.GT.0) GOTO 9999
        IF (IER.GT.0) GOTO 1099
 
        IF (FLAGS(2).EQ.1) THEN
-         CALL SEM(NIND,NATT,NG,W)
+         CALL SEM_T(NIND,NATT,NG,W)
        ENDIF
-C       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+C       CALL CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
 C       WRITE (*,11111) (IDT(III),III=1,NIND)
 C11111  FORMAT(10I3)
 C     Display to screen Log-likelihood if required
@@ -4302,10 +4302,10 @@ c       DO 1002 III=1,NIND
 c       DO 1002 KKK=1,NG
 c         U(III,KKK)=1
 c1002   CONTINUE
-c       CALL TFREE(NIND,NATT,NG,XUU,U,W,0,IER)
+c       CALL TFREE_T(NIND,NATT,NG,XUU,U,W,0,IER)
 c       ENDIF
 
-      CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
+      CALL MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,WTOT,T,W,XUU,XMAH,TEMP,U,IER)
 cccc      IF (IER.GT.0) GOTO 9999
       IF (IER.GT.0) GOTO 1099
@@ -4342,7 +4342,7 @@ C    Final work after convergence
         IF (CKOUT.LT.0.0001) IDT(I)=0
 1098  CONTINUE
       IF ((FLAGS(12).GT.0).AND.(FLAGS(9).EQ.1)) THEN
-       CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+       CALL CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
         WRITE(FYLENO,*)
         WRITE(FYLENO,*) '     *******************************'
        IF (FLAGS(8).EQ.4) THEN
@@ -4358,25 +4358,25 @@ C    Final work after convergence
         WRITE(FYLENO,1177) (IDT(III),III=1,NIND)
         WRITE (FYLENO,*)
 1177    FORMAT (2X,10I4)
-        CALL OUTESTIMATES(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
+        CALL OUTESTIMATES_T(NIND,NATT,NG,NCOV,XMU,V,XVAR,DV,T,XUU)
         FLAGS(12)=0
-        CALL ESTEP(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
+        CALL ESTEP_T(NIND,NATT,NG,X,XMU,V,T,DEN,WL,W,XUU,USA,DV,
      &  XLOGL,IOUNT,XMAH,IER)
         IF (IER.GT.0) GOTO 9999
         XTMP=1
-        CALL MSTEP(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
+        CALL MSTEP_T(NIND,NATT,NG,NCOV,X,XVAR,V,DV,
      &           XMU,WTOT,T,W,XUU,XMAH,XTMP,U,IER)
         IF (IER.GT.0) GOTO 9999
         FLAGS(12)=1
         WRITE(FYLENO,*)
-        CALL OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
+        CALL OUTLOOP_T(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
      &                     W,IDT,X,DEN,USA,U)
       ELSEIF (FLAGS(9).EQ.1) THEN
          WRITE (FYLENO,1041) XLOGL(IOUNT)
 1041     FORMAT(2X,'Final Log-Likelihood is ',F15.3)
          IF (FLAGS(11).EQ.0) THEN
            IF ((NG.NE.1).OR.(FLAGS(7).NE.0)) THEN
-            CALL OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
+            CALL OUTLOOP_T(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
      &                         W,IDT,X,DEN,USA,U)
            ENDIF
          ELSEIF (FLAGS(20).EQ.2) THEN
@@ -4390,7 +4390,7 @@ C    Final work after convergence
       RETURN
       END
 
-      SUBROUTINE CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+      SUBROUTINE CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
 C     This subroutine determines  the partition of entities,
 C     from the posterior probabilities W, into NG groups
       implicit double precision (a-h,o-z)
@@ -4415,7 +4415,7 @@ C     from the posterior probabilities W, into NG groups
       RETURN
       END
 
-      SUBROUTINE OUTLOOP(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
+      SUBROUTINE OUTLOOP_T(NIND,NATT,NG,XMU,DV,T,NCOV,IOUNT,XLOGL,
      &                   W,IDT,X,DEN,USA,U)
 c      This subroutine displays all the relevant information from the
 c      EM algorithm applied to the best partition.
@@ -4435,7 +4435,7 @@ c    &          U(MNIND,MNATT)
         WRITE (FYLENO,1105) IOUNT,XLOGL(IOUNT)
 1105    FORMAT (/2X,'In loop ',I3,' log likelihood is ',F15.3)
       ENDIF
-      CALL CAPART(NIND,NATT,NG,W,IDT,USA,XCC)
+      CALL CAPART_T(NIND,NATT,NG,W,IDT,USA,XCC)
       IF (FLAGS(6).EQ.1) THEN
         WRITE (*,*)
         WRITE (FYLENO,*) '  Density values of user defined model'
@@ -4491,7 +4491,7 @@ c1170   FORMAT (2X,I6,2X,10G13.5,'*',I3)
 
 
 
-      SUBROUTINE LCAL(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
+      SUBROUTINE LCAL_T(NIND,NATT,NG,X,W,XMU,WSUM,WUSUM,XVAR,U)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
       INTEGER FLAGS(40),FYLENO
@@ -4533,7 +4533,7 @@ C     Compute new estimate of covariance matrix for each group
       END
 
 
-      SUBROUTINE CRITERIA(NG,XLGL,NIND,NATT,NCOV,AIC,BIC,AWE)
+      SUBROUTINE CRITERIA_T(NG,XLGL,NIND,NATT,NCOV,AIC,BIC,AWE)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INTEGER FLAGS(40),FYLENO
       COMMON /STORE2/ FLAGS,FYLENO
@@ -4563,7 +4563,7 @@ C      Calculate the value of the Approximate Weight of Evidence
 
 
 
-      SUBROUTINE SYMINV(A,N,C,W,NULLTY,IFAULT,RMAX,CMY,TOL)
+      SUBROUTINE SYMINV_T(A,N,C,W,NULLTY,IFAULT,RMAX,CMY,TOL)
 C
 C       Algorithm AS7, Applied Statistics, Vol.17, 1968.
 C
@@ -4596,7 +4596,7 @@ C       Latest revision - 18 April 1981
         IF(NROW.LE.0) GO TO 100
         IFAULT=0
 C       Cholesky factorization of A, result in C
-        CALL CHOLA(A,NROW,C,NULLTY,IFAULT,RMAX,W,TOL)
+        CALL CHOLA_T(A,NROW,C,NULLTY,IFAULT,RMAX,W,TOL)
         IF(IFAULT.NE.0) GO TO 100
 C       Invert C & form the product (CINV)'*CINV, where CINV is the inverse
 C       of C, row by row starting with the last row.
@@ -4643,7 +4643,7 @@ C       IROW = the row number, NDIAG = location of last element in the row.
         END
 
 
-        SUBROUTINE CHOLA(A,N,U,NULLTY,IFAULT,RMAX,R,TOL)
+        SUBROUTINE CHOLA_T(A,N,U,NULLTY,IFAULT,RMAX,R,TOL)
 C
 C       Algorithm AS6, Applied Statistics, Vol.17, 1968, with
 C       modifications by A.J.Miller
@@ -4722,42 +4722,42 @@ C         End of row, estimate relative accuracy of diagonal element.
 100     RETURN
         END
 
-      SUBROUTINE SEM(NIND,NATT,NG,W)
+      SUBROUTINE SEM_T(NIND,NATT,NG,W)
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
-      DIMENSION W(MNIND,MAXNG),XL(MAXNG),WSEM(MNIND,MAXNG)
+      DIMENSION W(MNIND,MAXNG),XL(MAXNG),WSEM_T(MNIND,MAXNG)
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM,R
       DO 100 I=1,MNIND
        DO 100 K=1,MAXNG
-         WSEM(I,K)=0.0
+         WSEM_T(I,K)=0.0
 100   CONTINUE
 
       DO 120 I=1,NIND
         XLIM=0.0
-        R=RANDNUM()
+        R=RANDNUM_T()
         DO 110 K=1,NG-1
           XLIM=XLIM+W(I,K)
           XL(K)=XLIM
           IF (R.LE.XL(K)) THEN
-            WSEM(I,K)=1
+            WSEM_T(I,K)=1
             GOTO 120
           ENDIF
 110     CONTINUE
         XL(NG)=1.0
-        WSEM(I,NG)=1
+        WSEM_T(I,NG)=1
 120   CONTINUE
            DO 945 II=1,NIND
              DO 945 KK=1,NG
-               W(II,KK)=WSEM(II,KK)
+               W(II,KK)=WSEM_T(II,KK)
 945         CONTINUE
       RETURN
       END
 C
 C
 C
-      SUBROUTINE DOGLEG(N,R,LR,DIAG,QTB,DELTA,X,WA1,WA2)
+      SUBROUTINE DOGLEG_T(N,R,LR,DIAG,QTB,DELTA,X,WA1,WA2)
       INTEGER N,LR
       INCLUDE 'emmix/EMMIX-t.max'
       DOUBLE PRECISION DELTA
@@ -4783,7 +4783,7 @@ C     THE FIRST N COMPONENTS OF (Q TRANSPOSE)*B.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE DOGLEG(N,R,LR,DIAG,QTB,DELTA,X,WA1,WA2)
+C       SUBROUTINE DOGLEG_T(N,R,LR,DIAG,QTB,DELTA,X,WA1,WA2)
 C
 C     WHERE
 C
@@ -4936,316 +4936,9 @@ C
 C     LAST CARD OF SUBROUTINE DOGLEG.
 C
       END
-      DOUBLE PRECISION FUNCTION DPMPAR(I)
-      INTEGER I
-C     **********
-C
-C     FUNCTION DPMPAR
-C
-C     THIS FUNCTION PROVIDES DOUBLE PRECISION MACHINE PARAMETERS
-C     WHEN THE APPROPRIATE SET OF DATA STATEMENTS IS ACTIVATED (BY
-C     REMOVING THE C FROM COLUMN 1) AND ALL OTHER DATA STATEMENTS ARE
-C     RENDERED INACTIVE. MOST OF THE PARAMETER VALUES WERE OBTAINED
-C     FROM THE CORRESPONDING BELL LABORATORIES PORT LIBRARY FUNCTION.
-C
-C     THE FUNCTION STATEMENT IS
-C
-C       DOUBLE PRECISION FUNCTION DPMPAR(I)
-C
-C     WHERE
-C
-C       I IS AN INTEGER INPUT VARIABLE SET TO 1, 2, OR 3 WHICH
-C         SELECTS THE DESIRED MACHINE PARAMETER. IF THE MACHINE HAS
-C         T BASE B DIGITS AND ITS SMALLEST AND LARGEST EXPONENTS ARE
-C         EMIN AND EMAX, RESPECTIVELY, THEN THESE PARAMETERS ARE
-C
-C         DPMPAR(1) = B**(1 - T), THE MACHINE PRECISION,
-C
-C         DPMPAR(2) = B**(EMIN - 1), THE SMALLEST MAGNITUDE,
-C
-C         DPMPAR(3) = B**EMAX*(1 - B**(-T)), THE LARGEST MAGNITUDE.
-C
-C     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. MARCH 1980.
-C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
-C
-C     **********
-      INTEGER MCHEPS(4)
-      INTEGER MINMAG(4)
-      INTEGER MAXMAG(4)
-      DOUBLE PRECISION DMACH(3)
-      EQUIVALENCE (DMACH(1),MCHEPS(1))
-      EQUIVALENCE (DMACH(2),MINMAG(1))
-      EQUIVALENCE (DMACH(3),MAXMAG(1))
-C
-C     MACHINE CONSTANTS FOR THE IBM 360/370 SERIES,
-C     THE AMDAHL 470/V6, THE ICL 2900, THE ITEL AS/6,
-C     THE XEROX SIGMA 5/7/9 AND THE SEL SYSTEMS 85/86.
-C
-C     DATA MCHEPS(1),MCHEPS(2) / Z34100000, Z00000000 /
-C     DATA MINMAG(1),MINMAG(2) / Z00100000, Z00000000 /
-C     DATA MAXMAG(1),MAXMAG(2) / Z7FFFFFFF, ZFFFFFFFF /
-C
-C     MACHINE CONSTANTS FOR THE HONEYWELL 600/6000 SERIES.
-C
-C     DATA MCHEPS(1),MCHEPS(2) / O606400000000, O000000000000 /
-C     DATA MINMAG(1),MINMAG(2) / O402400000000, O000000000000 /
-C     DATA MAXMAG(1),MAXMAG(2) / O376777777777, O777777777777 /
-C
-C     MACHINE CONSTANTS FOR THE CDC 6000/7000 SERIES.
-C
-C     DATA MCHEPS(1) / 15614000000000000000B /
-C     DATA MCHEPS(2) / 15010000000000000000B /
-C
-C     DATA MINMAG(1) / 00604000000000000000B /
-C     DATA MINMAG(2) / 00000000000000000000B /
-C
-C     DATA MAXMAG(1) / 37767777777777777777B /
-C     DATA MAXMAG(2) / 37167777777777777777B /
-C
-C     MACHINE CONSTANTS FOR THE PDP-10 (KA PROCESSOR).
-C
-C     DATA MCHEPS(1),MCHEPS(2) / "114400000000, "000000000000 /
-C     DATA MINMAG(1),MINMAG(2) / "033400000000, "000000000000 /
-C     DATA MAXMAG(1),MAXMAG(2) / "377777777777, "344777777777 /
-C
-C     MACHINE CONSTANTS FOR THE PDP-10 (KI PROCESSOR).
-C
-C     DATA MCHEPS(1),MCHEPS(2) / "104400000000, "000000000000 /
-C     DATA MINMAG(1),MINMAG(2) / "000400000000, "000000000000 /
-C     DATA MAXMAG(1),MAXMAG(2) / "377777777777, "377777777777 /
-C
-C     MACHINE CONSTANTS FOR THE PDP-11 FORTRAN SUPPORTING
-C     32-BIT INTEGERS (EXPRESSED IN INTEGER AND OCTAL).
-C
-C     DATA MCHEPS(1),MCHEPS(2) /  620756992,           0 /
-C     DATA MINMAG(1),MINMAG(2) /    8388608,           0 /
-C     DATA MAXMAG(1),MAXMAG(2) / 2147483647,          -1 /
-C
-C     DATA MCHEPS(1),MCHEPS(2) / O04500000000, O00000000000 /
-C     DATA MINMAG(1),MINMAG(2) / O00040000000, O00000000000 /
-C     DATA MAXMAG(1),MAXMAG(2) / O17777777777, O37777777777 /
-C
-C     MACHINE CONSTANTS FOR THE PDP-11 FORTRAN SUPPORTING
-C     16-BIT INTEGERS (EXPRESSED IN INTEGER AND OCTAL).
-C
-C     DATA MCHEPS(1),MCHEPS(2) /   9472,      0 /
-C     DATA MCHEPS(3),MCHEPS(4) /      0,      0 /
-C
-C     DATA MINMAG(1),MINMAG(2) /    128,      0 /
-C     DATA MINMAG(3),MINMAG(4) /      0,      0 /
-C
-C     DATA MAXMAG(1),MAXMAG(2) /  32767,     -1 /
-C     DATA MAXMAG(3),MAXMAG(4) /     -1,     -1 /
-C
-C     DATA MCHEPS(1),MCHEPS(2) / O022400, O000000 /
-C     DATA MCHEPS(3),MCHEPS(4) / O000000, O000000 /
-C
-C     DATA MINMAG(1),MINMAG(2) / O000200, O000000 /
-C     DATA MINMAG(3),MINMAG(4) / O000000, O000000 /
-C
-C     DATA MAXMAG(1),MAXMAG(2) / O077777, O177777 /
-C     DATA MAXMAG(3),MAXMAG(4) / O177777, O177777 /
-C
-C     MACHINE CONSTANTS FOR THE BURROUGHS 6700/7700 SYSTEMS.
-C
-C     DATA MCHEPS(1) / O1451000000000000 /
-C     DATA MCHEPS(2) / O0000000000000000 /
-C
-C     DATA MINMAG(1) / O1771000000000000 /
-C     DATA MINMAG(2) / O7770000000000000 /
-C
-C     DATA MAXMAG(1) / O0777777777777777 /
-C     DATA MAXMAG(2) / O7777777777777777 /
-C
-C     MACHINE CONSTANTS FOR THE BURROUGHS 5700 SYSTEM.
-C
-C     DATA MCHEPS(1) / O1451000000000000 /
-C     DATA MCHEPS(2) / O0000000000000000 /
-C
-C     DATA MINMAG(1) / O1771000000000000 /
-C     DATA MINMAG(2) / O0000000000000000 /
-C
-C     DATA MAXMAG(1) / O0777777777777777 /
-C     DATA MAXMAG(2) / O0007777777777777 /
-C
-C     MACHINE CONSTANTS FOR THE BURROUGHS 1700 SYSTEM.
-C
-C     DATA MCHEPS(1) / ZCC6800000 /
-C     DATA MCHEPS(2) / Z000000000 /
-C
-C     DATA MINMAG(1) / ZC00800000 /
-C     DATA MINMAG(2) / Z000000000 /
-C
-C     DATA MAXMAG(1) / ZDFFFFFFFF /
-C     DATA MAXMAG(2) / ZFFFFFFFFF /
-C
-C     MACHINE CONSTANTS FOR THE UNIVAC 1100 SERIES.
-C
-C     DATA MCHEPS(1),MCHEPS(2) / O170640000000, O000000000000 /
-C     DATA MINMAG(1),MINMAG(2) / O000040000000, O000000000000 /
-C     DATA MAXMAG(1),MAXMAG(2) / O377777777777, O777777777777 /
-C
-C     MACHINE CONSTANTS FOR THE DATA GENERAL ECLIPSE S/200.
-C
-C     NOTE - IT MAY BE APPROPRIATE TO INCLUDE THE FOLLOWING CARD -
-C     STATIC DMACH(3)
-C
-C     DATA MINMAG/20K,3*0/,MAXMAG/77777K,3*177777K/
-C     DATA MCHEPS/32020K,3*0/
-C
-C     MACHINE CONSTANTS FOR THE HARRIS 220.
-C
-C     DATA MCHEPS(1),MCHEPS(2) / '20000000, '00000334 /
-C     DATA MINMAG(1),MINMAG(2) / '20000000, '00000201 /
-C     DATA MAXMAG(1),MAXMAG(2) / '37777777, '37777577 /
-C
-C     MACHINE CONSTANTS FOR THE CRAY-1.
-C
-C     DATA MCHEPS(1) / 0376424000000000000000B /
-C     DATA MCHEPS(2) / 0000000000000000000000B /
-C
-C     DATA MINMAG(1) / 0200034000000000000000B /
-C     DATA MINMAG(2) / 0000000000000000000000B /
-C
-C     DATA MAXMAG(1) / 0577777777777777777777B /
-C     DATA MAXMAG(2) / 0000007777777777777776B /
-C
-C     MACHINE CONSTANTS FOR THE PRIME 400.
-C
-C     DATA MCHEPS(1),MCHEPS(2) / :10000000000, :00000000123 /
-C     DATA MINMAG(1),MINMAG(2) / :10000000000, :00000100000 /
-C     DATA MAXMAG(1),MAXMAG(2) / :17777777777, :37777677776 /
-C
-C     MACHINE CONSTANTS FOR THE VAX-11.
-C
-C     DATA MCHEPS(1),MCHEPS(2) /   9472,  0 /
-C     DATA MINMAG(1),MINMAG(2) /    128,  0 /
-C     DATA MAXMAG(1),MAXMAG(2) / -32769, -1 /
-C
-C     DPMPAR = DMACH(I)
-      if(i.eq.1) then
-        DPMPAR=    2.2204460492503D-16
-      else if (i.eq.2) then
-        DPMPAR=    2.22507385850721D-308
-C     Last 1 in above line added 8 March 2002 for Compaq f90
-      else
-        DPMPAR=    8.9884656743116D+307
-      endif
-      RETURN
-C
-C     LAST CARD OF FUNCTION DPMPAR.
-C
-      END
-      DOUBLE PRECISION FUNCTION ENORM(N,X)
-      INCLUDE 'emmix/EMMIX-t.max'
-      INTEGER N
-      DOUBLE PRECISION X(MAXNG)
-C     **********
-C
-C     FUNCTION ENORM
-C
-C     GIVEN AN N-VECTOR X, THIS FUNCTION CALCULATES THE
-C     EUCLIDEAN NORM OF X.
-C
-C     THE EUCLIDEAN NORM IS COMPUTED BY ACCUMULATING THE SUM OF
-C     SQUARES IN THREE DIFFERENT SUMS. THE SUMS OF SQUARES FOR THE
-C     SMALL AND LARGE COMPONENTS ARE SCALED SO THAT NO OVERFLOWS
-C     OCCUR. NON-DESTRUCTIVE UNDERFLOWS ARE PERMITTED. UNDERFLOWS
-C     AND OVERFLOWS DO NOT OCCUR IN THE COMPUTATION OF THE UNSCALED
-C     SUM OF SQUARES FOR THE INTERMEDIATE COMPONENTS.
-C     THE DEFINITIONS OF SMALL, INTERMEDIATE AND LARGE COMPONENTS
-C     DEPEND ON TWO CONSTANTS, RDWARF AND RGIANT. THE MAIN
-C     RESTRICTIONS ON THESE CONSTANTS ARE THAT RDWARF**2 NOT
-C     UNDERFLOW AND RGIANT**2 NOT OVERFLOW. THE CONSTANTS
-C     GIVEN HERE ARE SUITABLE FOR EVERY KNOWN COMPUTER.
-C
-C     THE FUNCTION STATEMENT IS
-C
-C       DOUBLE PRECISION FUNCTION ENORM(N,X)
-C
-C     WHERE
-C
-C       N IS A POSITIVE INTEGER INPUT VARIABLE.
-C
-C       X IS AN INPUT ARRAY OF LENGTH N.
-C
-C     SUBPROGRAMS CALLED
-C
-C       FORTRAN-SUPPLIED ... DABS,DSQRT
-C
-C     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. MARCH 1980.
-C     BURTON S. GARBOW, KENNETH E. HILLSTROM, JORGE J. MORE
-C
-C     **********
-      INTEGER I
-      DOUBLE PRECISION AGIANT,FLOATN,ONE,RDWARF,RGIANT,S1,S2,S3,XABS,
-     *                 X1MAX,X3MAX,ZERO
-      DATA ONE,ZERO,RDWARF,RGIANT /1.0D0,0.0D0,3.834D-20,1.304D19/
-      S1 = ZERO
-      S2 = ZERO
-      S3 = ZERO
-      X1MAX = ZERO
-      X3MAX = ZERO
-      FLOATN = N
-      AGIANT = RGIANT/FLOATN
-      DO 90 I = 1, N
-         XABS = DABS(X(I))
-         IF (XABS .GT. RDWARF .AND. XABS .LT. AGIANT) GO TO 70
-            IF (XABS .LE. RDWARF) GO TO 30
-C
-C              SUM FOR LARGE COMPONENTS.
-C
-               IF (XABS .LE. X1MAX) GO TO 10
-                  S1 = ONE + S1*(X1MAX/XABS)**2
-                  X1MAX = XABS
-                  GO TO 20
-   10          CONTINUE
-                  S1 = S1 + (XABS/X1MAX)**2
-   20          CONTINUE
-               GO TO 60
-   30       CONTINUE
-C
-C              SUM FOR SMALL COMPONENTS.
-C
-               IF (XABS .LE. X3MAX) GO TO 40
-                  S3 = ONE + S3*(X3MAX/XABS)**2
-                  X3MAX = XABS
-                  GO TO 50
-   40          CONTINUE
-                  IF (XABS .NE. ZERO) S3 = S3 + (XABS/X3MAX)**2
-   50          CONTINUE
-   60       CONTINUE
-            GO TO 80
-   70    CONTINUE
-C
-C           SUM FOR INTERMEDIATE COMPONENTS.
-C
-            S2 = S2 + XABS**2
-   80    CONTINUE
-   90    CONTINUE
-C
-C     CALCULATION OF NORM.
-C
-      IF (S1 .EQ. ZERO) GO TO 100
-         ENORM = X1MAX*DSQRT(S1+(S2/X1MAX)/X1MAX)
-         GO TO 130
-  100 CONTINUE
-         IF (S2 .EQ. ZERO) GO TO 110
-            IF (S2 .GE. X3MAX)
-     *         ENORM = DSQRT(S2*(ONE+(X3MAX/S2)*(X3MAX*S3)))
-            IF (S2 .LT. X3MAX)
-     *         ENORM = DSQRT(X3MAX*((S2/X3MAX)+(X3MAX*S3)))
-            GO TO 120
-  110    CONTINUE
-            ENORM = X3MAX*DSQRT(S3)
-  120    CONTINUE
-  130 CONTINUE
-      RETURN
-C
-C     LAST CARD OF FUNCTION ENORM.
-C
-      END
-      SUBROUTINE FDJAC1(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,
+
+
+      SUBROUTINE FDJAC1_T(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,
      *                  WA1,WA2)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER N,LDFJAC,IFLAG,ML,MU
@@ -5264,7 +4957,7 @@ C     APPROXIMATING THE NONZERO TERMS.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE FDJAC1(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,
+C       SUBROUTINE FDJAC1_T(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,
 C                         WA1,WA2)
 C
 C     WHERE
@@ -5397,7 +5090,7 @@ C
 C     LAST CARD OF SUBROUTINE FDJAC1.
 C
       END
-      SUBROUTINE HYBRD(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,DIAG,
+      SUBROUTINE HYBRD_T(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,DIAG,
      *                 MODE,FACTOR,NPRINT,INFO,NFEV,FJAC,LDFJAC,R,LR,
      *                 QTF,WA1,WA2,WA3,WA4)
       INCLUDE 'emmix/EMMIX-t.max'
@@ -5419,7 +5112,7 @@ C     THEN CALCULATED BY A FORWARD-DIFFERENCE APPROXIMATION.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE HYBRD(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,
+C       SUBROUTINE HYBRD_T(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,
 C                        DIAG,MODE,FACTOR,NPRINT,INFO,NFEV,FJAC,
 C                        LDFJAC,R,LR,QTF,WA1,WA2,WA3,WA4)
 C
@@ -5622,14 +5315,14 @@ C
 C        CALCULATE THE JACOBIAN MATRIX.
 C
          IFLAG = 2
-         CALL FDJAC1(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,WA1,
+         CALL FDJAC1_T(FCN,N,X,FVEC,FJAC,LDFJAC,IFLAG,ML,MU,EPSFCN,WA1,
      *               WA2)
          NFEV = NFEV + MSUM
          IF (IFLAG .LT. 0) GO TO 300
 C
 C        COMPUTE THE QR FACTORIZATION OF THE JACOBIAN.
 C
-         CALL QRFAC(N,N,FJAC,LDFJAC,.FALSE.,IWA,1,WA1,WA2,WA3)
+         CALL QRFAC_T(N,N,FJAC,LDFJAC,.FALSE.,IWA,1,WA1,WA2,WA3)
 C
 C        ON THE FIRST ITERATION AND IF MODE IS 1, SCALE ACCORDING
 C        TO THE NORMS OF THE COLUMNS OF THE INITIAL JACOBIAN.
@@ -5689,7 +5382,7 @@ C
 C
 C        ACCUMULATE THE ORTHOGONAL FACTOR IN FJAC.
 C
-         CALL QFORM(N,N,FJAC,LDFJAC,WA1)
+         CALL QFORM_T(N,N,FJAC,LDFJAC,WA1)
 C
 C        RESCALE IF NECESSARY.
 C
@@ -5713,7 +5406,7 @@ C
 C
 C           DETERMINE THE DIRECTION P.
 C
-            CALL DOGLEG(N,R,LR,DIAG,QTF,DELTA,WA1,WA2,WA3)
+            CALL DOGLEG_T(N,R,LR,DIAG,QTF,DELTA,WA1,WA2,WA3)
 C
 C           STORE THE DIRECTION P AND X + P. CALCULATE THE NORM OF P.
 C
@@ -5833,9 +5526,9 @@ C
 C
 C           COMPUTE THE QR FACTORIZATION OF THE UPDATED JACOBIAN.
 C
-            CALL R1UPDT(N,N,R,LR,WA1,WA2,WA3,SING)
-            CALL R1MPYQ(N,N,FJAC,LDFJAC,WA2,WA3)
-            CALL R1MPYQ(1,N,QTF,1,WA2,WA3)
+            CALL R1UPDT_T(N,N,R,LR,WA1,WA2,WA3,SING)
+            CALL R1MPYQ_T(N,N,FJAC,LDFJAC,WA2,WA3)
+            CALL R1MPYQ_T(1,N,QTF,1,WA2,WA3)
 C
 C           END OF THE INNER LOOP.
 C
@@ -5858,7 +5551,7 @@ C
 C     LAST CARD OF SUBROUTINE HYBRD.
 C
       END
-      SUBROUTINE HYBRD1(FCN,N,X,FVEC,TOL,INFO,WA,LWA)
+      SUBROUTINE HYBRD1_T(FCN,N,X,FVEC,TOL,INFO,WA,LWA)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER N,INFO,LWA
       DOUBLE PRECISION TOL
@@ -5878,7 +5571,7 @@ C     APPROXIMATION.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE HYBRD1(FCN,N,X,FVEC,TOL,INFO,WA,LWA)
+C       SUBROUTINE HYBRD1_T(FCN,N,X,FVEC,TOL,INFO,WA,LWA)
 C
 C     WHERE
 C
@@ -5973,7 +5666,7 @@ c     DO 10 J = 1, N
       NPRINT = 0
       LR = (N*(N + 1))/2
       INDEX = 6*N + LR
-      CALL HYBRD(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,WA(1),MODE,
+      CALL HYBRD_T(FCN,N,X,FVEC,XTOL,MAXFEV,ML,MU,EPSFCN,WA(1),MODE,
      *           FACTOR,NPRINT,INFO,NFEV,WA(INDEX+1),N,WA(6*N+1),LR,
      *           WA(N+1),WA(2*N+1),WA(3*N+1),WA(4*N+1),WA(5*N+1))
       IF (INFO .EQ. 5) INFO = 4
@@ -5983,7 +5676,7 @@ C
 C     LAST CARD OF SUBROUTINE HYBRD1.
 C
       END
-      SUBROUTINE QFORM(M,N,Q,LDQ,WA)
+      SUBROUTINE QFORM_T(M,N,Q,LDQ,WA)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER M,N,LDQ
       DOUBLE PRECISION Q(LDQ,M),WA(M)
@@ -5997,7 +5690,7 @@ C     Q FROM ITS FACTORED FORM.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE QFORM(M,N,Q,LDQ,WA)
+C       SUBROUTINE QFORM_T(M,N,Q,LDQ,WA)
 C
 C     WHERE
 C
@@ -6079,7 +5772,7 @@ C
 C     LAST CARD OF SUBROUTINE QFORM.
 C
       END
-      SUBROUTINE QRFAC(M,N,A,LDA,PIVOT,IPVT,LIPVT,RDIAG,ACNORM,WA)
+      SUBROUTINE QRFAC_T(M,N,A,LDA,PIVOT,IPVT,LIPVT,RDIAG,ACNORM,WA)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER M,N,LDA,LIPVT
       INTEGER IPVT(LIPVT)
@@ -6106,7 +5799,7 @@ C     APPEARED IN THE CORRESPONDING LINPACK SUBROUTINE.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE QRFAC(M,N,A,LDA,PIVOT,IPVT,LIPVT,RDIAG,ACNORM,WA)
+C       SUBROUTINE QRFAC_T(M,N,A,LDA,PIVOT,IPVT,LIPVT,RDIAG,ACNORM,WA)
 C
 C     WHERE
 C
@@ -6244,7 +5937,7 @@ C
 C     LAST CARD OF SUBROUTINE QRFAC.
 C
       END
-      SUBROUTINE R1MPYQ(M,N,A,LDA,V,W)
+      SUBROUTINE R1MPYQ_T(M,N,A,LDA,V,W)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER M,N,LDA
       DOUBLE PRECISION A(LDA,MAXNG),V(MAXNG),W(MAXNG)
@@ -6264,7 +5957,7 @@ C     GV, GW ROTATIONS IS SUPPLIED.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE R1MPYQ(M,N,A,LDA,V,W)
+C       SUBROUTINE R1MPYQ_T(M,N,A,LDA,V,W)
 C
 C     WHERE
 C
@@ -6337,7 +6030,7 @@ C
 C     LAST CARD OF SUBROUTINE R1MPYQ.
 C
       END
-      SUBROUTINE R1UPDT(M,N,S,LS,U,V,W,SING)
+      SUBROUTINE R1UPDT_T(M,N,S,LS,U,V,W,SING)
       INCLUDE 'emmix/EMMIX-t.max'
       INTEGER M,N,LS
       LOGICAL SING
@@ -6367,7 +6060,7 @@ C     INFORMATION TO RECOVER THE GV, GW ROTATIONS IS RETURNED.
 C
 C     THE SUBROUTINE STATEMENT IS
 C
-C       SUBROUTINE R1UPDT(M,N,S,LS,U,V,W,SING)
+C       SUBROUTINE R1UPDT_T(M,N,S,LS,U,V,W,SING)
 C
 C     WHERE
 C
@@ -6551,7 +6244,7 @@ C
 C  This group of subroutines implements the K-means Clustering algorithm.
 C  Implemented by David Peel May 1994
 
-      SUBROUTINE KMEANS(NIND,NATT,NG,X,IDT,EPSILON,TT,IER)
+      SUBROUTINE KMEANS_T(NIND,NATT,NG,X,IDT,EPSILON,TT,IER)
 C      Main subroutine
 
        IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -6565,8 +6258,8 @@ C      Main subroutine
      &           XKOLD(MAXNG,MNATT),IDT(MNIND),
      &           XSTAN(MNIND,MNATT)
       IER=0
-      CALL KSTAND(NIND,NATT,X,XSTAN)
-      CALL KSEED(NIND,NATT,NG,XSTAN,XK,IER)
+      CALL KSTAND_T(NIND,NATT,X,XSTAN)
+      CALL KSEED_T(NIND,NATT,NG,XSTAN,XK,IER)
       DO 30 T=1,TT
       DO 430 KK=1,NG
         DO 420 LL=1,NATT
@@ -6574,10 +6267,10 @@ C      Main subroutine
 420             CONTINUE
 430     CONTINUE
         DO 20 KK=1,NIND
-          CALL WINNER(NATT,NG,XSTAN,KK,XK,IDT,IER)
+          CALL WINNER_T(NATT,NG,XSTAN,KK,XK,IDT,IER)
 20      CONTINUE
-          CALL UPDATE(NIND,NATT,NG,XSTAN,XK,IDT,IER)
-          ET=RULE(NG,NATT,XKOLD,XK)
+          CALL UPDATE_T(NIND,NATT,NG,XSTAN,XK,IDT,IER)
+          ET=RULE_T(NG,NATT,XKOLD,XK)
           IF (ET.LE.EPSILON) GO TO 99
 30    CONTINUE
 
@@ -6586,7 +6279,7 @@ C      Main subroutine
 99    RETURN
       END
 
-      SUBROUTINE KSTAND(NIND,NATT,X,XNEW)
+      SUBROUTINE KSTAND_T(NIND,NATT,X,XNEW)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       DIMENSION X(MNIND,MNATT),XNEW(MNIND,MNATT),
@@ -6609,7 +6302,7 @@ C      Main subroutine
       RETURN
       END
 
-      SUBROUTINE KSEED(NIND,NATT,NG,XSTAN,XK,IER)
+      SUBROUTINE KSEED_T(NIND,NATT,NG,XSTAN,XK,IER)
 c     This Subroutine chooses the initial K seeds (Means of clusters)
 c     for the algorithm. At present they are chosen from data set at
 c     random.
@@ -6621,7 +6314,7 @@ c     random.
        INCLUDE 'emmix/EMMIX-t.max'
       DIMENSION XSTAN(MNIND,MNATT),XK(MAXNG,MNATT)
       DO 210 I=1,NG
-        R=RANDNUM()
+        R=RANDNUM_T()
         R=R*NIND
 c       Convert CHOICE to integer
         CHOICE=INT(R)+1
@@ -6632,7 +6325,7 @@ c       Convert CHOICE to integer
       RETURN
       END
 
-      SUBROUTINE WINNER(NATT,NG,XSTAN,KK,XK,IDT,IER)
+      SUBROUTINE WINNER_T(NATT,NG,XSTAN,KK,XK,IDT,IER)
 c     This subroutine determines the allocation of the KKth point
 c     ie which mean is closest to the given data point (Euclidean).
 
@@ -6654,7 +6347,7 @@ c     ie which mean is closest to the given data point (Euclidean).
       RETURN
       END
 
-      SUBROUTINE UPDATE(NIND,NATT,NG,XSTAN,XK,IDT,IER)
+      SUBROUTINE UPDATE_T(NIND,NATT,NG,XSTAN,XK,IDT,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
        INCLUDE 'emmix/EMMIX-t.max'
       DIMENSION XK(MAXNG,MNATT),IDT(MNIND),
@@ -6684,7 +6377,7 @@ c         Update rules
       END
 
 
-      FUNCTION RULE(NG,NATT,XKOLD,XK)
+      FUNCTION RULE_T(NG,NATT,XKOLD,XK)
 c     This function returns the value used to determine if the algorithm
 c     has converged it is a measure of the change in the nodes from iteration
 c     to iteration.
@@ -6705,7 +6398,7 @@ C
 C
 C
 Copyright (C) 1985 Numerical Recipes Software -- GAMMLN
-      FUNCTION GAMMLN(XX)
+      FUNCTION GAMMLN_T(XX)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION COF(6),STP,HALF,ONE,FPF,X,TMP,SER,XX
 c      DATA COF,STP/76.18009173D0,-86.50532033D0,24.01409822D0,
@@ -6725,7 +6418,7 @@ c    *    -1.231739516D0,.120858003D-2,-.536382D-5,2.50662827465D0/
       RETURN
       END
 
-      FUNCTION DIGAMA(X, IER)
+      FUNCTION DIGAMA_T(X, IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 C
 C     ALGORITHM AS 103  APPL. STATIST. (1976) VOL.25, NO.3
@@ -6755,7 +6448,7 @@ C
         RETURN
       END IF
 C
-C     Reduce to DIGAMA(X + N) where (X + N) >= C
+C     Reduce to DIGAMA_T(X + N) where (X + N) >= C
 C
     1 IF (Y .GE. C) GO TO 2
       DIGAMA = DIGAMA - ONE/Y
@@ -6771,7 +6464,7 @@ C
       RETURN
       END
 
-      SUBROUTINE TMOM(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
+      SUBROUTINE TMOM_T(NIND,NATT,NG,X,XMU,XVAR,W,XUU)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       DIMENSION X(MNIND,MNATT),XMU(MAXNG,MNATT),XUU(MAXNG)
@@ -6794,7 +6487,7 @@ C
       RETURN
       END
 
-      SUBROUTINE TEQ0(NDUMMY,XUU1,FVEC1,IER)
+      SUBROUTINE TEQ0_T(NDUMMY,XUU1,FVEC1,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       COMMON /HYBD/ UTEMP(MNIND,MAXNG),TNIND,TNATT,XUUOLD(MAXNG),
@@ -6808,9 +6501,9 @@ C
             RETURN
            ENDIF
           IER=0
-          DIG1=DIGAMA(0.5*XUU1,IER)
+          DIG1=DIGAMA_T(0.5*XUU1,IER)
           IF (IER.GT.0) RETURN
-          DIG2=DIGAMA(0.5*(XUUOLD(1)+TNATT),IER)
+          DIG2=DIGAMA_T(0.5*(XUUOLD(1)+TNATT),IER)
           IF (IER.GT.0) RETURN
           XLOG1=LOG(0.5*XUU1)
           XLOG2=LOG(0.5*(XUUOLD(1)+TNATT))
@@ -6822,7 +6515,7 @@ C
       END
 
 
-      SUBROUTINE TEQ(NG,XUU,FVEC,IER)
+      SUBROUTINE TEQ_T(NG,XUU,FVEC,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       INCLUDE 'emmix/EMMIX-t.max'
       COMMON /HYBD/ UTEMP(MNIND,MAXNG),TNIND,TNATT,XUUOLD(MAXNG),
@@ -6837,9 +6530,9 @@ C
           RETURN
           ENDIF
           IER=0
-          DIG1=DIGAMA(0.5*XUU(K),IER)
+          DIG1=DIGAMA_T(0.5*XUU(K),IER)
           IF (IER.GT.0) RETURN
-          DIG2=DIGAMA(0.5*(XUUOLD(K)+TNATT),IER)
+          DIG2=DIGAMA_T(0.5*(XUUOLD(K)+TNATT),IER)
           IF (IER.GT.0) RETURN
           XLOG1=LOG(0.5*XUU(K))
           XLOG2=LOG(0.5*(XUUOLD(K)+TNATT))
@@ -6850,7 +6543,7 @@ C
       RETURN
       END
 
-        SUBROUTINE TFREE(NIND,NATT,NG,XUU,U,W,ITER,IER)
+        SUBROUTINE TFREE_T(NIND,NATT,NG,XUU,U,W,ITER,IER)
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
         INCLUDE 'emmix/EMMIX-t.max'
       COMMON /HYBD/ UTEMP(MNIND,MAXNG),TNIND,TNATT,XUUOLD(MAXNG),
@@ -6895,12 +6588,12 @@ C          tmp=(group-1)*3+1
           sizehy=(NG*(3*NG+13))/2
           IF (FLAGS(7).EQ.3) THEN
           XUU1=XUU(1)
-          call HYBRD1(TEQ0,1,XUU1,FVEC1,xtol,ifail,work,sizehy)
+          call HYBRD1_T(TEQ0,1,XUU1,FVEC1,xtol,ifail,work,sizehy)
       DO 111 K=1,NG
        XUU(K)=XUU1
 111   CONTINUE
           ELSE
-          call HYBRD1(TEQ,NG,XUU,FVEC,xtol,ifail,work,sizehy)
+          call HYBRD1_T(TEQ,NG,XUU,FVEC,xtol,ifail,work,sizehy)
           ENDIF
 C20     continue
       RETURN
@@ -6910,12 +6603,12 @@ C
 C   This group of subroutines deal with generating random numbers
 C
 C   The subroutines in this file  basically act as a interface between
-C   how this program calls the random number generator ( R=RANDNUM(SEED)
+C   how this program calls the random number generator ( R=RANDNUM_T(SEED)
 C
 
 C   D.Peel Nov 1995
 
-       SUBROUTINE DETERRANDOM(IER)
+       SUBROUTINE DETERRANDOM_T(IER)
 C      This subroutine is called at the very beginning of the program
 C      to determine if the random number generator is working
 C
@@ -6937,7 +6630,7 @@ C      in future versions
            IZ=54367
            XISEEDS(1)=.435543
            DO 106 I=2,1000
-             XISEEDS(I)=RANDOM(IX,IY,IZ)
+             XISEEDS(I)=RANDOM_T(IX,IY,IZ)
              IF (XISEEDS(I).EQ.0) GO TO 107
              DO 105 J=1,I-1
                IF (XISEEDS(I).EQ.XISEEDS(J)) GO TO 107
@@ -6963,7 +6656,7 @@ C      in future versions
            RETURN
            END
 
-           FUNCTION RANDNUM()
+           FUNCTION RANDNUM_T()
 C          This is the function called by the program NMM. If you
 C          wish to use your own portable random number generator
 C          then it should be used in place of this function.
@@ -6971,7 +6664,7 @@ C          then it should be used in place of this function.
            IMPLICIT DOUBLE PRECISION (A-H,O-Z)
            COMMON /STORE1/ SEED,RANDTYPE,IX,IY,IZ
            IF (RANDTYPE.EQ.1) THEN
-             RANDNUM=RANDOM(IX,IY,IZ)
+             RANDNUM=RANDOM_T(IX,IY,IZ)
            ELSE
       WRITE(*,*)'ERROR: As previously described due to random number'
       WRITE(*,*)'       generator problems features utilising'
@@ -6981,7 +6674,7 @@ C          then it should be used in place of this function.
            RETURN
            END
 
-      DOUBLE PRECISION FUNCTION RANDOM(IX,IY,IZ)
+      DOUBLE PRECISION FUNCTION RANDOM_T(IX,IY,IZ)
 C
 C     Algorithm AS 183 Appl. Statist. (1982) vol.31, no.2
 C
@@ -7031,7 +6724,7 @@ C      3/ Parametric sample which is simply generating a sample from the
 C         fitted estimates of the model on the original data set(normal
 C         mixture model)
 C
-      SUBROUTINE BSAMP(NIND,NATT,NG,XMU,XVAR,T,TX,X,WL,IDT,BT,IER)
+      SUBROUTINE BSAMP_T(NIND,NATT,NG,XMU,XVAR,T,TX,X,WL,IDT,BT,IER)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM
@@ -7058,11 +6751,11 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         WL(I)=0.0
 10    CONTINUE
       IF ((FLAGS(18).EQ.1).AND.(BT.EQ.0)) THEN
-       CALL SWR(NIND,WL)
+       CALL SWR_T(NIND,WL)
       ELSEIF ((FLAGS(18).EQ.2).AND.(BT.EQ.0)) THEN
-       CALL WLIKE(NIND,WL)
+       CALL WLIKE_T(NIND,WL)
       ELSE
-       CALL MVNG(NIND,NATT,NG,XMU,XVAR,T,X,IDT,IER)
+       CALL MVNG_T(NIND,NATT,NG,XMU,XVAR,T,X,IDT,IER)
        DO 50 I=1,NIND
         WL(I)=1
 50     CONTINUE
@@ -7077,7 +6770,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       RETURN
       END
 
-      SUBROUTINE SWR(NIND,WL)
+      SUBROUTINE SWR_T(NIND,WL)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       EXTERNAL RANDNUM
 C
@@ -7093,7 +6786,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DIMENSION WL(MNIND)
       DOUBLE PRECISION RANDNUM
       DO 100 I=1,NIND
-        R=RANDNUM()
+        R=RANDNUM_T()
         R=R*NIND
 c       Convert CHOICE to integer
         CHOICE=INT(R)+1
@@ -7112,7 +6805,7 @@ c       Convert CHOICE to integer
       END
 
 
-      SUBROUTINE WLIKE(NIND,WL)
+      SUBROUTINE WLIKE_T(NIND,WL)
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       EXTERNAL RANDNUM
 C
@@ -7129,7 +6822,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DOUBLE PRECISION RANDNUM
       WLSUM=0
       DO 100 I=1,NIND
-        WEIGHT=RANDNUM()
+        WEIGHT=RANDNUM_T()
 c       Convert CHOICE to integer
         WEIGHT=log(WEIGHT)
           WL(I)=WEIGHT
@@ -7160,7 +6853,7 @@ C     Furthermore, nind, natt and ngp are NO LONGER written to pmvng.out2.
 C     Modified by D.Peel SEP 1994 minor modifications and converted to a
 C     subroutine to interact with MMresamp
 
-      SUBROUTINE MVNG(NIND,NATT,NG,XMU,XVAR,T,X,IDT,IER)
+      SUBROUTINE MVNG_T(NIND,NATT,NG,XMU,XVAR,T,X,IDT,IER)
 C     This is the main subroutine to generate samples from a mixture of
 C     multivariate normals. The program uses the Naylor version to
 C     generate the multivariate normal data.
@@ -7188,7 +6881,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
      &          X(MNIND,MNATT),IDT(MNIND),XMU(MAXNG,MNATT)
        IER=0
 C      Determine the number in each group
-        CALL RANNT(NIND,NG,T,NT,R,IER)
+        CALL RANNT_T(NIND,NG,T,NT,R,IER)
         IF (IER.NE.0) RETURN
 C       Array NT contains the number of each group in the sample
         XKN=0
@@ -7196,7 +6889,7 @@ C       Array NT contains the number of each group in the sample
 C         Generate all samples from each group at once
 C         allocate to the y array in order
           KK=K
-          CALL MVNORM(NT(K),NATT,KK,XMU,XVAR,XSAR,R)
+          CALL MVNORM_T(NT(K),NATT,KK,XMU,XVAR,XSAR,R)
 C         Use group sample means and variances for initial allocation
           DO 20 I=1,NT(K)
           DO 20 J=1,NATT
@@ -7229,7 +6922,7 @@ c       WRITE (FYLENO,*) '   Generated sample from MIXCLUS'
       END
 
 
-      SUBROUTINE RANNT(NIND,NG,T,NT,R,IER)
+      SUBROUTINE RANNT_T(NIND,NG,T,NT,R,IER)
 C     The samples have the number from each group
 C     determined randomly in the same proportion
 C     as those assigned by the mixml program.
@@ -7258,7 +6951,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         XL(K)=TEMP
 110   CONTINUE
       DO 120 I=1,NIND
-        R=RANDNUM()
+        R=RANDNUM_T()
         DO 115 K=1,NG
           IF (R.LE.XL(K)) THEN
             NT(K)=NT(K)+1
@@ -7277,7 +6970,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       END
 
 
-      SUBROUTINE MVNORM(NS,NATT,KGP,XMU,XVAR,XSAR,R)
+      SUBROUTINE MVNORM_T(NS,NATT,KGP,XMU,XVAR,XSAR,R)
 c      Multivariate normal sample generator
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -7321,7 +7014,7 @@ c      Initialize mean and variance arrays
 15     CONTINUE
        DO 50 L=1,NS
          DO 17 I=1,NATT
-          CALL NORM(Z(I),R)
+          CALL NORM_T(Z(I),R)
 17       CONTINUE
          DO 20 I=1,NATT
            SUM=0.0
@@ -7339,32 +7032,32 @@ c      Initialize mean and variance arrays
 
 
 
-      SUBROUTINE NORM(Q,R)
+      SUBROUTINE NORM_T(Q,R)
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       REAL X,Y,G3X,V1,V2,SS,CL,Z
       EXTERNAL RANDNUM
       DOUBLE PRECISION RANDNUM,R
-      R=RANDNUM()
+      R=RANDNUM_T()
       IF(R.LE..8638D0) THEN
-10       R=RANDNUM()
+10       R=RANDNUM_T()
          X=R
-         R=RANDNUM()
+         R=RANDNUM_T()
          X=R+X
-         R=RANDNUM()
+         R=RANDNUM_T()
          X=X+R
          Z=2.0D0*(X-1.50D0)
       ELSEIF(R.LE.0.9745D0) THEN
-         R=RANDNUM()
+         R=RANDNUM_T()
          X=R
-         R=RANDNUM()
+         R=RANDNUM_T()
          X=X+R
          Z=1.5D0*(X-1.D0)
       ELSEIF(R.LE.0.9973002039D0) THEN
-20       R=RANDNUM()
+20       R=RANDNUM_T()
          X=6.0D0*R-3.0D0
          R=X
-         Y=0.358D0*RANDNUM()
+         Y=0.358D0*RANDNUM_T()
          R=X
          IF(ABS(X).LT.1.0D0) THEN
           G3X=17.49731196D0*DEXP((-0.5D0)*X*X)-4.73570326D0*(3D0-X*X)
@@ -7383,8 +7076,8 @@ c      Initialize mean and variance arrays
 30       CONTINUE
          Z=X
         ELSE
-40      V1=RANDNUM()
-        V2=RANDNUM()
+40      V1=RANDNUM_T()
+        V2=RANDNUM_T()
         V1=2.0D0*V1-1.0D0
         V2=2.0D0*V2-1.0D0
         SS=V1*V1+V2*V2
@@ -7423,7 +7116,7 @@ C
 C These subroutines will most probably be replaced in future versions.
 
 
-      SUBROUTINE HIER(NIND,NATT,NG,X,IDT,ISU,IS,BETA,IFAULT)
+      SUBROUTINE HI_T(NIND,NATT,NG,X,IDT,ISU,IS,BETA,IFAULT)
 C      The main controlling S/R for hierarchical clustering program
 C      Parameters:
 C      IFIN : Y  finish; N  repeat cycle(reread data & cluster again)
@@ -7479,7 +7172,7 @@ C         'Incremental Sum of Squares (WARD''S Method) =7
       IF(LIM.GT.LIMZ) GOTO 40
       DO 10 I=1,N3
 10      Z(I)=0.0
-15    CALL RCLUH(Z(N1),Z(N2),H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,
+15    CALL RCLUH_T(Z(N1),Z(N2),H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,
      &           ISU,FAC,X)
 c      write (19,*) 'FORM 1'
 c      write (19,*) (FORM1(III),III=1,14)
@@ -7492,15 +7185,15 @@ c      write (19,*) (FORM1(III),III=1,14)
       IF(LIM.GT.LIMZ) GOTO 40
       DO 20 I=N2,N3
 20      Z(I)=0.0
-      CALL DIST(Z(N1),Z(N2),NIND,NATT,FORM3,HD,HH4,X)
+      CALL DIST_T(Z(N1),Z(N2),NIND,NATT,FORM3,HD,HH4,X)
 cccccccccccccc
-c      CALL WSIM(Z(N2),Z(N3),NIND)
+c      CALL WSIM_T(Z(N2),Z(N3),NIND)
 ccccccccccccccc
       DO 30 I=N3,N6
 30      Z(I)=0.0
 
-      CALL AGHICL(Z(N2),Z(N3),Z(N4),Z(N5),NIND,BETA,IS)
-      CALL ALLOC(Z(N5),NIND,NATT,NG,ISU,IS,BETA,H2,HS,X,IDT)
+      CALL AGHICL_T(Z(N2),Z(N3),Z(N4),Z(N5),NIND,BETA,IS)
+      CALL ALLOC_T(Z(N5),NIND,NATT,NG,ISU,IS,BETA,H2,HS,X,IDT)
       RETURN
 
 40    WRITE(*,50) LIMZ,LIM
@@ -7511,7 +7204,7 @@ ccccccccccccccc
       END
 
 
-      SUBROUTINE RCLUH(RC,TEMP,H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,
+      SUBROUTINE RCLUH_T(RC,TEMP,H1,H2,H3,HH1,HH2,FORM1,NIND,NATT,
      &                 ISU,FAC,X)
 C     Reads GXE matrix, stores as either GXE or EXG, standardizes &/0r
 C     col. corrects if required.
@@ -7550,7 +7243,7 @@ C     col. corrects if required.
           I1=I+6
           FORM1(I1)=H2(2,I)
 180     CONTINUE
-        CALL STAND(RC,NIND,NATT)
+        CALL STAND_T(RC,NIND,NATT)
       ENDIF
 
       DO 190 II=1,NIND
@@ -7560,7 +7253,7 @@ C     col. corrects if required.
       RETURN
       END
 
-       SUBROUTINE WSIM(D,T,NR)
+       SUBROUTINE WSIM_T(D,T,NR)
 C
 C  WRITES DISSIMILARITY MATRIX.
 C
@@ -7589,7 +7282,7 @@ C
 
 
 
-      SUBROUTINE STAND(A,NIND,NATT)
+      SUBROUTINE STAND_T(A,NIND,NATT)
 C     Col. standardizes the A matrix by standard deviation.
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -7617,7 +7310,7 @@ C     Col. standardizes the A matrix by standard deviation.
       END
 
 
-      SUBROUTINE DEL(A,NIND,NATT)
+      SUBROUTINE DEL_T(A,NIND,NATT)
 C     Corrects each row  by mean of row
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -7644,7 +7337,7 @@ C     Corrects each row  by mean of row
       END
 
 
-      SUBROUTINE DIST(RC,DIST1,NIND,NATT,FORM3,HD,HH4,X)
+      SUBROUTINE DIST_T(RC,DIST1,NIND,NATT,FORM3,HD,HH4,X)
 C     Calculates the dissimilarity matrix as required.
 C     only squared Euclidean distance implemented;
 
@@ -7658,12 +7351,12 @@ C     only squared Euclidean distance implemented;
         I1=I+5
         FORM3(I1)=HD(I)
 410   CONTINUE
-      CALL SED(RC,DIST1,NIND,NATT)
+      CALL SED_T(RC,DIST1,NIND,NATT)
       RETURN
       END
 
 
-      SUBROUTINE SED(RC,DIST1,NIND,NATT)
+      SUBROUTINE SED_T(RC,DIST1,NIND,NATT)
 C     Requires an NIND by NATT matrix of data & calculates the SED
 C     dissimilarity matrix between the nind individuals & stores them
 C     in the array DIST.
@@ -7693,7 +7386,7 @@ C     missing data is denoted by a value .LE.-90.0.
       END
 
 
-      SUBROUTINE AGHICL(D,N,M,MEMB,NT,BET,IS)
+      SUBROUTINE AGHICL_T(D,N,M,MEMB,NT,BET,IS)
 C     Requires the dissimilarity matrix (D), the number of individuals
 C     to be classified (NT), and the nominated BETA value (BET) for
 C     flexible sorting if required.
@@ -7715,7 +7408,7 @@ C     & dissimilarity measure on fusion.
 
       IF=NT-1
       DO 610 I=1,IF
-        CALL MIND(D,N,IMIN,JMIN,DMIN,NT)
+        CALL MIND_T(D,N,IMIN,JMIN,DMIN,NT)
         M1=(I-1)*2+1
         M2=M1+1
         MEMB(M1)=M(IMIN)
@@ -7723,7 +7416,7 @@ C     & dissimilarity measure on fusion.
 c        write (19,*) IS
 c        write (19,*) MEMB(M1),MEMB(M2)
         NTI=NT+I
-        CALL DISTO(D,N,IMIN,JMIN,NT,BET,IS)
+        CALL DISTO_T(D,N,IMIN,JMIN,NT,BET,IS)
         N(IMIN)=N(IMIN)+N(JMIN)
         N(JMIN)=0
         M(IMIN)=NT+I
@@ -7732,7 +7425,7 @@ c        write (19,*) MEMB(M1),MEMB(M2)
       END
 
 
-      SUBROUTINE MIND(D,N,IMIN,JMIN,DMIN,NT)
+      SUBROUTINE MIND_T(D,N,IMIN,JMIN,DMIN,NT)
 C     Requires the GP.-GP. dissimilarity matrix D & the array of
 C     number of members in groups (N).
 C     returns the names of the two GPS. (IMIN & JMIN) with the
@@ -7761,7 +7454,7 @@ C     NT = NO. of taxa being clustered
       END
 
 
-      SUBROUTINE DISTO(D,N,IMIN,JMIN,NT,BET,IS)
+      SUBROUTINE DISTO_T(D,N,IMIN,JMIN,NT,BET,IS)
 C     Calculates the new GP.-GP. distances between the new GP. formed
 C     when GPS. IMIN & JMIN FUSE & all other GPS.
 C      BET; Nominated value for flexible sorting if required.
@@ -7774,7 +7467,7 @@ C      IS ; Code for strategy of clustering.
       DO 800 K=1,NT
         IF ((N(K).NE.0).AND.(K.NE.IMIN).AND.(K.NE.JMIN)) THEN
           K1=K
-          CALL DISTQ(D,N,IMIN,JMIN,DISS,K1,BET,IS)
+          CALL DISTQ_T(D,N,IMIN,JMIN,DISS,K1,BET,IS)
           IF(IMIN.GT.K) THEN
             M1=(IMIN-1)*(IMIN-2)/2+K
           ELSE
@@ -7786,7 +7479,7 @@ C      IS ; Code for strategy of clustering.
       RETURN
       END
 
-      SUBROUTINE DISTQ(D,N,IMIN,JMIN,DISS,K,BET,IS)
+      SUBROUTINE DISTQ_T(D,N,IMIN,JMIN,DISS,K,BET,IS)
 C     Calculates new GP.-GP. Dissimilarity between new GP. formed
 C     when GPS. IMIN & JMIN Fuse & other GPS.
 C       IS = 1; NEAREST NEIGHBOUR (SINGLE LINKAGE)
@@ -7889,7 +7582,7 @@ C  Calculate DISS Depending on strategy
       END
 
 
-      SUBROUTINE ALLOC(IHIE,NIND,NATT,NG,ISU,IS,BETA,H2,HS,X,IDT)
+      SUBROUTINE ALLOC_T(IHIE,NIND,NATT,NG,ISU,IS,BETA,H2,HS,X,IDT)
 C     This subroutine takes the hierarchical form and determines a partition
 C     of the data set into NG groups
 
@@ -7905,7 +7598,7 @@ C     of the data set into NG groups
       DO 910 I=1,6
 910    HEAD(I+3)=HS(IS,I)
       IF (IS.NE.6) BETA=0.0
-      CALL FUSE(NAME,NUMB,MEMB,IHIE,NIND,NIND,NG)
+      CALL FUSE_T(NAME,NUMB,MEMB,IHIE,NIND,NIND,NG)
       IG1=0
       DO 920 IF=1,NG
         DO 920 IG=1,NUMB(IF)
@@ -7913,11 +7606,11 @@ C     of the data set into NG groups
            IG2=MEMB(IG1)
            IDT(IG2)=IF
 920   CONTINUE
-c      CALL CHECK(NG,NIND,IDT)
+c      CALL CHECK_T(NG,NIND,IDT)
       RETURN
       END
 
-      SUBROUTINE FUSE(NAME,NUMB,MEMB,IHIE,NIND,NGPS,NGPF)
+      SUBROUTINE FUSE_T(NAME,NUMB,MEMB,IHIE,NIND,NGPS,NGPF)
 C     Four single dimensional arrays containing
 C      NAME  :Group names
 C      NUMB  :NO. in each group
@@ -7963,7 +7656,7 @@ C      NNG   : "  "   "      "  NEW GP. AFTER FUSION
       END
 
 
-      SUBROUTINE FUSEL (NAME,NUMB,MEMB,IG1,IG2,NGL,NEWG,NIND)
+      SUBROUTINE FUSEL_T(NAME,NUMB,MEMB,IG1,IG2,NGL,NEWG,NIND)
 C
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION NAME(*),NUMB(*),MEMB(*)
@@ -8001,13 +7694,13 @@ C     to positions after fusion
       NUMB(NGL-1)=NNG
 C     Shifting MEMBS. of GPS. to appropriate position of
 C     Memb array
-      CALL SHIFT(MEMB,NB1,NS1,NIND)
-      CALL SHIFT(MEMB,NB2,NS2,NIND)
+      CALL SHIFT_T(MEMB,NB1,NS1,NIND)
+      CALL SHIFT_T(MEMB,NB2,NS2,NIND)
       RETURN
       END
 
 
-      SUBROUTINE SHIFT(MEMB,NB,NS,NG)
+      SUBROUTINE SHIFT_T(MEMB,NB,NS,NG)
 C     Shifts membership of MEMB according to fusion
 
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
