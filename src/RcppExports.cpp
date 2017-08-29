@@ -6,6 +6,17 @@
 
 using namespace Rcpp;
 
+// emmix_t
+arma::vec emmix_t(arma::vec dat);
+RcppExport SEXP _EMMIXgene_emmix_t(SEXP datSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type dat(datSEXP);
+    rcpp_result_gen = Rcpp::wrap(emmix_t(dat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // call_emmix_sel
 arma::vec call_emmix_sel(arma::vec t, int row, int col, int g);
 RcppExport SEXP _EMMIXgene_call_emmix_sel(SEXP tSEXP, SEXP rowSEXP, SEXP colSEXP, SEXP gSEXP) {
@@ -40,6 +51,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_EMMIXgene_emmix_t", (DL_FUNC) &_EMMIXgene_emmix_t, 1},
     {"_EMMIXgene_call_emmix_sel", (DL_FUNC) &_EMMIXgene_call_emmix_sel, 4},
     {"_EMMIXgene_select_genes", (DL_FUNC) &_EMMIXgene_select_genes, 8},
     {NULL, NULL, 0}

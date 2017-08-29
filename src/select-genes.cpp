@@ -43,7 +43,7 @@ bool tabcompare(const tab &a, const tab &b)
 //&tl, &sm, &er
 
 // [[Rcpp::export]]
- arma::vec call_emmix_sel( arma::vec t, int row, int col, int g){
+ arma::vec call_emmix_sel(arma::vec t, int row, int col, int g){
   double fl1, fl2;
   int group1[MAX_TISSUES], group2[MAX_TISSUES];
   int comp[MAX_TISSUES], x, y = 0, a1, a2, i;
@@ -57,6 +57,7 @@ bool tabcompare(const tab &a, const tab &b)
   else{
     //actually call emmix on t
   }
+
 
   //out1.%d"
   a1 = 0;//sscanf (s, " Final Log-Likelihood is %f", &fl1);
@@ -114,7 +115,7 @@ bool tabcompare(const tab &a, const tab &b)
 
 
 // [[Rcpp::export]]
-int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double b1, int b2)
+int select_genes(arma::mat& data, int row, int col, int g, int k, int r, double b1, int b2)
 {
   //  ("How many random starts for the fitting of t components to individual genes?\n"); r
   // ("How many k-means starts for the fitting of t components to individual genes?\n"); k
@@ -147,7 +148,7 @@ int select_genes( arma::mat& data, int row, int col, int g, int k, int r, double
     // int col;			/* 3rd argument */
     // int g;			/* 4th argument */
 
-     arma::vec em_res = call_emmix_sel(t, row, col, g);	/* get -2 log \lambda, smaller, error */ //call emmix
+    arma::vec em_res = call_emmix_sel(t, row, col, g);	/* get -2 log \lambda, smaller, error */ //call emmix
     tl = em_res(0);
     er = em_res(1);
     sm = em_res(2);
