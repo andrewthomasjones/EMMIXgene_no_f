@@ -5,6 +5,14 @@
 #'@useDynLib EMMIXgene
 NULL
 
+emmix_t <- function(dat) {
+    .Call('_EMMIXgene_emmix_t', PACKAGE = 'EMMIXgene', dat)
+}
+
+#'@importFrom Rcpp sourceCpp
+#'@useDynLib EMMIXgene
+NULL
+
 call_emmix_sel <- function(t, row, col, g) {
     .Call('_EMMIXgene_call_emmix_sel', PACKAGE = 'EMMIXgene', t, row, col, g)
 }

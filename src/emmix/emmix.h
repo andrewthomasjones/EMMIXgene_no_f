@@ -26,6 +26,21 @@ extern "C" {
   } EMMIX, *PEMMIX;
 
 
+
+  void main_t_( /*  main EM t fit for select genes*/
+      int *NIND, int *NATT, int *NG0, int *NG1, int *NCOV,
+      double *X, double *TOLS,int *USA,int *RV,int *RNATT, double *SIG, double *TXUU,
+      double *TXMU, double *TXVAR, double *TT, int *TIDT, double *W, //end of inputs
+      double *XMUS,double *XVARS,double *TS,double *XUU,
+      double *AIC, double *BIC,double *AWE, double *TLL, double *PVAL,
+      int *IDTS, double *SET,double *SEU, double *SEV, int *IER);
+
+
+
+
+
+
+
   void initfit_( /*  get parameter estimates from initial partition*/
   double *y, int *pn, int *pp,int *pg, int *pncov,int *pdist,
   double * pro, double *mu, double * sigma, double *dof, double *delta,
