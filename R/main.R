@@ -1,16 +1,13 @@
-#' Add together two numbers.
+#' Selects Genes from data supplied.
 #'
-#' @param x A number.
-#' @param y A number.
-#' @return The sum of \code{x} and \code{y}.
+#' @param filename Name of file containing gene data.
+#' @param g A number.
+#' @param k A number.
+#' @param random_starts
+#' @param ll_thresh
+#' @param min_clust_size
+#' @return not sure yet
 #' @examples
-#' add(1, 1)
-#' add(10, 1)
-add <- function(x, y) {
-  x + y
-}
-
-
 select_genes_dat<-function(filename, g=1, k =1, random_starts=5, ll_thresh = 0.001, min_clust_size = 3){
     data<-read.delim(filename, sep=" ", header=F)
     row<-dim(x)[1]
