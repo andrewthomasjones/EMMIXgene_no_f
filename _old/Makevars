@@ -1,0 +1,10 @@
+## -*- mode: Makefile; -*-
+
+# Debug
+#PKG_FFLAGS = -Wall -pedantic -fbounds-check
+#PKG_CPPFLAGS = -Wall -pedantic -I./emmix
+#PKG_LIBS = $(FLIBS)
+PKG_FFLAGS = -fno-range-check
+# Release
+PKG_CPPFLAGS = -I./emmix
+PKG_LIBS=$(FLIBS) $(LAPACK_LIB) $(BLAS_LIBS)

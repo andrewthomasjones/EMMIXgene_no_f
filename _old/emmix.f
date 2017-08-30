@@ -1,0 +1,13 @@
+       INCLUDE 'emmix/EMD.f'
+       INCLUDE 'emmix/EMMIX.f'
+       INCLUDE 'emmix/EMMIX-f1.f'
+       INCLUDE 'emmix/EMMIX-f2.f'
+       INCLUDE 'emmix/EMMIX-spher.f'
+       INCLUDE 'emmix/EMMIX-t.f'
+C       INCLUDE 'emmix/EMFAC.max'
+C       INCLUDE 'emmix/EMMIX.max'
+C       INCLUDE 'emmix/EMMIX-f1.max'
+C       INCLUDE 'emmix/EMMIX-f2.max'
+C       INCLUDE 'emmix/EMMIX-spher.max'
+C       INCLUDE 'emmix/EMMIX-t.max'
+
