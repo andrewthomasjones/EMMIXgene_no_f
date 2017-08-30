@@ -15,6 +15,7 @@ select_genes_dat<-function(filename, g=1, k =1, random_starts=5, ll_thresh = 0.0
     data<-read.delim(filename, sep=" ", header=F)
     row<-dim(x)[1]
     col<-dim(x)[2]
-    res<-select_genes(data, row, col, g, k, random_starts,ll_thresh, min_clust_size)
+    emmix_t(dat, params, 1, 100)
+    res<-0#select_genes(data, row, col, g, k, random_starts,ll_thresh, min_clust_size)
 }
 
