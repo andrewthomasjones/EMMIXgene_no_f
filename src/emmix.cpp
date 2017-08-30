@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+
 #include <Rcpp.h>
 #include <boost/math/special_functions/digamma.hpp>
 #include <boost/math/special_functions/gamma.hpp>
@@ -45,6 +46,17 @@ double df_eq_func::getSumV()
 {
   return v_sum;
 }
+
+
+Rcpp::NumericVector export_vec(arma::vec y)
+{
+  Rcpp::NumericVector tmp = Rcpp::wrap(y);
+  tmp.attr("dim") = R_NilValue;
+  return tmp;
+}
+
+
+
 
 
 // [[Rcpp::export]]
@@ -168,9 +180,9 @@ List emmix_t(arma::vec dat, arma::mat params, int g=1, int max_it=100){
   params = temp2;  
   
  
+
   
-  
-  return Rcpp::List::create(Rcpp::Named("mu")= params.col(1));
+  return Rcpp::List::create(Rcpp::Named("mu")= export_vec(params.col(1)));
                       //   
                       // Named("pi") = params.col(0),
                       // Named("nu") = params.col(2),
@@ -184,9 +196,6 @@ List emmix_t(arma::vec dat, arma::mat params, int g=1, int max_it=100){
                       // );
 
 }
-
-
-
 
 
 

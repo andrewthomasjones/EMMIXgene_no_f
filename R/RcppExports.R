@@ -2,22 +2,17 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #'@importFrom Rcpp sourceCpp
-#'@useDynLib EMMIXgene
 NULL
 
-emmix_t <- function(dat) {
-    .Call('_EMMIXgene_emmix_t', PACKAGE = 'EMMIXgene', dat)
+estep <- function(dat, params) {
+    .Call('_EMMIXgene_estep', PACKAGE = 'EMMIXgene', dat, params)
 }
 
-#'@importFrom Rcpp sourceCpp
-#'@useDynLib EMMIXgene
-NULL
-
-call_emmix_sel <- function(t, row, col, g) {
-    .Call('_EMMIXgene_call_emmix_sel', PACKAGE = 'EMMIXgene', t, row, col, g)
+mstep <- function(dat, tau, you, params) {
+    .Call('_EMMIXgene_mstep', PACKAGE = 'EMMIXgene', dat, tau, you, params)
 }
 
-select_genes <- function(data, row, col, g, k, r, b1, b2) {
-    .Call('_EMMIXgene_select_genes', PACKAGE = 'EMMIXgene', data, row, col, g, k, r, b1, b2)
+emmix_t <- function(dat, params, g = 1L, max_it = 100L) {
+    .Call('_EMMIXgene_emmix_t', PACKAGE = 'EMMIXgene', dat, params, g, max_it)
 }
 
