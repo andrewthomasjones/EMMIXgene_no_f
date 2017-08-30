@@ -55,6 +55,12 @@ Rcpp::NumericVector export_vec(arma::vec y)
   return tmp;
 }
 
+Rcpp::NumericVector export_uvec(arma::uvec y)
+{
+  Rcpp::NumericVector tmp = Rcpp::wrap(y);
+  tmp.attr("dim") = R_NilValue;
+  return tmp;
+}
 
 
 
@@ -97,7 +103,13 @@ arma::mat estep(const arma::vec& dat, const arma::mat& params){
   return(new_params);
 }
 
-
+arma::mat start_kmeans(arma::vec dat, int g){
+  arma::mat params(g,4, arma::fill::zeros);
+  
+  //import kmeans
+  
+  return(params);
+}
 
 
 // [[Rcpp::export]]
@@ -140,10 +152,13 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
 }
 
 
-// [[Rcpp::export]]
-List emmix_t(arma::vec dat, arma::mat params, int g=1, int max_it=100){
-  int n = dat.size();
 
+// [[Rcpp::export]]
+List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double tol = 0.0001){
+  int n = dat.size();
+  
+  arma::mat params(g,4, arma::fill::zeros);
+  
   arma::vec pi = arma::zeros(g);
   arma::vec mu = arma::zeros(g);
   arma::vec nu = arma::zeros(g);
@@ -161,12 +176,7 @@ List emmix_t(arma::vec dat, arma::mat params, int g=1, int max_it=100){
   arma::vec Q2 = arma::zeros(n);
   arma::vec Q3 = arma::zeros(n);
 
-
-  pi =  params.col(0);
-  mu =  params.col(1);
-  nu =  params.col(2);
-  sigma =  params.col(3);
-
+  params = start_kmeans(dat, g);
   
   //primary loop
   
@@ -182,26 +192,63 @@ List emmix_t(arma::vec dat, arma::mat params, int g=1, int max_it=100){
  
 
   
-  return Rcpp::List::create(Rcpp::Named("mu")= export_vec(params.col(1)));
-                      //   
-                      // Named("pi") = params.col(0),
-                      // Named("nu") = params.col(2),
-                      // Named("sigma") = params.col(3),
-                      // Named("LL") = 0,
-                      // Named("BIC") = 0,  
-                      // Named("AIC") = 0,
-                      // Named("tau") = tau,
-                      // Named("lik") = lik,
-                      // Named("Clusters") = clusters
-                      // );
+  return  List::create(
+                      Named("mu")= export_vec(params.col(1)),
+                      Named("pi") = export_vec(params.col(0)),
+                      Named("nu") = export_vec(params.col(2)),
+                      Named("sigma") = export_vec(params.col(3)),
+                      Named("LL") = 0,
+                      Named("BIC") = 0,
+                      Named("AIC") = 0,
+                      Named("tau") = tau,
+                      Named("lik") = lik,
+                      Named("Clusters") = export_uvec(clusters),
+                      Named("c_min") = 0
+                      );
 
 }
 
+List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
+  
+  List g1 = emmix_t(dat, 1);
+  List g2 = emmix_t(dat, 2);
+  List best_g = g1;
+  
+  double lambda = 0; // ll_ratio(List g1, List g2)
+  
+  if(-2*log(lambda) > ll_thresh){
+    if(as<int>(g2.attr("c_min")) > min_clust_size){
+      best_g = g2;
+    }else{
+      List g3 = emmix_t(dat, 3, 100);
+      lambda = 0; // ll_ratio(List g2, List g3)
+      if(-2*log(lambda) > ll_thresh){
+        if(as<int>(g3.attr("c_min")) > min_clust_size){
+          best_g = g3;
+        }
+      }
+    }
+  }
+  
+  return(best_g);
+}
+
+// [[Rcpp::export]]
+List emmix_gene(arma::mat bigdat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
+ 
+ int n = bigdat.n_rows;
+ List tmp = List::create();
+ 
+ for(int i; i<n;i++){
+   tmp = each_gene(bigdat.row(i), random_starts, ll_thresh, min_clust_size, tol);
+ }
+ 
+ 
 
 
 
-
-
+  return(tmp);
+}
 
 
 
