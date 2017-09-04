@@ -13,8 +13,8 @@ select_genes_dat<-function(filename, g=1, k =1, random_starts=4, ll_thresh = 8, 
     row<-dim(x)[1]
     col<-dim(x)[2]
     
-    g1<-emmix_t(dat, 1, 100)
-    g2<-emmix_t(dat, 2, 100)
+    g1<-emmix_t(dat)
+    g2<-emmix_t(dat, 2)
     lambda<-0
     
 

@@ -4,8 +4,8 @@
 \alias{select_genes_dat}
 \title{Selects Genes from data supplied.}
 \usage{
-select_genes_dat(filename, g = 1, k = 1, random_starts = 5,
-  ll_thresh = 0.001, min_clust_size = 3)
+select_genes_dat(filename, g = 1, k = 1, random_starts = 4,
+  ll_thresh = 8, min_clust_size = 8)
 }
 \arguments{
 \item{filename}{Name of file containing gene data.}

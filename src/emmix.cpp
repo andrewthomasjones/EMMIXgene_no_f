@@ -3,8 +3,11 @@
 // [[Rcpp::plugins(cpp11)]]
 
 //'@importFrom Rcpp sourceCpp
+//'@useDynLib EMMIXgene
+
 
 #include <RcppArmadillo.h>
+#include <tkmeans.h>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -62,6 +65,23 @@ Rcpp::NumericVector export_uvec(arma::uvec y)
   return tmp;
 }
 
+//this is only 1D for now
+//'@export
+// [[Rcpp::export]]
+double mahalanobis(double y, double mu, double sigma)
+{
+  double delta = (y-mu)*(1./sigma)*(y-mu);
+  return delta;
+}
+
+//this is only 1D for now
+//'@export
+// [[Rcpp::export]]
+double t_dist(double y, double mu, double sigma, double nu,  int p =1)
+{
+  double pdf = (gamma(0.5*(nu+p))/sqrt(sigma))/(  std::pow(arma::datum::pi*nu, 0.5*p ) *gamma(0.5*nu)* std::pow(1+(mahalanobis(y,mu,sigma)/nu), 0.5*(nu+p))  );
+  return pdf;
+}
 
 
 
@@ -73,30 +93,35 @@ arma::mat estep(const arma::vec& dat, const arma::mat& params){
   
   arma::mat new_params(g2, n, arma::fill::zeros);
   arma::mat tau(g,n, arma::fill::zeros);
-  arma::mat tau_sum(1,n, arma::fill::zeros);
+  arma::rowvec tau_sum(n, arma::fill::zeros);
   arma::mat you(g,n, arma::fill::zeros);
 
   arma::vec pi = params.col(0);
-  arma::vec nu = params.col(2);
   arma::vec mu = params.col(1);
+  arma::vec nu = params.col(2);
   arma::vec sigma = params.col(3);
-
+  
 
   for(int i=0;i<g;i++){
-    students_t dist(nu(i));
     stdvec dens(n);
-    std::transform(dat.begin(), dat.end(), dens.begin(), [dist](double dat) { return pdf(dist,dat); });
+    double mu_i = mu.at(i);
+    double sigma_i = sigma.at(i);
+    double nu_i = nu.at(i);
+    std::transform(dat.begin(), dat.end(), dens.begin(), [mu_i, sigma_i, nu_i](double dat) { return t_dist(dat, mu_i, sigma_i, nu_i); });
     arma::vec dens2 = arma::conv_to<arma::vec>::from(dens);
     tau.row(i) = pi.at(i)*dens2.t();
-    tau_sum.row(0) += pi.at(i)*dens2.t();
+    tau_sum += tau.row(i);
     you.row(i) = ((nu.at(i)+1.0)/(nu.at(i) + (dat-mu.at(i))%(dat-mu.at(i))*(1/sigma.at(i)) )).t();
 
   }
+ 
   
   for(int i=0;i<g;i++){
-    tau.row(i) /= tau_sum.row(0);
+    tau.row(i) /= tau_sum;
   }
-
+  
+  
+  //tau.print();
   new_params.rows(0,g-1)=tau;
   new_params.rows(g,g2-1)=you;
 
@@ -105,8 +130,28 @@ arma::mat estep(const arma::vec& dat, const arma::mat& params){
 
 arma::mat start_kmeans(arma::vec dat, int g){
   arma::mat params(g,4, arma::fill::zeros);
+  arma::vec weights(1, arma::fill::ones);
+  arma::uvec alloc(dat.n_elem, arma::fill::zeros);
+  arma::uvec cluster_sizes(g, arma::fill::zeros);
   
-  //import kmeans
+  params.col(1) = tkmeans(dat, g, 0.0, weights, 1);
+  
+  for(int i; i<dat.n_elem;i++){
+    arma::vec temp = abs(params.col(1)- dat(i)); 
+    alloc.at(i) = arma::index_min(temp);
+  }
+  
+  //cluster size and variance
+  for(int i =0; i<g;i++){
+    arma::uvec tmp1 = find(alloc == i);
+    cluster_sizes.at(i) = tmp1.n_elem;
+    params(i,3) = sum(pow(dat(tmp1)-params(i,1),2.0))/dat.n_elem;
+  }
+  
+  params.col(0) = arma::conv_to< arma::vec >::from(cluster_sizes)/dat.n_elem;
+  
+  //not sure if better way to initialise
+  params.col(2).fill(2.5);
   
   return(params);
 }
@@ -114,7 +159,7 @@ arma::mat start_kmeans(arma::vec dat, int g){
 
 // [[Rcpp::export]]
 arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
-  int n = dat.size();
+  int n = dat.n_elem;
   int g = tau.n_rows;
 
   arma::vec mu2 = arma::zeros<arma::vec>(g);
@@ -125,9 +170,12 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
   
   s_tau = sum(tau,1);
   pi2 = s_tau/n;
-
-  double a = 0.001;
-  double b = 100;
+  
+  //tau.print();
+  //pi2.t().print();
+  
+  double a = 2.01;
+  double b = 999.99;
   boost::uintmax_t df_max_iter=500; // boost solver params, could be user params but relatively unimportant
   tools::eps_tolerance<double> tol(30);
 
@@ -135,10 +183,17 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
     mu2(i) = (sum(dat.t()%you.row(i)%tau.row(i)) / sum(you.row(i)%tau.row(i)));
     sigma2(i) = (sum(you.row(i)%tau.row(i)%((dat.t()-mu2(i))%(dat.t()-mu2(i)))  ) / s_tau(i));
 
+
     double v_sum = (1/s_tau(i))*sum(tau.row(i)%(arma::log(you.row(i))-you.row(i)));
-    df_eq_func rootFun = df_eq_func(v_sum);
-    std::pair<double, double>  r1= tools::bisect(rootFun, a, b, tol, df_max_iter);
-    nu2(i) = (r1.first + r1.second)/2.0;
+      df_eq_func rootFun = df_eq_func(v_sum);
+      
+    try{
+        std::pair<double, double>  r1= tools::bisect(rootFun, a, b, tol, df_max_iter);
+        nu2(i) = (r1.first + r1.second)/2.0;
+    }catch(...){
+        nu2(i) = 999.994;
+    }
+    
 
   }
 
@@ -163,11 +218,11 @@ double AIC_calc(double LL,  int k){
 }
 
 
-
+//'@export
 // [[Rcpp::export]]
-List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double tol = 0.0001){
+List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double tol = 0.0001, std::string start_method = "kmeans"){
   int n = dat.size();
-  int k =0; int n_fixed =0;
+  int k =0; int n_fixed = 0;
   double  LL =0;
   arma::mat params(g,4, arma::fill::zeros);
   
@@ -185,68 +240,99 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
   arma::mat temp2(g,4, arma::fill::zeros);
   
   double Q1 = 0.0;
-  arma::vec Q2 =  arma::zeros(g,n);
-  arma::vec Q3 =  arma::zeros(g,n);
-
-  params = start_kmeans(dat, g);
+  arma::vec Q2 =  arma::zeros(g);
+  arma::mat Q3 =  arma::zeros(g,n);
+  arma::mat Q2b =  arma::zeros(g,n);
   
-  //primary loop
+  std::vector<List> tempOut;
   
-  for(int j =0; j<max_it;j++){
-    arma::mat temp1 = estep(dat,params);
-    tau = temp1.rows(0,g-1);
-    you = temp1.rows(g,2*g-1);
-    temp2 = mstep(dat, tau, you, params);
-    params = temp2; 
-    //log liklihood
-    Q1 = sum(sum( tau.each_col() % arma::log(params.col(0)) ));
-   
-    mu=params.col(1);
-    nu=params.col(2);
-    sigma = params.col(3);
+  for(int starts =0; starts < random_starts; starts++){
+      
+        if(start_method == "kmeans"){
+          params = start_kmeans(dat, g);
+          //params.print();
+        }
+      
+      
+        //primary loop
+        
+        for(int j =0; j<max_it;j++){
+          arma::mat temp1 = estep(dat,params);
+          tau = temp1.rows(0,g-1);
+          you = temp1.rows(g,2*g-1);
+          temp2 = mstep(dat, tau, you, params);
+          params = temp2; 
+          //log liklihood
+          Q1 = sum(sum( tau.each_col() % arma::log(params.col(0)) ));
+          
+         
+          mu=params.col(1);
+          nu=params.col(2);
+          sigma = params.col(3);
+          
+          for(int i=0; i <g; i++){
+            Q2.at(i) = - log(gamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *log(0.5*nu.at(i))+ 0.5*nu.at(i)*(digamma((nu.at(i)+1)/2) - log ((nu.at(i)+1)/2) + sum(log(you.row(i))-you.row(i)) );
+            
+            Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
+            Q2b.row(i) = tau.row(i)*Q2.at(i);
+          }
+         
+          lik.at(j) = Q1  + sum(sum(tau % Q3,0)) + sum(sum(Q2b,0)) ;
+          LL = lik.at(j);
+          
+          
+        }
+        
+        
     
-    for(int i=0; i <g; i++){
-      Q2.row(i) = -log ( gamma(0.5*(nu.at(i)))   ) + 0.5*nu.at(i) *log(0.5*nu.at(i))+ 0.5*nu.at(i)*sum(log(you.row(i))-you.row(i),1) + digamma((nu.at(i)+1)/2) - log ((nu.at(i)+1)/2);
-      Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))*((dat-mu.at(i)).t())*(dat-mu.at(i));
+    
+    
+    //cluster allocation
+    for(int i =0; i<n;i++){
+      clusters.at(i) = tau.col(i).index_max();
     }
     
-    lik.at(j) = Q1 + sum(sum(tau % Q2,0)) + sum(sum(tau % Q3,0));
-    LL = lik.at(j);
+    //cluster size
+    for(int i =0; i<g;i++){
+      arma::uvec tmp1 = find(clusters == i);
+      cluster_sizes.at(i) = tmp1.n_elem;
+    }
+    //min cluster size
+    int c_min = min(cluster_sizes);
     
     
+    //n_params
+    k = (g-1)+ g + g + g - n_fixed;//pi + mu + sigma + nu - fixed params
+    
+    List temp_list = List::create(
+      Named("mu")= export_vec(params.col(1)),
+      Named("pi") = export_vec(params.col(0)),
+      Named("nu") = export_vec(params.col(2)),
+      Named("sigma") = export_vec(params.col(3)),
+      Named("LL") = LL,
+      Named("BIC") = BIC_calc(LL, k, n),
+      Named("AIC") = AIC_calc(LL, k),
+      Named("tau") = tau,
+      Named("lik") = lik,
+      Named("k") = k, //number of parameters
+      Named("Clusters") = export_uvec(clusters),
+      Named("c_min") = c_min //smallest cluster
+    );
+    
+    tempOut.push_back(temp_list);
+    
+  }
+    
+  arma::vec temp_ll = arma::zeros(random_starts);
+  
+  for(int i; i<random_starts;i++){
+    temp_ll(i)= as<double>(tempOut.at(random_starts-i-1)["LL"]);
   }
   
-  //cluster allocation
-  for(int i =0; i<n;i++){
-    clusters.at(i) = tau.col(i).index_max();
-  }
+  List return_list = tempOut.at(temp_ll(find_finite(temp_ll)).index_max());
   
-  //cluster size
-  for(int i =0; i<g;i++){
-    arma::uvec tmp1 = find(clusters == i);
-    cluster_sizes.at(i) = tmp1.n_elem;
-  }
-  //min cluster size
-  int c_min = min(cluster_sizes);
-  
-  
-  //n_params
-  k = (g-1)+ g + g + g - n_fixed;//pi + mu + sigma + nu - fixed params
-  
-  return  List::create(
-                      Named("mu")= export_vec(params.col(1)),
-                      Named("pi") = export_vec(params.col(0)),
-                      Named("nu") = export_vec(params.col(2)),
-                      Named("sigma") = export_vec(params.col(3)),
-                      Named("LL") = LL,
-                      Named("BIC") = BIC_calc(LL, k, n),
-                      Named("AIC") = AIC_calc(LL, k),
-                      Named("tau") = tau,
-                      Named("lik") = lik,
-                      Named("k") = k, //number of parameters
-                      Named("Clusters") = export_uvec(clusters),
-                      Named("c_min") = c_min //smallest cluster
-                      );
+
+  return return_list;
 
 }
 
@@ -292,15 +378,3 @@ List emmix_gene(arma::mat bigdat, int random_starts=4, double ll_thresh = 8, int
 
   return(tmp);
 }
-
-
-
-
-
-
-
-
-
-
-
-

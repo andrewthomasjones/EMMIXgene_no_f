@@ -10,7 +10,7 @@ Encoding: UTF-8
 License: GPL (>= 3)
 LazyData: TRUE
 Suggests: testthat
-LinkingTo: Rcpp, RcppArmadillo,BH
+LinkingTo: Rcpp, RcppArmadillo, BH, EMMIXgene
 Imports:
     Rcpp (>= 0.12.5)
 SystemRequirements: C++11
