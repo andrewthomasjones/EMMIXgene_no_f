@@ -28,6 +28,7 @@ emmix_t <- function(dat, g = 1L, random_starts = 4L, max_it = 100L, tol = 0.0001
     .Call('_EMMIXgene_emmix_t', PACKAGE = 'EMMIXgene', dat, g, random_starts, max_it, tol, start_method)
 }
 
+#'@export
 emmix_gene <- function(bigdat, random_starts = 4L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001) {
     .Call('_EMMIXgene_emmix_gene', PACKAGE = 'EMMIXgene', bigdat, random_starts, ll_thresh, min_clust_size, tol)
 }

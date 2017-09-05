@@ -11,7 +11,6 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-
 #include <Rcpp.h>
 #include <boost/math/special_functions/digamma.hpp>
 #include <boost/math/special_functions/gamma.hpp>
@@ -34,7 +33,7 @@ public:
 
   double operator()(double v) {
 
-    double temp = -digamma(0.5*v) + std::log(0.5*v) + v_sum + digamma((v+1.)/2.) - std::log((v+1.)/2.)+1.;
+    double temp = -digamma(0.5*v) + std::log(0.5*v) + v_sum + digamma(0.5*(v+1.)) - std::log(0.5*(v+1.))+1.;
     //std::cout << "v: " << v << " v_sum: " << v_sum << " temp: " << temp << std::endl;
     return temp;
     //return df_eq_est(v,v_sum);
@@ -79,7 +78,7 @@ double mahalanobis(double y, double mu, double sigma)
 // [[Rcpp::export]]
 double t_dist(double y, double mu, double sigma, double nu,  int p =1)
 {
-  double pdf = (gamma(0.5*(nu+p))/sqrt(sigma))/(  std::pow(arma::datum::pi*nu, 0.5*p ) *gamma(0.5*nu)* std::pow(1+(mahalanobis(y,mu,sigma)/nu), 0.5*(nu+p))  );
+  double pdf =((tgamma(0.5*(nu+p))/sqrt(sigma))/(  std::pow(arma::datum::pi*nu, 0.5*p ) *tgamma(0.5*nu)* std::pow(1+(mahalanobis(y,mu,sigma)/nu), 0.5*(nu+p))  ));
   return pdf;
 }
 
@@ -109,20 +108,18 @@ arma::mat estep(const arma::vec& dat, const arma::mat& params){
     double nu_i = nu.at(i);
     std::transform(dat.begin(), dat.end(), dens.begin(), [mu_i, sigma_i, nu_i](double dat) { return t_dist(dat, mu_i, sigma_i, nu_i); });
     arma::vec dens2 = arma::conv_to<arma::vec>::from(dens);
-    tau.row(i) = pi.at(i)*dens2.t();
-    tau_sum += tau.row(i);
-    you.row(i) = ((nu.at(i)+1.0)/(nu.at(i) + (dat-mu.at(i))%(dat-mu.at(i))*(1/sigma.at(i)) )).t();
+    tau.row(i)  = pi.at(i)*dens2.t();
+    you.row(i) = ((nu.at(i)+1.0)/(nu.at(i) + (dat-mu.at(i))%(dat-mu.at(i))*(1/sigma.at(i)))).t();
 
   }
- 
   
-  for(int i=0;i<g;i++){
-    tau.row(i) /= tau_sum;
-  }
+  
+  arma::mat tau2 = tau.each_row() / sum(tau,0);
+  
   
   
   //tau.print();
-  new_params.rows(0,g-1)=tau;
+  new_params.rows(0,g-1)=tau2;
   new_params.rows(g,g2-1)=you;
 
   return(new_params);
@@ -146,13 +143,12 @@ arma::mat start_kmeans(arma::vec dat, int g){
     arma::uvec tmp1 = find(alloc == i);
     cluster_sizes.at(i) = tmp1.n_elem;
     params(i,3) = sum(pow(dat(tmp1)-params(i,1),2.0))/dat.n_elem;
+    params(i,2) = 4.0+(sum(pow((dat(tmp1)-params(i,1))/sqrt(params(i,3)),4.0))/dat.n_elem)/6.0;
+    if(params(i,2) < 0 ){params(i,2) = 2.5;}
+    if(params(i,2) > 300 ){params(i,2) = 299.99;}
   }
   
   params.col(0) = arma::conv_to< arma::vec >::from(cluster_sizes)/dat.n_elem;
-  
-  //not sure if better way to initialise
-  params.col(2).fill(2.5);
-  
   return(params);
 }
 
@@ -164,6 +160,7 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
 
   arma::vec mu2 = arma::zeros<arma::vec>(g);
   arma::vec nu2 = arma::zeros<arma::vec>(g);
+  arma::vec nu = params.col(2);
   arma::vec sigma2 = arma::zeros<arma::vec>(g);
   arma::vec s_tau = arma::zeros<arma::vec>(g);
   arma::vec pi2 = arma::zeros<arma::vec>(g);
@@ -171,32 +168,41 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
   s_tau = sum(tau,1);
   pi2 = s_tau/n;
   
-  //tau.print();
-  //pi2.t().print();
+
   
-  double a = 2.01;
-  double b = 999.99;
+  double a = 0.01;
+  double b = 299.99;
   boost::uintmax_t df_max_iter=500; // boost solver params, could be user params but relatively unimportant
   tools::eps_tolerance<double> tol(30);
-
+  
   for(int i=0;i<g;i++){
     mu2(i) = (sum(dat.t()%you.row(i)%tau.row(i)) / sum(you.row(i)%tau.row(i)));
-    sigma2(i) = (sum(you.row(i)%tau.row(i)%((dat.t()-mu2(i))%(dat.t()-mu2(i)))  ) / s_tau(i));
-
-
+    sigma2(i) = (sum(you.row(i)%tau.row(i)%((dat.t()-mu2(i))%(dat.t()-mu2(i)))) / s_tau(i));
+    
+  
+    
     double v_sum = (1/s_tau(i))*sum(tau.row(i)%(arma::log(you.row(i))-you.row(i)));
-      df_eq_func rootFun = df_eq_func(v_sum);
+    // Rcpp::Rcout << "(s_tau(i)) = " << (s_tau(i)) << std::endl;
+    // Rcpp::Rcout << "(1/s_tau(i)) = " << (1/s_tau(i)) << std::endl;
+    // Rcpp::Rcout << "v_sum = " << v_sum << std::endl;
+    if(!std::isfinite(v_sum)){v_sum =0.0;}
+    
+    df_eq_func rootFun = df_eq_func(v_sum);
       
     try{
         std::pair<double, double>  r1= tools::bisect(rootFun, a, b, tol, df_max_iter);
         nu2(i) = (r1.first + r1.second)/2.0;
     }catch(...){
-        nu2(i) = 999.994;
+        nu2(i) = 299.99;
+        //nu2(i) = nu(i);
     }
+    //nu2.t().print();
     
-
   }
-
+  //nu2.t().print();
+  
+  //nu2.fill(20);  
+    
   arma::mat new_params(g,4, arma::fill::zeros);
   new_params.col(0) = pi2;
   new_params.col(1) = mu2;
@@ -246,7 +252,8 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
   
   std::vector<List> tempOut;
   
-  for(int starts =0; starts < random_starts; starts++){
+  int starts =0; int safety_count = 0;
+  while(starts < random_starts){
       
         if(start_method == "kmeans"){
           params = start_kmeans(dat, g);
@@ -255,35 +262,52 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
       
       
         //primary loop
+        int j =0; double diff=10.0; double old_LL=0;
         
-        for(int j =0; j<max_it;j++){
+        while(j<max_it & diff > tol){
+          
           arma::mat temp1 = estep(dat,params);
           tau = temp1.rows(0,g-1);
           you = temp1.rows(g,2*g-1);
           temp2 = mstep(dat, tau, you, params);
           params = temp2; 
-          //log liklihood
-          Q1 = sum(sum( tau.each_col() % arma::log(params.col(0)) ));
           
-         
+          //params.print();
+          
+          //log liklihood
+          double accumQ1=0;
+          double accumQ2=0;
+          double accumQ3=0;
+          
           mu=params.col(1);
           nu=params.col(2);
           sigma = params.col(3);
           
           for(int i=0; i <g; i++){
-            Q2.at(i) = - log(gamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *log(0.5*nu.at(i))+ 0.5*nu.at(i)*(digamma((nu.at(i)+1)/2) - log ((nu.at(i)+1)/2) + sum(log(you.row(i))-you.row(i)) );
-            
+            Q2.at(i) = - std::log(tgamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(digamma(0.5*(nu.at(i)+1.0)) - std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1 );
             Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
-            Q2b.row(i) = tau.row(i)*Q2.at(i);
+    
           }
-         
-          lik.at(j) = Q1  + sum(sum(tau % Q3,0)) + sum(sum(Q2b,0)) ;
+          
+          for(int i=0; i <g; i++){
+            for(int k=0; k <n; k++){
+              accumQ1+=tau(i,k)*std::log(params(i,0));
+              accumQ2+=tau(i,k)*Q2.at(i);
+              accumQ3+=tau(i,k)*Q3(i,k);
+            }
+          }
+
+          lik.at(j) = accumQ1 + accumQ2 + accumQ3 ;
           LL = lik.at(j);
           
+          diff = std::abs(LL - old_LL);
+          old_LL = LL;
+          //Rcpp::Rcout << "LL = " << LL << " diff = " << diff << std::endl;
+          j++;
           
         }
         
-        
+   
     
     
     
@@ -299,28 +323,36 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
     }
     //min cluster size
     int c_min = min(cluster_sizes);
+    arma::vec lik2 = lik.rows(0,j-1);
     
-    
+    //Rcpp::Rcout << "LL = " << LL << std::endl;
     //n_params
     k = (g-1)+ g + g + g - n_fixed;//pi + mu + sigma + nu - fixed params
-    
-    List temp_list = List::create(
-      Named("mu")= export_vec(params.col(1)),
-      Named("pi") = export_vec(params.col(0)),
-      Named("nu") = export_vec(params.col(2)),
-      Named("sigma") = export_vec(params.col(3)),
-      Named("LL") = LL,
-      Named("BIC") = BIC_calc(LL, k, n),
-      Named("AIC") = AIC_calc(LL, k),
-      Named("tau") = tau,
-      Named("lik") = lik,
-      Named("k") = k, //number of parameters
-      Named("Clusters") = export_uvec(clusters),
-      Named("c_min") = c_min //smallest cluster
-    );
-    
-    tempOut.push_back(temp_list);
-    
+    if(std::isfinite(LL)){
+      List temp_list = List::create(
+        Named("mu")= export_vec(params.col(1)),
+        Named("pi") = export_vec(params.col(0)),
+        Named("nu") = export_vec(params.col(2)),
+        Named("sigma") = export_vec(params.col(3)),
+        Named("LL") = LL ,
+        Named("BIC") = BIC_calc(LL, k, n),
+        Named("AIC") = AIC_calc(LL, k),
+        Named("tau") = tau,
+        Named("lik") = lik2,
+        Named("k") = k, //number of parameters
+        Named("Clusters") = export_uvec(clusters),
+        Named("c_min") = c_min, //smallest cluster,
+        Named("n_iter") = j //total iterations, if not equal max_iter then terminated due to meeting tolerance
+      );
+      
+      tempOut.push_back(temp_list);
+      starts++;
+    }else{
+      if(safety_count>random_starts*10){
+        stop("Unable to converge.");
+      }
+    }
+    safety_count++;
   }
     
   arma::vec temp_ll = arma::zeros(random_starts);
@@ -349,7 +381,7 @@ List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min
     if(as<int>(g2.attr("c_min")) > min_clust_size){
       best_g = g2;
     }else{
-      List g3 = emmix_t(dat, 3, 100);
+      List g3 = emmix_t(dat, 3);
       lambda = 0; // ll_ratio(List g2, List g3)
       if(-2*log(lambda) > ll_thresh){
         if(as<int>(g3.attr("c_min")) > min_clust_size){
@@ -362,6 +394,8 @@ List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min
   return(best_g);
 }
 
+
+//'@export
 // [[Rcpp::export]]
 List emmix_gene(arma::mat bigdat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
  
