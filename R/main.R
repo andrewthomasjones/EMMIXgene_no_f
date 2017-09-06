@@ -13,9 +13,7 @@ select_genes_dat<-function(filename, g=1, k =1, random_starts=4, ll_thresh = 8, 
     row<-dim(x)[1]
     col<-dim(x)[2]
     
-    g1<-emmix_t(dat)
-    g2<-emmix_t(dat, 2)
-    lambda<-0
+    a<-emmix_gene(as.matrix(data)[1:10,])
     
 
     res<-0#select_genes(data, row, col, g, k, random_starts,ll_thresh, min_clust_size)

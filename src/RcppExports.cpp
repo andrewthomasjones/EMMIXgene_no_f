@@ -76,6 +76,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// each_gene
+List each_gene(arma::vec dat, int random_starts, double ll_thresh, int min_clust_size, double tol);
+RcppExport SEXP _EMMIXgene_each_gene(SEXP datSEXP, SEXP random_startsSEXP, SEXP ll_threshSEXP, SEXP min_clust_sizeSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type dat(datSEXP);
+    Rcpp::traits::input_parameter< int >::type random_starts(random_startsSEXP);
+    Rcpp::traits::input_parameter< double >::type ll_thresh(ll_threshSEXP);
+    Rcpp::traits::input_parameter< int >::type min_clust_size(min_clust_sizeSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(each_gene(dat, random_starts, ll_thresh, min_clust_size, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
 // emmix_gene
 List emmix_gene(arma::mat bigdat, int random_starts, double ll_thresh, int min_clust_size, double tol);
 RcppExport SEXP _EMMIXgene_emmix_gene(SEXP bigdatSEXP, SEXP random_startsSEXP, SEXP ll_threshSEXP, SEXP min_clust_sizeSEXP, SEXP tolSEXP) {
@@ -116,6 +131,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_EMMIXgene_estep", (DL_FUNC) &_EMMIXgene_estep, 2},
     {"_EMMIXgene_mstep", (DL_FUNC) &_EMMIXgene_mstep, 4},
     {"_EMMIXgene_emmix_t", (DL_FUNC) &_EMMIXgene_emmix_t, 6},
+    {"_EMMIXgene_each_gene", (DL_FUNC) &_EMMIXgene_each_gene, 5},
     {"_EMMIXgene_emmix_gene", (DL_FUNC) &_EMMIXgene_emmix_gene, 5},
     {"_EMMIXgene_tkmeans", (DL_FUNC) &_EMMIXgene_tkmeans, 8},
     {NULL, NULL, 0}

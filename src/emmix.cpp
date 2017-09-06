@@ -65,7 +65,7 @@ Rcpp::NumericVector export_uvec(arma::uvec y)
 }
 
 //this is only 1D for now
-//'@export
+
 // [[Rcpp::export]]
 double mahalanobis(double y, double mu, double sigma)
 {
@@ -74,7 +74,7 @@ double mahalanobis(double y, double mu, double sigma)
 }
 
 //this is only 1D for now
-//'@export
+
 // [[Rcpp::export]]
 double t_dist(double y, double mu, double sigma, double nu,  int p =1)
 {
@@ -342,7 +342,8 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
         Named("k") = k, //number of parameters
         Named("Clusters") = export_uvec(clusters),
         Named("c_min") = c_min, //smallest cluster,
-        Named("n_iter") = j //total iterations, if not equal max_iter then terminated due to meeting tolerance
+        Named("n_iter") = j,//total iterations, if not equal max_iter then terminated due to meeting tolerance
+        Named("components") = g
       );
       
       tempOut.push_back(temp_list);
@@ -368,7 +369,8 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
 
 }
 
-
+//'@export
+// [[Rcpp::export]]
 List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
   
   List g1 = emmix_t(dat, 1);
@@ -376,21 +378,24 @@ List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min
   List best_g = g1;
   
   double lambda = 0; // ll_ratio(List g1, List g2)
+  lambda = as<double>(g1["LL"]) - as<double>(g2["LL"]);
+  //Rcout<< lambda << std::endl; 
   
-  if(-2*log(lambda) > ll_thresh){
-    if(as<int>(g2.attr("c_min")) > min_clust_size){
+  
+  if(-2*(lambda) > ll_thresh){
+    if(as<int>(g2["c_min"]) > min_clust_size){
       best_g = g2;
     }else{
       List g3 = emmix_t(dat, 3);
       lambda = 0; // ll_ratio(List g2, List g3)
       if(-2*log(lambda) > ll_thresh){
-        if(as<int>(g3.attr("c_min")) > min_clust_size){
+        if(as<int>(g3["c_min"]) > min_clust_size){
           best_g = g3;
         }
       }
     }
   }
-  
+
   return(best_g);
 }
 
@@ -400,15 +405,13 @@ List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min
 List emmix_gene(arma::mat bigdat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
  
  int n = bigdat.n_rows;
- List tmp = List::create();
+ Rcpp::List tmp;
  
  for(int i; i<n;i++){
-   tmp = each_gene(bigdat.row(i), random_starts, ll_thresh, min_clust_size, tol);
+   tmp = (each_gene(bigdat.row(i).t(), random_starts, ll_thresh, min_clust_size, tol));
  }
  
+ //Rcpp::List ret = each_gene(bigdat.row(0).t(), random_starts, ll_thresh, min_clust_size, tol);
  
-
-
-
-  return(tmp);
+ return(tmp);
 }

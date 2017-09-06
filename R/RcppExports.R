@@ -5,12 +5,10 @@
 #'@useDynLib EMMIXgene
 NULL
 
-#'@export
 mahalanobis <- function(y, mu, sigma) {
     .Call('_EMMIXgene_mahalanobis', PACKAGE = 'EMMIXgene', y, mu, sigma)
 }
 
-#'@export
 t_dist <- function(y, mu, sigma, nu, p = 1L) {
     .Call('_EMMIXgene_t_dist', PACKAGE = 'EMMIXgene', y, mu, sigma, nu, p)
 }
@@ -26,6 +24,11 @@ mstep <- function(dat, tau, you, params) {
 #'@export
 emmix_t <- function(dat, g = 1L, random_starts = 4L, max_it = 100L, tol = 0.0001, start_method = "kmeans") {
     .Call('_EMMIXgene_emmix_t', PACKAGE = 'EMMIXgene', dat, g, random_starts, max_it, tol, start_method)
+}
+
+#'@export
+each_gene <- function(dat, random_starts = 4L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001) {
+    .Call('_EMMIXgene_each_gene', PACKAGE = 'EMMIXgene', dat, random_starts, ll_thresh, min_clust_size, tol)
 }
 
 #'@export
