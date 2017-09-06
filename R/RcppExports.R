@@ -27,13 +27,13 @@ emmix_t <- function(dat, g = 1L, random_starts = 4L, max_it = 100L, tol = 0.0001
 }
 
 #'@export
-each_gene <- function(dat, random_starts = 4L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001) {
-    .Call('_EMMIXgene_each_gene', PACKAGE = 'EMMIXgene', dat, random_starts, ll_thresh, min_clust_size, tol)
+each_gene <- function(dat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans") {
+    .Call('_EMMIXgene_each_gene', PACKAGE = 'EMMIXgene', dat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method)
 }
 
 #'@export
-emmix_gene <- function(bigdat, random_starts = 4L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001) {
-    .Call('_EMMIXgene_emmix_gene', PACKAGE = 'EMMIXgene', bigdat, random_starts, ll_thresh, min_clust_size, tol)
+emmix_gene <- function(bigdat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans") {
+    .Call('_EMMIXgene_emmix_gene', PACKAGE = 'EMMIXgene', bigdat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method)
 }
 
 #'@export
