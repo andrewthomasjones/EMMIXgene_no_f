@@ -419,6 +419,10 @@ List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double
  arma::vec it =  arma::zeros(n);
  
  for(int i; i<n;i++){
+<<<<<<< HEAD
+=======
+   Rcout << i << std::endl;
+>>>>>>> 72f30203f31446d4bedbf8d3b6e7b3d9557a001e
    tmp = (each_gene(bigdat.row(i).t(), random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
    stat.at(i) = as<double>(tmp["Ratio"]);
    comp.at(i) = as<double>(tmp["components"]);
