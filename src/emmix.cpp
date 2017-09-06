@@ -231,6 +231,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
   int k =0; int n_fixed = 0;
   double  LL =0;
   arma::mat params(g,4, arma::fill::zeros);
+  List return_list;
   
   arma::vec pi = arma::zeros(g);
   arma::vec mu = arma::zeros(g);
@@ -254,7 +255,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
   
   int starts =0; int safety_count = 0;
   while(starts < random_starts){
-      
+    
         if(start_method == "kmeans"){
           params = start_kmeans(dat, g);
           //params.print();
@@ -343,14 +344,17 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
         Named("Clusters") = export_uvec(clusters),
         Named("c_min") = c_min, //smallest cluster,
         Named("n_iter") = j,//total iterations, if not equal max_iter then terminated due to meeting tolerance
-        Named("components") = g
+        Named("components") = g,
+        Named("Ratio") = 0.0
       );
       
       tempOut.push_back(temp_list);
       starts++;
     }else{
       if(safety_count>random_starts*10){
-        stop("Unable to converge.");
+        
+        //return_list = tempOut.back();
+        return return_list;
       }
     }
     safety_count++;
@@ -362,7 +366,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
     temp_ll(i)= as<double>(tempOut.at(random_starts-i-1)["LL"]);
   }
   
-  List return_list = tempOut.at(temp_ll(find_finite(temp_ll)).index_max());
+  return_list = tempOut.at(temp_ll(find_finite(temp_ll)).index_max());
   
 
   return return_list;
@@ -371,47 +375,61 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
 
 //'@export
 // [[Rcpp::export]]
-List each_gene(arma::vec dat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
-  
-  List g1 = emmix_t(dat, 1);
-  List g2 = emmix_t(dat, 2);
+List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "kmeans"){
+  List g1 = emmix_t(dat, 1, random_starts, max_it, tol, start_method);
+  List g2 = emmix_t(dat, 2, random_starts, max_it, tol, start_method);
   List best_g = g1;
   
-  double lambda = 0; // ll_ratio(List g1, List g2)
+  double lambda = 0;
+  double lambda_s = 0;// ll_ratio(List g1, List g2)
   lambda = as<double>(g1["LL"]) - as<double>(g2["LL"]);
-  //Rcout<< lambda << std::endl; 
-  
+  lambda_s = as<double>(g1["LL"]) - as<double>(g2["LL"]);
   
   if(-2*(lambda) > ll_thresh){
     if(as<int>(g2["c_min"]) > min_clust_size){
       best_g = g2;
+      lambda_s = as<double>(g1["LL"]) - as<double>(g2["LL"]);
     }else{
-      List g3 = emmix_t(dat, 3);
-      lambda = 0; // ll_ratio(List g2, List g3)
-      if(-2*log(lambda) > ll_thresh){
+      List g3 = emmix_t(dat, 3, random_starts, max_it, tol, start_method);
+      lambda = as<double>(g2["LL"]) - as<double>(g3["LL"]);; // ll_ratio(List g2, List g3)
+      if(-2*(lambda) > ll_thresh){
         if(as<int>(g3["c_min"]) > min_clust_size){
           best_g = g3;
+          lambda_s = as<double>(g2["LL"]) - as<double>(g3["LL"]);
         }
       }
     }
   }
-
+  best_g["Ratio"] = -2*(lambda_s);
+  
+  
   return(best_g);
 }
 
 
 //'@export
 // [[Rcpp::export]]
-List emmix_gene(arma::mat bigdat, int random_starts=4, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001){
+List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "kmeans"){
  
  int n = bigdat.n_rows;
  Rcpp::List tmp;
  
+ arma::vec stat =  arma::zeros(n);
+ arma::vec comp =  arma::zeros(n);
+ arma::vec it =  arma::zeros(n);
+ 
  for(int i; i<n;i++){
-   tmp = (each_gene(bigdat.row(i).t(), random_starts, ll_thresh, min_clust_size, tol));
+   tmp = (each_gene(bigdat.row(i).t(), random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
+   stat.at(i) = as<double>(tmp["Ratio"]);
+   comp.at(i) = as<double>(tmp["components"]);
+   it.at(i) = as<double>(tmp["n_iter"]);
  }
  
  //Rcpp::List ret = each_gene(bigdat.row(0).t(), random_starts, ll_thresh, min_clust_size, tol);
- 
- return(tmp);
+ Rcpp::List ret =List::create(
+   Named("stat")= export_vec(stat),
+   Named("g")= export_vec(comp),
+   Named("it")= export_vec(it)
+ );
+ return(ret);
 }
