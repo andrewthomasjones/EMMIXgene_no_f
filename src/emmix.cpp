@@ -75,6 +75,7 @@ double mahalanobis(double y, double mu, double sigma)
 
 //this is only 1D for now
 
+//'@export
 // [[Rcpp::export]]
 double t_dist(double y, double mu, double sigma, double nu,  int p =1)
 {

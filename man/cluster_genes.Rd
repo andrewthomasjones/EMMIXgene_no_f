@@ -4,12 +4,12 @@
 \alias{cluster_genes}
 \title{Clusters genes}
 \usage{
-cluster_genes(genes, g = NULL)
+cluster_genes(gen, g = NULL)
 }
 \arguments{
-\item{genes}{matrix of genes}
+\item{gen}{an emmix-gene object produced by select genes.}
 
-\item{g}{number of clusters}
+\item{g}{number of gene clusters . If not specified will be selected automatically on the basis of BIC.}
 }
 \value{
 mclust object

@@ -14,8 +14,5 @@ test3<-cluster_tissues(test1, test2, 'mfa')
 for(k in 1:g){
   test4<-heat_maps(test1$genes[test2$classification==k,], test3[k,]) 
   plot(test4)
-  
-  test5<-heat_maps(test1$genes[test2$classification==k,]) 
-  plot(test5)
 }
 

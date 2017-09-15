@@ -90,11 +90,12 @@ cluster_genes<-function(gen, g=NULL){
 #' @param gen emmix-gene object
 #' @param clusters mclust object
 #' @param method Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers. 
+#' @param k number of factors if using mfa
 #' @return a clustering for each sample (columns) by each group(rows)
 #' @examples
 #' 
 #' @export
-cluster_tissues<-function(gen, clusters, method='t'){
+cluster_tissues<-function(gen, clusters, method='t', k=2){
   
   g<-clusters$G
   p<-ncol(clusters$data)
@@ -114,7 +115,7 @@ cluster_tissues<-function(gen, clusters, method='t'){
     for(i in 1:g){
       group <- (gen$genes[clusters$classification==i,])
       #actually mixture of common factor analysers. consider fixing.
-      mfa_fit<-mcfa(t(group), 2, 2)
+      mfa_fit<-mcfa(t(group), 2, k)
       clustering[i,]<- as.numeric(xor(predict(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
     }
     
@@ -127,7 +128,7 @@ cluster_tissues<-function(gen, clusters, method='t'){
 #' Heat maps
 #'
 #' @param clust_genes matrix of genes
-#' @return 
+#' @return ggplot2 heat map
 #' @examples
 #' 
 #' @export
@@ -152,6 +153,46 @@ heat_maps<-function(clust_genes, clustering=NULL){
           axis.title=element_text(size=14,face="bold"),
           axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks.y=element_blank(),axis.ticks.x=element_blank()) +
     labs(fill = "Expression level")
+  
+  return(plot)
+}
+
+#' Plot single gene
+#'
+#' @param dat full matrix of data
+#' @param gene_id row number
+#' @param random_starts number of random starts for the fit
+#' @return ggplot2 histogram with fit
+#' @examples
+#' 
+#' @export
+plot_single_gene<-function(dat, gene_id, random_starts=50){ 
+  
+  
+  
+  df<-data.frame(x=dat[gene_id,])
+  n<-length(df$x)/4
+  breaks<-seq(-4,4, length.out=n)
+  plot<-ggplot(df, aes(x=x)) + geom_histogram(aes(y=..density..), breaks=breaks, alpha=.5)+theme_bw()
+  
+  
+  df2<-data.frame(x=seq(-4, 4, length.out = 1000))
+  res<-each_gene(alon_data[gene_id,],random_starts)
+  for(i in 1:res$components){
+    for(j in 1:nrow(df2)){
+      df2[[paste0('y',i)]][j]<-res$pi[i]*t_dist(df2$x[j], res$mu[i], res$sigma[i], res$nu[i])
+    }
+  }
+  
+  
+  plot<-plot+geom_line(data=df2, aes(x=x, y=y1))
+  if(res$components>1){
+    plot<-plot+geom_line(data=df2, aes(x=x, y=y2))
+  }
+  
+  if(res$components>2){
+    plot<-plot+geom_line(data=df2, aes(x=x, y=y3))
+  }
   
   return(plot)
 }

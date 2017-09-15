@@ -9,6 +9,7 @@ mahalanobis <- function(y, mu, sigma) {
     .Call('_EMMIXgene_mahalanobis', PACKAGE = 'EMMIXgene', y, mu, sigma)
 }
 
+#'@export
 t_dist <- function(y, mu, sigma, nu, p = 1L) {
     .Call('_EMMIXgene_t_dist', PACKAGE = 'EMMIXgene', y, mu, sigma, nu, p)
 }

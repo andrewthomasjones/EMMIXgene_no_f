@@ -8,14 +8,22 @@ Description: Re-implements EMMIX-GENE
 Encoding: UTF-8
 License: GPL (>= 3)
 LazyData: TRUE
-Suggests: testthat
-LinkingTo: Rcpp, RcppArmadillo, BH
+Depends: R (>= 3.1.0)
+Suggests: 
+  testthat,
+  knitr,
+  rmarkdown
+LinkingTo: 
+  Rcpp,
+  RcppArmadillo,
+  BH
 Imports:
-    Rcpp (>= 0.12.5),
-    mclust,
-    reshape,
-    ggplot2,
-    scales,
-    tools
+  Rcpp (>= 0.12.5),
+  mclust,
+  reshape,
+  ggplot2,
+  scales,
+  tools
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr

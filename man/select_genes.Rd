@@ -4,18 +4,27 @@
 \alias{select_genes}
 \title{Selects Genes from data supplied.}
 \usage{
-select_genes(filename, random_starts = 4, max_it = 400, ll_thresh = 8,
-  min_clust_size = 8)
+select_genes(filename, dat, random_starts = 4, max_it = 400,
+  ll_thresh = 8, min_clust_size = 8)
 }
 \arguments{
-\item{filename}{Name of file containing gene data.}
+\item{filename}{Name of file containing gene data. Can be either .csv or space separated .dat. Rows are genes and columns are samples. Must supply one of filename and dat.}
+
+\item{dat}{A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.}
+
+\item{random_starts}{The number of random starts used per gene when fitting t-distributions.}
+
+\item{ll_thresh}{The difference in log-likihood used as a threshold for selecting between g=1 and g=2.}
+
+\item{min_clust_size}{The minimum number of observations per cluster.}
 }
 \value{
-matrix of genes
+emmix-gene object
 }
 \description{
 Selects Genes from data supplied.
 }
 \examples{
+
 
 }

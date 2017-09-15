@@ -4,13 +4,13 @@
 \alias{heat_maps}
 \title{Heat maps}
 \usage{
-heat_maps(clust_genes)
+heat_maps(clust_genes, clustering = NULL)
 }
 \arguments{
-\item{clust_genes}{mclust object}
+\item{clust_genes}{matrix of genes}
 }
 \value{
-?
+ggplot2 heat map
 }
 \description{
 Heat maps
