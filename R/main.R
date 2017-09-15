@@ -11,7 +11,7 @@
 #' @return matrix of genes
 #' @examples
 select_genes<-function(filename, random_starts=4, max_it = 400, ll_thresh = 8, min_clust_size = 8){
-    data<-as.matrix(read.delim(filename, sep=" ", header=F))
+    data<-as.matrix(read.delim(filename, sep=" ", header=F))[,1:72]
     a<-emmix_gene(data)
     genes <- data[a$g>1,]
     return(a)
