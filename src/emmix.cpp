@@ -303,6 +303,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
           
           diff = std::abs(LL - old_LL);
           old_LL = LL;
+          
           //Rcpp::Rcout << "LL = " << LL << " diff = " << diff << std::endl;
           j++;
           
@@ -326,7 +327,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
     int c_min = min(cluster_sizes);
     arma::vec lik2 = lik.rows(0,j-1);
     
-    //Rcpp::Rcout << "LL = " << LL << std::endl;
+    
     //n_params
     k = (g-1)+ g + g + g - n_fixed;//pi + mu + sigma + nu - fixed params
     if(std::isfinite(LL)){
@@ -352,7 +353,6 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
       starts++;
     }else{
       if(safety_count>random_starts*10){
-        
         //return_list = tempOut.back();
         return return_list;
       }
@@ -376,14 +376,17 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
 //'@export
 // [[Rcpp::export]]
 List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "kmeans"){
+  
   List g1 = emmix_t(dat, 1, random_starts, max_it, tol, start_method);
   List g2 = emmix_t(dat, 2, random_starts, max_it, tol, start_method);
   List best_g = g1;
-  
+ 
   double lambda = 0;
   double lambda_s = 0;// ll_ratio(List g1, List g2)
+  
   lambda = as<double>(g1["LL"]) - as<double>(g2["LL"]);
   lambda_s = as<double>(g1["LL"]) - as<double>(g2["LL"]);
+  
   
   if(-2*(lambda) > ll_thresh){
     if(as<int>(g2["c_min"]) > min_clust_size){
@@ -400,6 +403,8 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
       }
     }
   }
+  
+  
   best_g["Ratio"] = -2*(lambda_s);
   
   
@@ -431,5 +436,6 @@ List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double
    Named("g")= export_vec(comp),
    Named("it")= export_vec(it)
  );
+ 
  return(ret);
 }

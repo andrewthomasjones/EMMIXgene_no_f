@@ -16,6 +16,7 @@ Imports:
     FactMixtAnalysis,
     reshape,
     ggplot2,
-    scales
+    scales,
+    tools
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
