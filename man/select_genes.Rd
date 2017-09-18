@@ -5,7 +5,8 @@
 \title{Selects genes using the EMMIXgene algorithim.}
 \usage{
 select_genes(dat, filename, random_starts = 4, max_it = 100,
-  ll_thresh = 8, min_clust_size = 8)
+  ll_thresh = 8, min_clust_size = 8, tol = 1e-04,
+  start_method = "kmeans", three = FALSE)
 }
 \arguments{
 \item{dat}{A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.}
@@ -19,6 +20,10 @@ select_genes(dat, filename, random_starts = 4, max_it = 100,
 \item{ll_thresh}{The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.}
 
 \item{min_clust_size}{The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8.}
+
+\item{tol}{Tolerance value used for detecting convergence of EMMIX fits.}
+
+\item{start_method}{Default value is "kmeans". Can also choose "random" for purely random starts.}
 
 \item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
 }

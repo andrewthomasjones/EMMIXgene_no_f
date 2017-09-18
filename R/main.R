@@ -9,6 +9,8 @@
 #' @param max_it The maximum number of iterations per mixture fit. Default value is 100.
 #' @param ll_thresh The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.
 #' @param min_clust_size The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8. 
+#' @param tol Tolerance value used for detecting convergence of EMMIX fits. 
+#' @param start_method Default value is "kmeans". Can also choose "random" for purely random starts.
 #' @param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
 #' @return An emmix-gene object containing:
 #' \item{stat}{The difference in log-liklihood for g=1 and g=2 for each gene (or for g=2 and g=3 where relevant).}
@@ -24,7 +26,7 @@
 #' example <- select_genes(alon_data[1:100, ]) 
 #' 
 #' @export
-select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh = 8, min_clust_size = 8){
+select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method ="kmeans",  three=FALSE){
   
     #housekeeping   
   
@@ -58,7 +60,7 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     #actual method
     
     #do emmix_gene C++ routine
-    a<-emmix_gene(data)
+    a<-emmix_gene(data,random_starts, max_it, ll_thresh, min_clust_size,tol,start_method, three)
     a$selected<-a$g>1
     
     #add selected genes to result
