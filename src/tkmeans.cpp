@@ -173,9 +173,9 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
   M.each_row() /= weights.t();
 
   arma::mat best_means = init_centres(M, k, verbose);
-  double temp_BIC = 0.0;
-  double best_BIC = 0.0;
-  int best_j = 0;
+  //double temp_BIC = 0.0;
+  //double best_BIC = 0.0;
+  //int best_j = 0;
 
   for( int j=0; j<nstart;j++){
 

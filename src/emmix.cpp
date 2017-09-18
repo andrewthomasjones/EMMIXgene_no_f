@@ -134,7 +134,7 @@ arma::mat start_kmeans(arma::vec dat, int g){
   
   params.col(1) = tkmeans(dat, g, 0.0, weights, 1);
   
-  for(int i; i<dat.n_elem;i++){
+  for(int i=0; i<dat.n_elem;i++){
     arma::vec temp = abs(params.col(1)- dat(i)); 
     alloc.at(i) = arma::index_min(temp);
   }
@@ -247,7 +247,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
   arma::mat you = arma::zeros(g,n);
   arma::mat temp2(g,4, arma::fill::zeros);
   
-  double Q1 = 0.0;
+  //double Q1 = 0.0;
   arma::vec Q2 =  arma::zeros(g);
   arma::mat Q3 =  arma::zeros(g,n);
   arma::mat Q2b =  arma::zeros(g,n);
@@ -286,15 +286,16 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
           sigma = params.col(3);
           
           for(int i=0; i <g; i++){
-            Q2.at(i) = - std::log(tgamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(digamma(0.5*(nu.at(i)+1.0)) - std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1 );
+            Q2(i) = - std::log(tgamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(digamma(0.5*(nu.at(i)+1.0)) - std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1 );
             Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
     
           }
           
+          Q2 = Q2+0.0; // this is just to supress the unused variable warning in clang
           for(int i=0; i <g; i++){
             for(int k=0; k <n; k++){
               accumQ1+=tau(i,k)*std::log(params(i,0));
-              accumQ2+=tau(i,k)*Q2.at(i);
+              accumQ2+=tau(i,k)*Q2(i);
               accumQ3+=tau(i,k)*Q3(i,k);
             }
           }
@@ -363,7 +364,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
     
   arma::vec temp_ll = arma::zeros(random_starts);
   
-  for(int i; i<random_starts;i++){
+  for(int i=0; i<random_starts;i++){
     temp_ll(i)= as<double>(tempOut.at(random_starts-i-1)["LL"]);
   }
   
@@ -424,7 +425,7 @@ List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double
  arma::vec comp =  arma::zeros(n);
  arma::vec it =  arma::zeros(n);
  
- for(int i; i<n;i++){
+ for(int i=0; i<n;i++){
    tmp = (each_gene(bigdat.row(i).t(), random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
    stat.at(i) = as<double>(tmp["Ratio"]);
    comp.at(i) = as<double>(tmp["components"]);
