@@ -79,8 +79,12 @@ for(k in 1:g){
 }
 
 
-test5<-cluster_tissues_top_genes((test1), 50)
+test5<-top_genes_cluster_tissues((test1), 50)
 heat_maps(test1$all_genes[test5$top_genes,]) 
 
-qplot(test3$mfa_fit$U[,,1], test3$mfa_fit$U[,,2])
+rbind(test5$mfa_fit$U[,,1],test5$mfa_fit$U[,,2])
+
+group <- as.matrix((gen$all_genes[top_genes,]))
+G1<-factor(predict_mcfa(mfa_fit, t(group)))
+qplot(test5$mfa_fit$U[,1,1], test5$mfa_fit$U[,2,1], colour=G1)
 

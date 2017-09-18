@@ -118,16 +118,12 @@ cluster_tissues<-function(gen, clusters, method='t', k=6){
     for(i in 1:g){
       group <- as.matrix((gen$genes[clusters$classification==i,]))
       #actually mixture of common factor analysers. consider fixing.
-      print(dim(group))
-      if(dim(group)[1] > dim(group)[2]+k){
-        mfa_fit<-mcfa(t(group), 2, k)
-        clustering[i,]<- as.numeric(xor(predict.mcfa(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
-        
-      }else{
-        warning("Unable to complete mixture of factor analysers fit, number of samples less than number of variables")
-        
-      }
+      #print(dim(group))
       
+        mfa_fit<-mcfa(t(group), 2, k)
+        clustering[i,]<- as.numeric(xor(predict_mcfa(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
+        
+    
       
     }
     
@@ -136,6 +132,61 @@ cluster_tissues<-function(gen, clusters, method='t', k=6){
   
   return(clustering)
 }
+
+
+
+
+#' Clusters tissues
+#'
+#' @param gen emmix-gene object
+#' @param n_top number of top genes (as ranked by liklihood) to be selected
+#' @param method Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers. 
+#' @param k number of factors if using mfa
+#' @return a clustering for each sample (columns) by each group(rows)
+#' @examples
+#' 
+#' @export
+top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', k=2){
+  
+
+  p<-ncol(gen$genes)
+  clustering<-array(0,p)
+  
+  top_genes<-order(test1$stat,decreasing = FALSE)[1:n_top]
+  
+  if(method=='t'){
+    
+      group_means <- colMeans(gen$all_genes[top_genes,])
+      t_fit<-emmix_t(group_means, 2)
+      clustering<-as.numeric(xor(t_fit$Clusters, (t_fit$mu[1]>t_fit$mu[2])))
+    
+    
+  }
+  
+  if(method=='mfa'){
+    
+      group <- as.matrix((gen$all_genes[top_genes,]))
+      mfa_fit<-mcfa(t(group), 2, k)
+      clustering<- as.numeric(xor(predict_mcfa(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
+      
+      
+      
+    }
+    
+    
+  
+  
+  return(list(clustering=clustering, top_genes=top_genes, mfa_fit=mfa_fit))
+}
+
+
+
+
+
+
+
+
+
 
 #' Heat maps
 #'
