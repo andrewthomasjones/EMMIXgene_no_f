@@ -1,20 +1,30 @@
-
-# filename='/home/andrew/projects/EMMIX-GENE/dat/golub_norm.dat'
-# filename='/home/andrew/projects/EMMIX-GENE/dat/alon_norm.dat'
-
-#' Selects Genes from data supplied.
-#'
-#' @param filename Name of file containing gene data. Can be either .csv or space separated .dat. Rows are genes and columns are samples. Must supply one of filename and dat.
-#' @param dat A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.
-#' @param random_starts The number of random starts used per gene when fitting t-distributions.
-#' @param ll_thresh The difference in log-likihood used as a threshold for selecting between g=1 and g=2.
-#' @param min_clust_size The minimum number of observations per cluster. 
-#' @return emmix-gene object
-#' @examples
+#' Selects genes using the EMMIXgene algorithim.
 #' 
+#' Follows the gene selection methodology of 
+#' G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the clustering of microarray expression data , Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422, https://doi.org/10.1093/bioinformatics/18.3.413
+#'
+#' @param dat A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.
+#' @param filename Name of file containing gene data. Can be either .csv or space separated .dat. Rows are genes and columns are samples. Must supply one of filename and dat.
+#' @param random_starts The number of random initializations used per gene when fitting mixtures of t-distributions. Initialisation uses k-means by default.
+#' @param max_it The maximum number of iterations per mixture fit. Default value is 100.
+#' @param ll_thresh The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.
+#' @param min_clust_size The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8. 
+#' @param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
+#' @return An emmix-gene object containing:
+#' \item{stat}{The difference in log-liklihood for g=1 and g=2 for each gene (or for g=2 and g=3 where relevant).}
+#' \item{g}{The selected number of components for each gene.}
+#' \item{it}{The number of iterations for each genes selected fit.} 
+#' \item{selected}{An indicator for each genes selected status}
+#' \item{genes}{A dataframe of selected genes.}
+#' \item{all_genes}{Returns dat or contents of filename.}
+#' 
+#' @examples
+#' data(alon_data)
+#' #only run on first 100 genes for speed
+#' example <- select_genes(alon_data[1:100, ]) 
 #' 
 #' @export
-select_genes<-function(dat, filename, random_starts=4, max_it = 400, ll_thresh = 8, min_clust_size = 8){
+select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh = 8, min_clust_size = 8){
   
     #housekeeping   
   
