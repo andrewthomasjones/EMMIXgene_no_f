@@ -6,16 +6,16 @@
 
 using namespace Rcpp;
 
-// mahalanobis
-double mahalanobis(double y, double mu, double sigma);
-RcppExport SEXP _EMMIXgene_mahalanobis(SEXP ySEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+// mahalanobis_c
+double mahalanobis_c(double y, double mu, double sigma);
+RcppExport SEXP _EMMIXgene_mahalanobis_c(SEXP ySEXP, SEXP muSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type y(ySEXP);
     Rcpp::traits::input_parameter< double >::type mu(muSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(mahalanobis(y, mu, sigma));
+    rcpp_result_gen = Rcpp::wrap(mahalanobis_c(y, mu, sigma));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -77,8 +77,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // each_gene
-List each_gene(arma::vec dat, int random_starts, int max_it, double ll_thresh, int min_clust_size, double tol, std::string start_method);
-RcppExport SEXP _EMMIXgene_each_gene(SEXP datSEXP, SEXP random_startsSEXP, SEXP max_itSEXP, SEXP ll_threshSEXP, SEXP min_clust_sizeSEXP, SEXP tolSEXP, SEXP start_methodSEXP) {
+List each_gene(arma::vec dat, int random_starts, int max_it, double ll_thresh, int min_clust_size, double tol, std::string start_method, bool three);
+RcppExport SEXP _EMMIXgene_each_gene(SEXP datSEXP, SEXP random_startsSEXP, SEXP max_itSEXP, SEXP ll_threshSEXP, SEXP min_clust_sizeSEXP, SEXP tolSEXP, SEXP start_methodSEXP, SEXP threeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -89,13 +89,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type min_clust_size(min_clust_sizeSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< std::string >::type start_method(start_methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(each_gene(dat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
+    Rcpp::traits::input_parameter< bool >::type three(threeSEXP);
+    rcpp_result_gen = Rcpp::wrap(each_gene(dat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method, three));
     return rcpp_result_gen;
 END_RCPP
 }
 // emmix_gene
-List emmix_gene(arma::mat& bigdat, int random_starts, int max_it, double ll_thresh, int min_clust_size, double tol, std::string start_method);
-RcppExport SEXP _EMMIXgene_emmix_gene(SEXP bigdatSEXP, SEXP random_startsSEXP, SEXP max_itSEXP, SEXP ll_threshSEXP, SEXP min_clust_sizeSEXP, SEXP tolSEXP, SEXP start_methodSEXP) {
+List emmix_gene(arma::mat& bigdat, int random_starts, int max_it, double ll_thresh, int min_clust_size, double tol, std::string start_method, bool three);
+RcppExport SEXP _EMMIXgene_emmix_gene(SEXP bigdatSEXP, SEXP random_startsSEXP, SEXP max_itSEXP, SEXP ll_threshSEXP, SEXP min_clust_sizeSEXP, SEXP tolSEXP, SEXP start_methodSEXP, SEXP threeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,7 +107,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type min_clust_size(min_clust_sizeSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< std::string >::type start_method(start_methodSEXP);
-    rcpp_result_gen = Rcpp::wrap(emmix_gene(bigdat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
+    Rcpp::traits::input_parameter< bool >::type three(threeSEXP);
+    rcpp_result_gen = Rcpp::wrap(emmix_gene(bigdat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method, three));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -130,13 +132,13 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_EMMIXgene_mahalanobis", (DL_FUNC) &_EMMIXgene_mahalanobis, 3},
+    {"_EMMIXgene_mahalanobis_c", (DL_FUNC) &_EMMIXgene_mahalanobis_c, 3},
     {"_EMMIXgene_t_dist", (DL_FUNC) &_EMMIXgene_t_dist, 5},
     {"_EMMIXgene_estep", (DL_FUNC) &_EMMIXgene_estep, 2},
     {"_EMMIXgene_mstep", (DL_FUNC) &_EMMIXgene_mstep, 4},
     {"_EMMIXgene_emmix_t", (DL_FUNC) &_EMMIXgene_emmix_t, 6},
-    {"_EMMIXgene_each_gene", (DL_FUNC) &_EMMIXgene_each_gene, 7},
-    {"_EMMIXgene_emmix_gene", (DL_FUNC) &_EMMIXgene_emmix_gene, 7},
+    {"_EMMIXgene_each_gene", (DL_FUNC) &_EMMIXgene_each_gene, 8},
+    {"_EMMIXgene_emmix_gene", (DL_FUNC) &_EMMIXgene_emmix_gene, 8},
     {"_EMMIXgene_tkmeans", (DL_FUNC) &_EMMIXgene_tkmeans, 8},
     {NULL, NULL, 0}
 };

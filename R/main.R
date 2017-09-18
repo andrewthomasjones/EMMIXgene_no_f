@@ -14,7 +14,7 @@
 #' 
 #' 
 #' @export
-select_genes<-function(filename, dat, random_starts=4, max_it = 400, ll_thresh = 8, min_clust_size = 8){
+select_genes<-function(dat, filename, random_starts=4, max_it = 400, ll_thresh = 8, min_clust_size = 8){
   
     #housekeeping   
   
@@ -36,21 +36,24 @@ select_genes<-function(filename, dat, random_starts=4, max_it = 400, ll_thresh =
     }
     
     
-    if(any(complete.cases((data)))|any(complete.cases(t(data)))){
+    if(any(!complete.cases((data)))| any(!complete.cases(t(data)))){
       warning("Incomplete cases removed removed.")
     }
   
     #remove missing data
-    data<-data[,complete.cases(t(data))]
     data<-data[complete.cases((data)),]
+    data<-data[,complete.cases(t(data))]
+   
     
     #actual method
     
     #do emmix_gene C++ routine
     a<-emmix_gene(data)
+    a$selected<-a$g>1
     
     #add selected genes to result
     a$genes <- data[a$g>1,]
+    a$all_genes <- data
     
     result<-structure(a, class="emmix-gene")
     #return selected genes
@@ -95,7 +98,7 @@ cluster_genes<-function(gen, g=NULL){
 #' @examples
 #' 
 #' @export
-cluster_tissues<-function(gen, clusters, method='t', k=2){
+cluster_tissues<-function(gen, clusters, method='t', k=6){
   
   g<-clusters$G
   p<-ncol(clusters$data)
@@ -113,10 +116,19 @@ cluster_tissues<-function(gen, clusters, method='t', k=2){
   
   if(method=='mfa'){
     for(i in 1:g){
-      group <- (gen$genes[clusters$classification==i,])
+      group <- as.matrix((gen$genes[clusters$classification==i,]))
       #actually mixture of common factor analysers. consider fixing.
-      mfa_fit<-mcfa(t(group), 2, k)
-      clustering[i,]<- as.numeric(xor(predict(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
+      print(dim(group))
+      if(dim(group)[1] > dim(group)[2]+k){
+        mfa_fit<-mcfa(t(group), 2, k)
+        clustering[i,]<- as.numeric(xor(predict.mcfa(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
+        
+      }else{
+        warning("Unable to complete mixture of factor analysers fit, number of samples less than number of variables")
+        
+      }
+      
+      
     }
     
     
@@ -144,7 +156,7 @@ heat_maps<-function(clust_genes, clustering=NULL){
   df_heatmap$samples<-factor(df_heatmap$samples)
   
   plot<-ggplot(df_heatmap, aes(samples,genes )) + geom_tile(aes(fill = expression_level),  color = "white") +
-    scale_fill_distiller(palette = "Spectral", limits=c(-4,4)) + 
+    scale_fill_distiller(palette = "RdYlGn") + #, limits=c(-3,3)) + 
     ylab("Genes") +
     xlab("Samples") +
     theme(legend.title = element_text(size = 10),
@@ -177,7 +189,7 @@ plot_single_gene<-function(dat, gene_id, random_starts=50){
   
   
   df2<-data.frame(x=seq(-4, 4, length.out = 1000))
-  res<-each_gene(alon_data[gene_id,],random_starts)
+  res<-each_gene(dat[gene_id,],random_starts)
   for(i in 1:res$components){
     for(j in 1:nrow(df2)){
       df2[[paste0('y',i)]][j]<-res$pi[i]*t_dist(df2$x[j], res$mu[i], res$sigma[i], res$nu[i])

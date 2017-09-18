@@ -5,8 +5,8 @@
 #'@useDynLib EMMIXgene
 NULL
 
-mahalanobis <- function(y, mu, sigma) {
-    .Call('_EMMIXgene_mahalanobis', PACKAGE = 'EMMIXgene', y, mu, sigma)
+mahalanobis_c <- function(y, mu, sigma) {
+    .Call('_EMMIXgene_mahalanobis_c', PACKAGE = 'EMMIXgene', y, mu, sigma)
 }
 
 #'@export
@@ -28,13 +28,13 @@ emmix_t <- function(dat, g = 1L, random_starts = 4L, max_it = 100L, tol = 0.0001
 }
 
 #'@export
-each_gene <- function(dat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans") {
-    .Call('_EMMIXgene_each_gene', PACKAGE = 'EMMIXgene', dat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method)
+each_gene <- function(dat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans", three = FALSE) {
+    .Call('_EMMIXgene_each_gene', PACKAGE = 'EMMIXgene', dat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method, three)
 }
 
 #'@export
-emmix_gene <- function(bigdat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans") {
-    .Call('_EMMIXgene_emmix_gene', PACKAGE = 'EMMIXgene', bigdat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method)
+emmix_gene <- function(bigdat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans", three = FALSE) {
+    .Call('_EMMIXgene_emmix_gene', PACKAGE = 'EMMIXgene', bigdat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method, three)
 }
 
 #'@export

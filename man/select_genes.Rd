@@ -4,13 +4,13 @@
 \alias{select_genes}
 \title{Selects Genes from data supplied.}
 \usage{
-select_genes(filename, dat, random_starts = 4, max_it = 400,
+select_genes(dat, filename, random_starts = 4, max_it = 400,
   ll_thresh = 8, min_clust_size = 8)
 }
 \arguments{
-\item{filename}{Name of file containing gene data. Can be either .csv or space separated .dat. Rows are genes and columns are samples. Must supply one of filename and dat.}
-
 \item{dat}{A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.}
+
+\item{filename}{Name of file containing gene data. Can be either .csv or space separated .dat. Rows are genes and columns are samples. Must supply one of filename and dat.}
 
 \item{random_starts}{The number of random starts used per gene when fitting t-distributions.}
 

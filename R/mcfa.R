@@ -1,6 +1,5 @@
-mcfa <- function(Y, g, q, ...) UseMethod("mcfa")
-
-mcfa.default <- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
+#' @export
+mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
 	initClust=NULL, initMethod='eigenA', convMeas='diff',
         errorMsg=FALSE, ...){
 
@@ -81,6 +80,7 @@ est.mcfa <- function(Y, g, q, itmax, tol, pivec, A, xi, omega, D, convMeas, ...)
   n <- nrow(Y)
 
   fit <- list(g=g, q=q, pivec=pivec, A=A, xi=xi, omega=omega, D=D)
+
   fit$logL <- loglike.mcfa(Y, g, q, pivec, A, xi, omega, D)
   if(class(fit$logL) == 'character'){
     FIT <- paste('Failed in computing the log-likelihood before the EM-steps,',
@@ -136,7 +136,10 @@ loglike.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
     }
     logdetD <- log(det(as.matrix(omega[,,i]))) + sum(log(diag(D))) +
       log(det(chol.inv(omega[,,i]) + t(A) %*% InvD %*% A))
-    MhalDist <- mahalanobis(Y, t(A %*% xi[, i, drop=FALSE]), InvS, TRUE)
+    
+ 
+ 
+    MhalDist <- mahalanobis(Y, t(A %*% xi[, i, drop=FALSE]), InvS, inverted=TRUE)
     Fji[,i] <- -0.5*MhalDist - (p/2)*log(2*pi) - 0.5*logdetD
   }
   Fji <- sweep(Fji, 2, log(pivec), '+')
@@ -149,7 +152,6 @@ loglike.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
 tau.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
   p <- ncol(Y); if(is.null(p)) p <- 1
   n <- nrow(Y)
-
   Fji <- array(NA, c(n,g))
   InvD <- diag(1/diag(D))
   for(i in 1:g){
@@ -360,7 +362,9 @@ plot.mcfa <- function(x, ...){
   }
 }
 
-predict.mcfa <- function(object, x, ...){
+
+#' @export
+predict_mcfa <- function(object, x, ...){
   tau <- tau.mcfa(x, object$g, object$q, object$pivec, object$A, object$xi,
                   object$omega, object$D)
   clust <- apply(tau, 1, which.max)

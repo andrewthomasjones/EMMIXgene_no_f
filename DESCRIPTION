@@ -8,7 +8,6 @@ Description: Re-implements EMMIX-GENE
 Encoding: UTF-8
 License: GPL (>= 3)
 LazyData: TRUE
-Depends: R (>= 3.1.0)
 Suggests: 
   testthat,
   knitr,
@@ -17,7 +16,8 @@ LinkingTo:
   Rcpp,
   RcppArmadillo,
   BH
-Imports:
+Depends:
+  R (>= 3.1.0),
   Rcpp (>= 0.12.5),
   mclust,
   reshape,
