@@ -5,8 +5,8 @@
 \title{Selects genes using the EMMIXgene algorithim.}
 \usage{
 select_genes(dat, filename, random_starts = 4, max_it = 100,
-  ll_thresh = 8, min_clust_size = 8, tol = 1e-04,
-  start_method = "kmeans", three = FALSE)
+  ll_thresh = 8, min_clust_size = 8, tol = 1e-04, start_method = "both",
+  three = FALSE)
 }
 \arguments{
 \item{dat}{A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.}
@@ -23,7 +23,7 @@ select_genes(dat, filename, random_starts = 4, max_it = 100,
 
 \item{tol}{Tolerance value used for detecting convergence of EMMIX fits.}
 
-\item{start_method}{Default value is "kmeans". Can also choose "random" for purely random starts.}
+\item{start_method}{Default value is "both". Can also choose "random" for purely random starts.}
 
 \item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
 }

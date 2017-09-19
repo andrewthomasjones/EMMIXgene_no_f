@@ -23,17 +23,17 @@ mstep <- function(dat, tau, you, params) {
 }
 
 #'@export
-emmix_t <- function(dat, g = 1L, random_starts = 4L, max_it = 100L, tol = 0.0001, start_method = "kmeans") {
+emmix_t <- function(dat, g = 1L, random_starts = 4L, max_it = 100L, tol = 0.0001, start_method = "both") {
     .Call('_EMMIXgene_emmix_t', PACKAGE = 'EMMIXgene', dat, g, random_starts, max_it, tol, start_method)
 }
 
 #'@export
-each_gene <- function(dat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans", three = FALSE) {
+each_gene <- function(dat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "both", three = FALSE) {
     .Call('_EMMIXgene_each_gene', PACKAGE = 'EMMIXgene', dat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method, three)
 }
 
 #'@export
-emmix_gene <- function(bigdat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "kmeans", three = FALSE) {
+emmix_gene <- function(bigdat, random_starts = 4L, max_it = 100L, ll_thresh = 8, min_clust_size = 8L, tol = 0.0001, start_method = "both", three = FALSE) {
     .Call('_EMMIXgene_emmix_gene', PACKAGE = 'EMMIXgene', bigdat, random_starts, max_it, ll_thresh, min_clust_size, tol, start_method, three)
 }
 

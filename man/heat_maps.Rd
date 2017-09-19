@@ -4,17 +4,20 @@
 \alias{heat_maps}
 \title{Heat maps}
 \usage{
-heat_maps(clust_genes, clustering = NULL)
+heat_maps(dat, clustering = NULL)
 }
 \arguments{
-\item{clust_genes}{matrix of genes}
+\item{dat}{matrix of gene expression data.}
 }
 \value{
-ggplot2 heat map
+A ggplot2 heat map.
 }
 \description{
-Heat maps
+Plot heat maps of gene expression data. Optionally sort the x-axis according to a predtermined clustering.
 }
 \examples{
+data(alon_data)
+example <- heat_maps(alon_data[1:100, ])
 
+  
 }

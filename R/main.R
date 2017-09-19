@@ -10,7 +10,7 @@
 #' @param ll_thresh The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.
 #' @param min_clust_size The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8. 
 #' @param tol Tolerance value used for detecting convergence of EMMIX fits. 
-#' @param start_method Default value is "kmeans". Can also choose "random" for purely random starts.
+#' @param start_method Default value is "both". Can also choose "random" for purely random starts.
 #' @param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
 #' @return An emmix-gene object containing:
 #' \item{stat}{The difference in log-liklihood for g=1 and g=2 for each gene (or for g=2 and g=3 where relevant).}
@@ -26,7 +26,7 @@
 #' example <- select_genes(alon_data[1:100, ]) 
 #' 
 #' @export
-select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method ="kmeans",  three=FALSE){
+select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method ="both",  three=FALSE){
   
     #housekeeping   
   
@@ -73,14 +73,21 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
 }
 
 #' Clusters genes
+#' 
+#' Sorts genes into clusters using mixtures of normal distributions with covariance matrices restricted to be multiples of the indentity matrix.
 #'
-#' @param gen an emmix-gene object produced by select genes.
-#' @param g number of gene clusters . If not specified will be selected automatically on the basis of BIC.
-#' @return mclust object
+#' @param gen an emmix-gene object produced by select_genes().  
+#' @param g The desired number of gene clusters. If not specified will be selected automatically on the basis of BIC.
+#' @return An mclust object containing the clustering. 
 #' @examples
+#' #' data(alon_data)
+#' #only run on first 100 genes for speed
+#' example <- select_genes(alon_data[1:100, ]) 
+#' example2<-cluster_genes(example)
 #' 
 #' @export
 cluster_genes<-function(gen, g=NULL){
+  
   clust_genes<-Mclust((gen$genes), G=g, modelNames = "VII")
   g<-clust_genes$G
   
@@ -110,7 +117,7 @@ cluster_genes<-function(gen, g=NULL){
 #' @examples
 #' 
 #' @export
-cluster_tissues<-function(gen, clusters, method='t', k=6){
+cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
   
   g<-clusters$G
   p<-ncol(clusters$data)
@@ -120,7 +127,7 @@ cluster_tissues<-function(gen, clusters, method='t', k=6){
   if(method=='t'){
     for(i in 1:g){
         group_means <- colMeans(gen$genes[clusters$classification==i,])
-        t_fit<-emmix_t(group_means, 2)
+        t_fit<-emmix_t(group_means, G)
         clustering[i,]<-as.numeric(xor(t_fit$Clusters, (t_fit$mu[1]>t_fit$mu[2])))
      }
     
@@ -132,8 +139,8 @@ cluster_tissues<-function(gen, clusters, method='t', k=6){
       #actually mixture of common factor analysers. consider fixing.
       #print(dim(group))
       
-        mfa_fit<-mcfa(t(group), 2, k)
-        clustering[i,]<- as.numeric(xor(predict_mcfa(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
+        mfa_fit<-mcfa(t(group), G, q)
+        clustering[i,]<- as.numeric(predict_mcfa(mfa_fit, t(group))-1) 
         
     
       
@@ -148,29 +155,32 @@ cluster_tissues<-function(gen, clusters, method='t', k=6){
 
 
 
-#' Clusters tissues
+#' Cluster tissues
 #'
-#' @param gen emmix-gene object
+#' @param gen An emmix-gene object produced by select_genes().
 #' @param n_top number of top genes (as ranked by liklihood) to be selected
 #' @param method Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers. 
-#' @param k number of factors if using mfa
-#' @return a clustering for each sample (columns) by each group(rows)
+#' @param k The number of factors if using mfa.
+#' @return An emmix-gene object containing:
+#' \item{stat}{A matrix containing clustering (0 or 1) for each sample (columns) by each group(rows).}
+#' \item{top_gene}{The row nunbers of the top genes.}
+#' \item{fit}{The fit object used to determine the clustering.}
 #' @examples
 #' 
 #' @export
-top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', k=2){
+top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
   
 
   p<-ncol(gen$genes)
   clustering<-array(0,p)
   
-  top_genes<-order(test1$stat,decreasing = FALSE)[1:n_top]
+  top_genes<-order(gen$stat,decreasing = FALSE)[1:n_top]
   
   if(method=='t'){
     
       group_means <- colMeans(gen$all_genes[top_genes,])
-      t_fit<-emmix_t(group_means, 2)
-      clustering<-as.numeric(xor(t_fit$Clusters, (t_fit$mu[1]>t_fit$mu[2])))
+      fit<-emmix_t(group_means, g)
+      clustering<-as.numeric(xor(fit$Clusters, (fit$mu[1]>fit$mu[2])))
     
     
   }
@@ -178,8 +188,8 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', k=2){
   if(method=='mfa'){
     
       group <- as.matrix((gen$all_genes[top_genes,]))
-      mfa_fit<-mcfa(t(group), 2, k)
-      clustering<- as.numeric(xor(predict_mcfa(mfa_fit, t(group))-1, (diff(mfa_fit$xi[1,])>0))) 
+      fit<-mcfa(t(group), g, q)
+      clustering<- as.numeric(xor(predict_mcfa(fit, t(group))-1, (diff(fit$xi[1,])>0))) 
       
       
       
@@ -188,7 +198,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', k=2){
     
   
   
-  return(list(clustering=clustering, top_genes=top_genes, mfa_fit=mfa_fit))
+  return(list(clustering=clustering, top_genes=top_genes, fit=fit))
 }
 
 
@@ -201,58 +211,85 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', k=2){
 
 
 #' Heat maps
-#'
-#' @param clust_genes matrix of genes
-#' @return ggplot2 heat map
-#' @examples
 #' 
+#' Plot heat maps of gene expression data. Optionally sort the x-axis according to a predtermined clustering.
+#'
+#' @param dat matrix of gene expression data.
+#' @return A ggplot2 heat map.
+#' @examples
+#' data(alon_data)
+#' example <- heat_maps(alon_data[1:100, ])
+#' 
+#'   
 #' @export
-heat_maps<-function(clust_genes, clustering=NULL){
-  colnames(clust_genes) <- NULL
+heat_maps<-function(dat, clustering=NULL){
+  colnames(dat) <- NULL
   if(!is.null(clustering)){
-    clust_genes<-clust_genes[,order(clustering)]
+    dat<-dat[,order(clustering)]
   }
   
-  df_heatmap<-melt(clust_genes)
+  
+  df_heatmap<-melt(dat)
   names(df_heatmap)<-c("genes", "samples",  "expression_level")
   df_heatmap$genes<-factor(df_heatmap$genes)
   df_heatmap$samples<-factor(df_heatmap$samples)
   
   plot<-ggplot(df_heatmap, aes(samples,genes )) + geom_tile(aes(fill = expression_level),  color = "white") +
-    scale_fill_distiller(palette = "RdYlGn") + #, limits=c(-3,3)) + 
+    scale_fill_distiller(palette = "Spectral")  +  
     ylab("Genes") +
     xlab("Samples") +
     theme(legend.title = element_text(size = 10),
           legend.text = element_text(size = 12),
           plot.title = element_text(size=16),
           axis.title=element_text(size=14,face="bold"),
-          axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks.y=element_blank(),axis.ticks.x=element_blank()) +
+         axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
     labs(fill = "Expression level")
+  
+  if(is.null(clustering)){
+    plot<- plot +  scale_x_discrete(breaks = seq(0, length(levels(df_heatmap$genes)), 10) )
+  }
+  
+  if(!is.null(clustering)){
+    plot<- plot  +  scale_x_discrete(labels =order(clustering)) #+ theme(axis.text.x = element_blank())
+  }
   
   return(plot)
 }
 
-#' Plot single gene
+#' Plot a single gene expression histogram with best fitted mixture of t-distributions.
+#' 
+#' Plot a single gene expression histogram with best fitted mixture of t-distributions according to the EMMIX-gene algorithm.
 #'
-#' @param dat full matrix of data
-#' @param gene_id row number
-#' @param random_starts number of random starts for the fit
-#' @return ggplot2 histogram with fit
+#' @param dat matrix of gene expression data.
+#' @param gene_id row number of gene to be plotted.
+#' @param random_starts The number of random initializations used per gene when fitting mixtures of t-distributions. Initialisation uses k-means by default.
+#' @param max_it The maximum number of iterations per mixture fit. Default value is 100.
+#' @param ll_thresh The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.
+#' @param min_clust_size The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8. 
+#' @param tol Tolerance value used for detecting convergence of EMMIX fits. 
+#' @param start_method Default value is "both". Can also choose "random" for purely random starts.
+#' @param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
+#' @return A ggplot2 histogram with fitted t-distributions overlayed. 
 #' @examples
+#' data(alon_data)
+#' example <- plot_single_gene(alon_data,1) 
+#' #not run
+#' #plot(example)
 #' 
 #' @export
-plot_single_gene<-function(dat, gene_id, random_starts=50){ 
+plot_single_gene<-function(dat, gene_id, random_starts=8, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method = "both",  three=TRUE){ 
   
   
   
   df<-data.frame(x=dat[gene_id,])
   n<-length(df$x)/4
-  breaks<-seq(-4,4, length.out=n)
+  breaks<-seq(-4,2, length.out=n)
   plot<-ggplot(df, aes(x=x)) + geom_histogram(aes(y=..density..), breaks=breaks, alpha=.5)+theme_bw()
   
   
-  df2<-data.frame(x=seq(-4, 4, length.out = 1000))
-  res<-each_gene(dat[gene_id,],random_starts)
+  df2<-data.frame(x=seq(-4, 2, length.out = 1000))
+  res<-each_gene(dat[gene_id,],random_starts,max_it, ll_thresh, min_clust_size, tol,start_method,three)
+  
   for(i in 1:res$components){
     for(j in 1:nrow(df2)){
       df2[[paste0('y',i)]][j]<-res$pi[i]*t_dist(df2$x[j], res$mu[i], res$sigma[i], res$nu[i])
@@ -261,6 +298,7 @@ plot_single_gene<-function(dat, gene_id, random_starts=50){
   
   
   plot<-plot+geom_line(data=df2, aes(x=x, y=y1))
+  
   if(res$components>1){
     plot<-plot+geom_line(data=df2, aes(x=x, y=y2))
   }

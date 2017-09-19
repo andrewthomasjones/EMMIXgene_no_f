@@ -2,24 +2,27 @@
 % Please edit documentation in R/main.R
 \name{top_genes_cluster_tissues}
 \alias{top_genes_cluster_tissues}
-\title{Clusters tissues}
+\title{Cluster tissues}
 \usage{
 top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", k = 2)
 }
 \arguments{
-\item{gen}{emmix-gene object}
+\item{gen}{An emmix-gene object produced by select_genes().}
 
 \item{n_top}{number of top genes (as ranked by liklihood) to be selected}
 
 \item{method}{Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers.}
 
-\item{k}{number of factors if using mfa}
+\item{k}{The number of factors if using mfa.}
 }
 \value{
-a clustering for each sample (columns) by each group(rows)
+An emmix-gene object containing:
+\item{stat}{A matrix containing clustering (0 or 1) for each sample (columns) by each group(rows).}
+\item{top_gene}{The row nunbers of the top genes.}
+\item{fit}{The fit object used to determine the clustering.}
 }
 \description{
-Clusters tissues
+Cluster tissues
 }
 \examples{
 

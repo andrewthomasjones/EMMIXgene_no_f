@@ -2,23 +2,41 @@
 % Please edit documentation in R/main.R
 \name{plot_single_gene}
 \alias{plot_single_gene}
-\title{Plot single gene}
+\title{Plot a single gene expression histogram with best fitted mixture of t-distributions.}
 \usage{
-plot_single_gene(dat, gene_id, random_starts = 50)
+plot_single_gene(dat, gene_id, random_starts = 8, max_it = 100,
+  ll_thresh = 8, min_clust_size = 8, tol = 1e-04, start_method = "both",
+  three = TRUE)
 }
 \arguments{
-\item{dat}{full matrix of data}
+\item{dat}{matrix of gene expression data.}
 
-\item{gene_id}{row number}
+\item{gene_id}{row number of gene to be plotted.}
 
-\item{random_starts}{number of random starts for the fit}
+\item{random_starts}{The number of random initializations used per gene when fitting mixtures of t-distributions. Initialisation uses k-means by default.}
+
+\item{max_it}{The maximum number of iterations per mixture fit. Default value is 100.}
+
+\item{ll_thresh}{The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.}
+
+\item{min_clust_size}{The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8.}
+
+\item{tol}{Tolerance value used for detecting convergence of EMMIX fits.}
+
+\item{start_method}{Default value is "both". Can also choose "random" for purely random starts.}
+
+\item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
 }
 \value{
-ggplot2 histogram with fit
+A ggplot2 histogram with fitted t-distributions overlayed.
 }
 \description{
-Plot single gene
+Plot a single gene expression histogram with best fitted mixture of t-distributions according to the EMMIX-gene algorithm.
 }
 \examples{
+data(alon_data)
+example <- plot_single_gene(alon_data[1, ]) 
+#not run
+#plot(example)
 
 }
