@@ -16,7 +16,7 @@ heat_maps(alon_sel$all_genes[alon_top_50$top_genes,], alon_top_50$clustering)
 
 #5.1.2
 alon_clus_20<-cluster_genes(alon_sel2, 10)
-alon_clus_20_t<-cluster_tissues(alon_sel, alon_clus_20, method='t', k=4)
+alon_clus_20_t<-cluster_tissues(alon_sel, alon_clus_20, method='t', q=4)
 
 for(j in 1:10){
   plot<-heat_maps(alon_sel$genes[alon_clus_20$classification==j,], alon_clus_20_t[j,]) 
@@ -31,9 +31,9 @@ golub_clus_g<-cluster_genes(golub_sel)
 n_golub<-sum(golub_sel2$selected)
 
 golub_clus_40<-cluster_genes(golub_sel2, 20)
-golub_clus_40_t<-cluster_tissues(golub_sel2, golub_clus_40, method='t', k=8)
+golub_clus_40_t<-cluster_tissues(golub_sel2, golub_clus_40, method='t', q=8)
 
-golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, k=6)
+golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, q=6)
 
 
 heat_maps(golub_sel$all_genes[golub_top_50$top_genes,], golub_top_50$clustering)
@@ -44,7 +44,7 @@ for(j in 1:10){
 }
 
 
-golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, k=6, g=2)
+golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, q=6, g=2)
 
 
 

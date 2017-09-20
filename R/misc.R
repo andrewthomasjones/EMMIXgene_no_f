@@ -76,11 +76,11 @@ Starts <- function(Y, g, initClust, nkmeans, nrandom){
   if(is.numeric(nkmeans) & ! is.null(nkmeans) & (nkmeans > 0))
   {
     for (i in 1:nkmeans)
-      starts <- cbind(starts, kmeans(Y, g)$cluster)
+      starts <- cbind(starts, stats::kmeans(Y, g)$cluster)
   }
 
   if(is.numeric(nrandom) & ! is.null(nrandom) & (nrandom > 0))
-    starts <- cbind(starts, floor(g * matrix(runif(n*nrandom), c(n, nrandom))) + 1)
+    starts <- cbind(starts, floor(g * matrix(stats::runif(n*nrandom), c(n, nrandom))) + 1)
 
   starts <- cbind(initClust, starts)
   starts <- as.matrix(starts)

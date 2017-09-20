@@ -6,21 +6,20 @@
 //'@useDynLib EMMIXgene
 
 
-#include <RcppArmadillo.h>
-#include <tkmeans.h>
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <Rcpp.h>
 #include <boost/math/special_functions/digamma.hpp>
 #include <boost/math/special_functions/gamma.hpp>
-#include <boost/math/distributions/students_t.hpp>
+#include <boost/math/tools/roots.hpp>
+#include <RcppArmadillo.h>
+#include <tkmeans.h>
 
 //using namespace arma;
 using namespace Rcpp;
-using namespace boost::math;
+//using namespace boost::math;
 
-typedef students_t_distribution<double> students_t;
+
 typedef std::vector<double> stdvec;
 
 double df_eq_est (double v, double v_sum);
@@ -33,8 +32,7 @@ public:
 
   double operator()(double v) {
 
-    double temp = -digamma(0.5*v) + std::log(0.5*v) + v_sum + digamma(0.5*(v+1.)) - std::log(0.5*(v+1.))+1.;
-    //std::cout << "v: " << v << " v_sum: " << v_sum << " temp: " << temp << std::endl;
+    double temp = -boost::math::digamma(0.5*v) + std::log(0.5*v) + v_sum + boost::math::digamma(0.5*(v+1.)) - std::log(0.5*(v+1.))+1.;
     return temp;
     //return df_eq_est(v,v_sum);
 
@@ -75,7 +73,6 @@ double mahalanobis_c(double y, double mu, double sigma)
 
 //this is only 1D for now
 
-//'@export
 // [[Rcpp::export]]
 double t_dist(double y, double mu, double sigma, double nu,  int p =1)
 {
@@ -208,8 +205,8 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
   double a = 0.01;
   double b = 299.99;
   boost::uintmax_t df_max_iter=500; // boost solver params, could be user params but relatively unimportant
-  tools::eps_tolerance<double> tol(30);
-  
+  boost::math::tools::eps_tolerance<double> tol(30);
+ 
   for(int i=0;i<g;i++){
     mu2(i) = (sum(dat.t()%you.row(i)%tau.row(i)) / sum(you.row(i)%tau.row(i)));
     sigma2(i) = (sum(you.row(i)%tau.row(i)%((dat.t()-mu2(i))%(dat.t()-mu2(i)))) / s_tau(i));
@@ -225,7 +222,7 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
     df_eq_func rootFun = df_eq_func(v_sum);
       
     try{
-        std::pair<double, double>  r1= tools::bisect(rootFun, a, b, tol, df_max_iter);
+        std::pair<double, double>  r1= boost::math::tools::bisect(rootFun, a, b, tol, df_max_iter);
         nu2(i) = (r1.first + r1.second)/2.0;
     }catch(...){
         nu2(i) = 299.99;
@@ -259,7 +256,7 @@ double AIC_calc(double LL,  int k){
 }
 
 
-//'@export
+
 // [[Rcpp::export]]
 List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double tol = 0.0001, std::string start_method = "both"){
   int n = dat.size();
@@ -333,7 +330,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
           sigma = params.col(3);
           
           for(int i=0; i <g; i++){
-            Q2(i) = - std::log(tgamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(digamma(0.5*(nu.at(i)+1.0)) - std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1);
+            Q2(i) = - std::log(boost::math::tgamma(0.5*(nu.at(i)))) + 0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(boost::math::digamma(0.5*(nu.at(i)+1.0)) - std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1);
             Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
     
           }
@@ -422,7 +419,6 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
 
 }
 
-//'@export
 // [[Rcpp::export]]
 List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "both", bool three=false){
   
@@ -441,10 +437,7 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
   
   
   
-  // std::cout<< " g1 " << as<double>(g1["LL"])<<" g2 " << as<double>(g2["LL"])<< " g3 " << as<double>(g3["LL"]) << std::endl;
-  // std::cout<< " g1 " << as<int>(g1["c_min"])<<" g2 " << as<int>(g2["c_min"])<< " g3 " << as<int>(g3["c_min"]) << std::endl;
-  // std::cout<< " g1 v g2 " << -2*(lambda)  <<  std::endl;
-  // 
+
   if(-2*(lambda) > ll_thresh){
     if(as<int>(g2["c_min"]) >= min_clust_size){
       best_g = g2;
@@ -480,7 +473,7 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
 }
 
 
-//'@export
+
 // [[Rcpp::export]]
 List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "both", bool three = false){
  
