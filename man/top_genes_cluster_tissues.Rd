@@ -4,7 +4,8 @@
 \alias{top_genes_cluster_tissues}
 \title{Cluster tissues}
 \usage{
-top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", k = 2)
+top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", q = 2,
+  g = 2)
 }
 \arguments{
 \item{gen}{An emmix-gene object produced by select_genes().}
@@ -13,7 +14,9 @@ top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", k = 2)
 
 \item{method}{Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers.}
 
-\item{k}{The number of factors if using mfa.}
+\item{q}{number of factors if using mfa}
+
+\item{g}{number of components if using mfa}
 }
 \value{
 An emmix-gene object containing:
@@ -23,7 +26,4 @@ An emmix-gene object containing:
 }
 \description{
 Cluster tissues
-}
-\examples{
-
 }

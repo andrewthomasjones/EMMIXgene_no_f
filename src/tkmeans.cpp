@@ -141,8 +141,6 @@ arma::mat init_centres(arma::mat M, int k, bool verbose){
   return cent;
 }
 
-
-//'@export
 // [[Rcpp::export]]
 arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int nstart, int iter , double tol, bool verbose){
   unsigned int n = size(M)[0];

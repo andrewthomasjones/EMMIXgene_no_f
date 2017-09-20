@@ -28,15 +28,12 @@ plot_single_gene(dat, gene_id, random_starts = 8, max_it = 100,
 \item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
 }
 \value{
-A ggplot2 histogram with fitted t-distributions overlayed.
+A ggplot2 histogram with fitted t-distributions overlayed. 
+data(alon_data)
+example <- plot_single_gene(alon_data,1) 
+#not run
+#plot(example)
 }
 \description{
 Plot a single gene expression histogram with best fitted mixture of t-distributions according to the EMMIX-gene algorithm.
-}
-\examples{
-data(alon_data)
-example <- plot_single_gene(alon_data[1, ]) 
-#not run
-#plot(example)
-
 }

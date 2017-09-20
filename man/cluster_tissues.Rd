@@ -4,7 +4,7 @@
 \alias{cluster_tissues}
 \title{Clusters tissues}
 \usage{
-cluster_tissues(gen, clusters, method = "t", k = 6)
+cluster_tissues(gen, clusters, method = "t", q = 6, G = 2)
 }
 \arguments{
 \item{gen}{emmix-gene object}
@@ -13,14 +13,13 @@ cluster_tissues(gen, clusters, method = "t", k = 6)
 
 \item{method}{Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers.}
 
-\item{k}{number of factors if using mfa}
+\item{q}{number of factors if using mfa}
+
+\item{G}{number of components if using mfa}
 }
 \value{
 a clustering for each sample (columns) by each group(rows)
 }
 \description{
 Clusters tissues
-}
-\examples{
-
 }

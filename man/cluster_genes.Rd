@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{cluster_genes}
 \alias{cluster_genes}
-\title{Clusters genes}
+\title{Clusters genes using mixtures of normal distributions}
 \usage{
 cluster_genes(gen, g = NULL)
 }
@@ -20,7 +20,7 @@ Sorts genes into clusters using mixtures of normal distributions with covariance
 \examples{
 #' data(alon_data)
 #only run on first 100 genes for speed
-example <- select_genes(alon_data[1:100, ]) 
-example2<-cluster_genes(example)
+# example <- select_genes(alon_data[1:100, ]) 
+# example2<- cluster_genes(example)
 
 }

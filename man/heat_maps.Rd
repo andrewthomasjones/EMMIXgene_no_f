@@ -8,6 +8,8 @@ heat_maps(dat, clustering = NULL)
 }
 \arguments{
 \item{dat}{matrix of gene expression data.}
+
+\item{clustering}{a vector of sample classifications. MUst be same length as the number of columns in dat.}
 }
 \value{
 A ggplot2 heat map.

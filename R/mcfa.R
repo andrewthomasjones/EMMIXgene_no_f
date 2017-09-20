@@ -1,4 +1,3 @@
-#' @export
 mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
 	initClust=NULL, initMethod='eigenA', convMeas='diff',
         errorMsg=FALSE, ...){
@@ -139,7 +138,7 @@ loglike.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
     
  
  
-    MhalDist <- mahalanobis(Y, t(A %*% xi[, i, drop=FALSE]), InvS, inverted=TRUE)
+    MhalDist <- stats::mahalanobis(Y, t(A %*% xi[, i, drop=FALSE]), InvS, inverted=TRUE)
     Fji[,i] <- -0.5*MhalDist - (p/2)*log(2*pi) - 0.5*logdetD
   }
   Fji <- sweep(Fji, 2, log(pivec), '+')
@@ -160,7 +159,7 @@ tau.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
       t(A) %*% InvD
     logdetD <- log(det(as.matrix(omega[,,i]))) + sum(log(diag(D))) +
       log(det(chol.inv(omega[,,i]) + t(A) %*% InvD %*% A))
-    MhalDist <- mahalanobis(Y, t(A %*% xi[, i, drop=FALSE]), InvS, TRUE)
+    MhalDist <- stats::mahalanobis(Y, t(A %*% xi[, i, drop=FALSE]), InvS, TRUE)
     Fji[,i] <- -0.5*MhalDist - (p/2)*log(2*pi) - 0.5*logdetD
   }
 
@@ -219,10 +218,10 @@ init.est.para.mcfa <- function(Y, g, q, start, init.method="eigenA", ...){
 
   if(init.method=="randA")
   {
-    A <- matrix(rnorm(p*q), nrow=p, ncol=q)
+    A <- matrix(stats::rnorm(p*q), nrow=p, ncol=q)
     C <- chol(t(A) %*% A)
     A <- A %*% solve(C)
-    D <- diag(diag(cov(Y)))
+    D <- diag(diag(stats::cov(Y)))
     SqrtD <- diag(sqrt(diag(D)))
     InvSqrtD <- diag(1/diag(SqrtD))
     for(i in 1:g) {
@@ -230,7 +229,7 @@ init.est.para.mcfa <- function(Y, g, q, start, init.method="eigenA", ...){
       pivec[i] <- length(indices)/n
       uiT <- Y[indices,] %*% A
       xi[, i]  <- apply(uiT, 2, mean)
-      Si <- cov(Y[indices,])
+      Si <- stats::cov(Y[indices,])
       eig.list    <- try(eigen(InvSqrtD %*% Si %*% InvSqrtD), TRUE)
       H <- eig.list$vectors
       sort.lambda <- sort(eig.list$values, decreasing = TRUE, index.return=TRUE)
@@ -259,7 +258,7 @@ init.est.para.mcfa <- function(Y, g, q, start, init.method="eigenA", ...){
       pivec[i] <- length(indices)/n
       uiT <- Y[indices,] %*% A
       xi[, i]  <- apply(uiT, 2, mean)
-      omega[,, i] <- cov(t(t(A) %*% t(Y[indices,])) - xi[,i])
+      omega[,, i] <- stats::cov(t(t(A) %*% t(Y[indices,])) - xi[,i])
     }
     D <- diag(rep(mean(Eig$values[(q+1):p]), p))
   }
@@ -341,15 +340,15 @@ plot.mcfa <- function(x, ...){
 
   if(x$q == 1)
   {
-    plot(x$Fmat, 1:length(x$Fmat),  xlim=range(x$Fmat), axes=F, xlab=expression(widehat(u)[1]),
+    graphics::plot(x$Fmat, 1:length(x$Fmat),  xlim=range(x$Fmat), axes=F, xlab=expression(widehat(u)[1]),
          ylab="",type="p",  pch = if (x$g <= 5) {20+as.numeric(x$clust)} else{as.numeric(x$clust)},
          col = as.numeric(x$clust), bg =  as.numeric(x$clust))
-    axis(side=1)
+    graphics::axis(side=1)
   }
 
   if(x$q == 2)
   {
-    plot(x$Fmat[,c(1, 2)], pch = if (x$g <= 5) {20+as.numeric(x$clust)} else{as.numeric(x$clust)},
+    graphics::plot(x$Fmat[,c(1, 2)], pch = if (x$g <= 5) {20+as.numeric(x$clust)} else{as.numeric(x$clust)},
          col = as.numeric(x$clust), bg =  as.numeric(x$clust), xlim = range(x$Fmat[,1]),
          ylim = range(x$Fmat[,2]),
          xlab = expression(widehat(u)[1]), ylab=expression(widehat(u)[2]) )
@@ -357,13 +356,11 @@ plot.mcfa <- function(x, ...){
 
   if(x$q > 2)
   {
-   pairs(x$Fmat, pch = if (x$g <= 5) {20+as.numeric(x$clust)} else{as.numeric(x$clust)},
+    graphics::pairs(x$Fmat, pch = if (x$g <= 5) {20+as.numeric(x$clust)} else{as.numeric(x$clust)},
           col = as.numeric(x$clust), bg =  as.numeric(x$clust))
   }
 }
 
-
-#' @export
 predict_mcfa <- function(object, x, ...){
   tau <- tau.mcfa(x, object$g, object$q, object$pivec, object$A, object$xi,
                   object$omega, object$D)

@@ -1,6 +1,9 @@
-#' Selects genes using the EMMIXgene algorithim.
+#' @import ggplot2
+NULL
+
+#' @title Selects genes using the EMMIXgene algorithim.
 #' 
-#' Follows the gene selection methodology of 
+#' @description Follows the gene selection methodology of 
 #' G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the clustering of microarray expression data , Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422, https://doi.org/10.1093/bioinformatics/18.3.413
 #'
 #' @param dat A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.
@@ -39,8 +42,8 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     }  
   
     if(!missing(filename)&missing(dat)){
-      if(file_ext(filename)=="dat"){data<-as.matrix(read.delim(filename, sep=" ", header=F))}
-      if(file_ext(filename)=="csv"){data<-as.matrix(read.csv(filename, header=F))}
+      if(tools::file_ext(filename)=="dat"){data<-as.matrix(utils::read.delim(filename, sep=" ", header=F))}
+      if(tools::file_ext(filename)=="csv"){data<-as.matrix(utils::read.csv(filename, header=F))}
     }
   
     if(missing(filename)&!missing(dat)){
@@ -48,13 +51,13 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     }
     
     
-    if(any(!complete.cases((data)))| any(!complete.cases(t(data)))){
+    if(any(!stats::complete.cases((data)))| any(!stats::complete.cases(t(data)))){
       warning("Incomplete cases removed removed.")
     }
   
     #remove missing data
-    data<-data[complete.cases((data)),]
-    data<-data[,complete.cases(t(data))]
+    data<-data[stats::complete.cases((data)),]
+    data<-data[,stats::complete.cases(t(data))]
    
     
     #actual method
@@ -72,7 +75,7 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     return(result)
 }
 
-#' Clusters genes
+#' Clusters genes using mixtures of normal distributions
 #' 
 #' Sorts genes into clusters using mixtures of normal distributions with covariance matrices restricted to be multiples of the indentity matrix.
 #'
@@ -82,13 +85,13 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
 #' @examples
 #' #' data(alon_data)
 #' #only run on first 100 genes for speed
-#' example <- select_genes(alon_data[1:100, ]) 
-#' example2<-cluster_genes(example)
+#' # example <- select_genes(alon_data[1:100, ]) 
+#' # example2<- cluster_genes(example)
 #' 
 #' @export
 cluster_genes<-function(gen, g=NULL){
   
-  clust_genes<-Mclust((gen$genes), G=g, modelNames = "VII")
+  clust_genes<-mclust::Mclust((gen$genes), G=g, modelNames = "VII")
   g<-clust_genes$G
   
   ll_rank_stat<-array(0,g)
@@ -112,9 +115,10 @@ cluster_genes<-function(gen, g=NULL){
 #' @param gen emmix-gene object
 #' @param clusters mclust object
 #' @param method Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers. 
-#' @param k number of factors if using mfa
+#' @param q number of factors if using mfa
+#' @param G number of components if using mfa
 #' @return a clustering for each sample (columns) by each group(rows)
-#' @examples
+# #' @examples
 #' 
 #' @export
 cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
@@ -160,12 +164,13 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #' @param gen An emmix-gene object produced by select_genes().
 #' @param n_top number of top genes (as ranked by liklihood) to be selected
 #' @param method Method for seperating tissue classes. Can be either 't' for a univariate mixture of t-distributions on gene cluster means, or 'mfa' for a mixture of factor analysers. 
-#' @param k The number of factors if using mfa.
+#' @param q number of factors if using mfa
+#' @param g number of components if using mfa
 #' @return An emmix-gene object containing:
 #' \item{stat}{A matrix containing clustering (0 or 1) for each sample (columns) by each group(rows).}
 #' \item{top_gene}{The row nunbers of the top genes.}
 #' \item{fit}{The fit object used to determine the clustering.}
-#' @examples
+# #' @examples
 #' 
 #' @export
 top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
@@ -215,6 +220,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #' Plot heat maps of gene expression data. Optionally sort the x-axis according to a predtermined clustering.
 #'
 #' @param dat matrix of gene expression data.
+#' @param clustering a vector of sample classifications. MUst be same length as the number of columns in dat.
 #' @return A ggplot2 heat map.
 #' @examples
 #' data(alon_data)
@@ -229,12 +235,12 @@ heat_maps<-function(dat, clustering=NULL){
   }
   
   
-  df_heatmap<-melt(dat)
+  df_heatmap<-reshape::melt(dat)
   names(df_heatmap)<-c("genes", "samples",  "expression_level")
   df_heatmap$genes<-factor(df_heatmap$genes)
   df_heatmap$samples<-factor(df_heatmap$samples)
   
-  plot<-ggplot(df_heatmap, aes(samples,genes )) + geom_tile(aes(fill = expression_level),  color = "white") +
+  plot<-ggplot(df_heatmap, aes(df_heatmap$samples,df_heatmap$genes )) + geom_tile(aes(fill = df_heatmap$expression_level),  color = "white") +
     scale_fill_distiller(palette = "Spectral")  +  
     ylab("Genes") +
     xlab("Samples") +
@@ -270,7 +276,7 @@ heat_maps<-function(dat, clustering=NULL){
 #' @param start_method Default value is "both". Can also choose "random" for purely random starts.
 #' @param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
 #' @return A ggplot2 histogram with fitted t-distributions overlayed. 
-#' @examples
+# #' @examples
 #' data(alon_data)
 #' example <- plot_single_gene(alon_data,1) 
 #' #not run
@@ -279,13 +285,15 @@ heat_maps<-function(dat, clustering=NULL){
 #' @export
 plot_single_gene<-function(dat, gene_id, random_starts=8, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method = "both",  three=TRUE){ 
   
-  
-  
   df<-data.frame(x=dat[gene_id,])
   n<-length(df$x)/4
   breaks<-seq(-4,2, length.out=n)
-  plot<-ggplot(df, aes(x=x)) + geom_histogram(aes(y=..density..), breaks=breaks, alpha=.5)+theme_bw()
+  p<-ggplot(df, aes(x=df$x)) + geom_histogram(breaks=breaks, alpha=.5)+theme_bw()
+  p2<-ggplot_build(p)
   
+  df_dens<-data.frame(x=p2$data[[1]]$x, y=p2$data[[1]]$density) 
+    
+  plot<-ggplot(df_dens) + geom_histogram(aes(x=df_dens$x, y=df_dens$y), alpha=.5, stat="identity")+theme_bw()+xlab("Gene Expression Value")+ylab("Density")
   
   df2<-data.frame(x=seq(-4, 2, length.out = 1000))
   res<-each_gene(dat[gene_id,],random_starts,max_it, ll_thresh, min_clust_size, tol,start_method,three)
@@ -297,20 +305,40 @@ plot_single_gene<-function(dat, gene_id, random_starts=8, max_it = 100, ll_thres
   }
   
   
-  plot<-plot+geom_line(data=df2, aes(x=x, y=y1))
+  plot<-plot+geom_line(data=df2, aes(x=df2$x, y=df2$y1))
   
   if(res$components>1){
-    plot<-plot+geom_line(data=df2, aes(x=x, y=y2))
+    plot<-plot+geom_line(data=df2, aes(x=df2$x, y=df2$y2))
   }
   
   if(res$components>2){
-    plot<-plot+geom_line(data=df2, aes(x=x, y=y3))
+    plot<-plot+geom_line(data=df2, aes(x=df2$x, y=df2$y3))
   }
   
   return(plot)
 }
 
+#' @title Normalised gene expression values from Alon et al. (1999).
+#'
+#' @description A dataset containing centred and normalised values of the logged expression values of a subset of 2000 genes taken from 
+#'Alon, Uri, et al. "Broad patterns of gene expression revealed by clustering analysis of tumor and normal colon tissues probed by oligonucleotide arrays." Proceedings of the National Academy of Sciences 96.12 (1999): 6745-6750.
+#'The method of subset selection was described in G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the clustering of microarray expression data , Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
+#'
+#' @docType data
+#' @keywords datasets
+#' @name alon_data
+#' @usage data(alon_data)
+#' @format A data frame with 2000 rows (genes) and 62 variables (samples).
+NULL
 
-
-
-
+#' @title Normalised gene expression values from Golub et al. (1999).
+#'
+#' @description A dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from Golub, Todd R., et al. "Molecular classification of cancer: class discovery and class prediction by gene expression monitoring." science 286.5439 (1999): 531-537.
+#' The method of subset selection was described in G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the clustering of microarray expression data , Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
+#'
+#' @docType data
+#' @keywords datasets
+#' @name golub_data
+#' @usage data(golub_data)
+#' @format A data frame with 3731 rows (genes) and 72 variables (samples).
+NULL
