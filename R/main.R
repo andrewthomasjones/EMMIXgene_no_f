@@ -20,6 +20,7 @@ NULL
 #' \item{g}{The selected number of components for each gene.}
 #' \item{it}{The number of iterations for each genes selected fit.} 
 #' \item{selected}{An indicator for each genes selected status}
+#' \item{ranks}{selected gene ids ranked by stat}
 #' \item{genes}{A dataframe of selected genes.}
 #' \item{all_genes}{Returns dat or contents of filename.}
 #' 
@@ -69,6 +70,9 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     #add selected genes to result
     a$genes <- data[a$g>1,]
     a$all_genes <- data
+    
+    #ranks of selected 
+    a$ranks<-c(order(res$stat)[res$selected], rep(NA, length(res$stat)-sum(res$selected)))
     
     result<-structure(a, class="emmix-gene")
     #return selected genes
