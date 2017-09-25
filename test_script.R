@@ -1,50 +1,6 @@
 library(EMMIXgene)
 data(alon_data)
 data(golub_data)
-#5.1
-alon_sel<-select_genes(alon_data)
-alon_sel2<-select_genes(dat=alon_data, random_starts=8, max_it = 200, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method ="both", three = T)
-n_alon<-sum(alon_sel2$selected)
-
-#5.1.1
-alon_top<-top_genes_cluster_tissues(alon_sel, n_alon, k=6)
-alon_top_50<-top_genes_cluster_tissues(alon_sel, 50, k=6)
-
-heat_maps(alon_sel$all_genes[alon_top$top_genes,], alon_top$clustering)
-heat_maps(alon_sel$all_genes[alon_top_50$top_genes,], alon_top_50$clustering)
-
-
-#5.1.2
-alon_clus_20<-cluster_genes(alon_sel2, 10)
-alon_clus_20_t<-cluster_tissues(alon_sel, alon_clus_20, method='t', q=4)
-
-for(j in 1:10){
-  plot<-heat_maps(alon_sel$genes[alon_clus_20$classification==j,], alon_clus_20_t[j,]) 
-  print(plot)
-}
-
-golub_sel<-select_genes(golub_data)
-golub_sel2<-select_genes(dat=golub_data, random_starts=8, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.00001, start_method ="kmeans", three = T)
-
-#5.2
-golub_clus_g<-cluster_genes(golub_sel)
-n_golub<-sum(golub_sel2$selected)
-
-golub_clus_40<-cluster_genes(golub_sel2, 20)
-golub_clus_40_t<-cluster_tissues(golub_sel2, golub_clus_40, method='t', q=8)
-
-golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, q=6)
-
-
-heat_maps(golub_sel$all_genes[golub_top_50$top_genes,], golub_top_50$clustering)
-
-for(j in 1:10){
-  plot<-heat_maps(golub_sel2$genes[golub_clus_40$classification==j,], golub_clus_40_t[j,]) 
-  print(plot)
-}
-
-
-golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, q=6, g=2)
 
 
 

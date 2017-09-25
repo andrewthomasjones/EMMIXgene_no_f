@@ -1,58 +1,95 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "EMMIX-gene"
+author: "Andrew Jones"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: bibliography.bib
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{EMMIX-gene}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+# EMMIX-gene 
+The aim of this document is to reproduce the results of the original EMMIX-gene paper (@mclachlan2002mixture) while demonstrating the EMMIX-gene R-package workflow.
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
 
-## Vignette Info
+## Data
+The original paper analysed two data sets. These are included in the R-package. 
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+golub_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from @golub1999molecular.
 
-## Styles
+alon_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 2000 genes taken from @alon1999broad.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+The method of subset selection for both datasets follows that of their original papers and is described in @mclachlan2002mixture.
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+```{r}
+library(EMMIXgene)
+data(alon_data)
+dim(alon_data)
+data(golub_data)
+dim(golub_data)
 
-## Figures
+```
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+## Single Genes
 
 ```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+plot_single_gene(alon_data,1758) 
+plot_single_gene(alon_data,474,g=3) 
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r, fig.show='hold'}
+plot_single_gene(alon_data, 474, g=2) 
 ```
 
-Also a quote using `>`:
+## Select Genes
+```{r}
+#5.1
+alon_sel<-select_genes(alon_data)
+n_alon<-sum(alon_sel$selected)
+```
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+<!-- #5.1.1 -->
+<!-- alon_top<-top_genes_cluster_tissues(alon_sel, n_alon, k=6) -->
+<!-- alon_top_50<-top_genes_cluster_tissues(alon_sel, 50, k=6) -->
+
+<!-- heat_maps(alon_sel$all_genes[alon_top$top_genes,], alon_top$clustering) -->
+<!-- heat_maps(alon_sel$all_genes[alon_top_50$top_genes,], alon_top_50$clustering) -->
+
+
+<!-- #5.1.2 -->
+<!-- alon_clus_20<-cluster_genes(alon_sel2, 10) -->
+<!-- alon_clus_20_t<-cluster_tissues(alon_sel, alon_clus_20, method='t', q=4) -->
+
+<!-- for(j in 1:10){ -->
+<!--   plot<-heat_maps(alon_sel$genes[alon_clus_20$classification==j,], alon_clus_20_t[j,])  -->
+<!--   print(plot) -->
+<!-- } -->
+
+<!-- golub_sel<-select_genes(golub_data) -->
+<!-- golub_sel2<-select_genes(dat=golub_data, random_starts=8, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.00001, start_method ="kmeans", three = T) -->
+
+<!-- #5.2 -->
+<!-- golub_clus_g<-cluster_genes(golub_sel) -->
+<!-- n_golub<-sum(golub_sel2$selected) -->
+
+<!-- golub_clus_40<-cluster_genes(golub_sel2, 20) -->
+<!-- golub_clus_40_t<-cluster_tissues(golub_sel2, golub_clus_40, method='t', q=8) -->
+
+<!-- golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, q=6) -->
+
+
+<!-- heat_maps(golub_sel$all_genes[golub_top_50$top_genes,], golub_top_50$clustering) -->
+
+<!-- for(j in 1:10){ -->
+<!--   plot<-heat_maps(golub_sel2$genes[golub_clus_40$classification==j,], golub_clus_40_t[j,])  -->
+<!--   print(plot) -->
+<!-- } -->
+
+
+<!-- golub_top_50<-top_genes_cluster_tissues(golub_sel2, 50, q=6, g=2) -->
+
+
+
+# References

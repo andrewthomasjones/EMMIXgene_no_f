@@ -72,7 +72,7 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     a$all_genes <- data
     
     #ranks of selected 
-    a$ranks<-c(order(res$stat)[res$selected], rep(NA, length(res$stat)-sum(res$selected)))
+    a$ranks<-c(order(a$stat)[a$selected], rep(NA, length(a$stat)-sum(a$selected)))
     
     result<-structure(a, class="emmix-gene")
     #return selected genes
@@ -272,13 +272,14 @@ heat_maps<-function(dat, clustering=NULL){
 #'
 #' @param dat matrix of gene expression data.
 #' @param gene_id row number of gene to be plotted.
+#' @param g force number of components, default = NULL
 #' @param random_starts The number of random initializations used per gene when fitting mixtures of t-distributions. Initialisation uses k-means by default.
 #' @param max_it The maximum number of iterations per mixture fit. Default value is 100.
 #' @param ll_thresh The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.
 #' @param min_clust_size The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8. 
 #' @param tol Tolerance value used for detecting convergence of EMMIX fits. 
 #' @param start_method Default value is "both". Can also choose "random" for purely random starts.
-#' @param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
+#' @param three Also test g=2 vs g=3 where appropriate. Defaults to TRUE.
 #' @return A ggplot2 histogram with fitted t-distributions overlayed. 
 # #' @examples
 #' data(alon_data)
@@ -287,7 +288,7 @@ heat_maps<-function(dat, clustering=NULL){
 #' #plot(example)
 #' 
 #' @export
-plot_single_gene<-function(dat, gene_id, random_starts=8, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method = "both",  three=TRUE){ 
+plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100, ll_thresh = 8, min_clust_size = 8, tol = 0.0001, start_method = "both",  three=TRUE){ 
   
   df<-data.frame(x=dat[gene_id,])
   n<-length(df$x)/4
@@ -297,10 +298,16 @@ plot_single_gene<-function(dat, gene_id, random_starts=8, max_it = 100, ll_thres
   
   df_dens<-data.frame(x=p2$data[[1]]$x, y=p2$data[[1]]$density) 
     
-  plot<-ggplot(df_dens) + geom_histogram(aes(x=df_dens$x, y=df_dens$y), alpha=.5, stat="identity")+theme_bw()+xlab("Gene Expression Value")+ylab("Density")
+  plot<-ggplot(df_dens) + geom_bar(aes(x=df_dens$x, y=df_dens$y), alpha=.5, stat="identity", position="identity")+theme_bw()+xlab("Gene Expression Value")+ylab("Density")
   
   df2<-data.frame(x=seq(-4, 2, length.out = 1000))
-  res<-each_gene(dat[gene_id,],random_starts,max_it, ll_thresh, min_clust_size, tol,start_method,three)
+  
+  if(!is.null(g)){
+    res<-emmix_t(dat[gene_id,], g, random_starts, max_it, tol,start_method)
+  }else{
+    res<-each_gene(dat[gene_id,],random_starts, max_it, ll_thresh, min_clust_size, tol,start_method,three)
+  }
+  
   
   for(i in 1:res$components){
     for(j in 1:nrow(df2)){
@@ -308,7 +315,7 @@ plot_single_gene<-function(dat, gene_id, random_starts=8, max_it = 100, ll_thres
     }
   }
   
-  
+
   plot<-plot+geom_line(data=df2, aes(x=df2$x, y=df2$y1))
   
   if(res$components>1){
