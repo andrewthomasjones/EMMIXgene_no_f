@@ -183,7 +183,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
   p<-ncol(gen$genes)
   clustering<-array(0,p)
   
-  top_genes<-order(gen$stat,decreasing = FALSE)[1:n_top]
+  top_genes<-gen$ranks[1:n_top]
   
   if(method=='t'){
     
