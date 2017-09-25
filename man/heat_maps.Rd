@@ -4,12 +4,14 @@
 \alias{heat_maps}
 \title{Heat maps}
 \usage{
-heat_maps(dat, clustering = NULL)
+heat_maps(dat, clustering = NULL, y_lab = NULL)
 }
 \arguments{
 \item{dat}{matrix of gene expression data.}
 
 \item{clustering}{a vector of sample classifications. MUst be same length as the number of columns in dat.}
+
+\item{y_lab}{optional label for y-axis.}
 }
 \value{
 A ggplot2 heat map.

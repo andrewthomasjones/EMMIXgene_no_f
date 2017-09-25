@@ -379,3 +379,24 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
   M.each_row() %= weights.t();
   return best_means;
 }
+
+// [[Rcpp::export]]
+arma::uvec nearest_cluster(arma::mat& data, arma::mat& centres){
+  unsigned int k =  centres.n_rows;
+  double lambda = 1.0;
+  unsigned int d = size(data)[0];
+  
+  if(data.n_cols!=centres.n_cols){
+    stop("Cluster centre dimensionality does not match data.");
+  }
+  
+  arma::uvec clusters = arma::zeros<arma::uvec>(d);
+  
+  for(unsigned int i=0;i<d;i++){
+    arma::mat Dc = distCentre2(k, data.row(i), centres, lambda, d);
+    unsigned int cluster = min_index(Dc);
+    clusters.at(i) = cluster+1;//going back to 1 indexed R
+  }
+  
+  return clusters;
+}

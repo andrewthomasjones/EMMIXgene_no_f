@@ -4,7 +4,7 @@
 \alias{plot_single_gene}
 \title{Plot a single gene expression histogram with best fitted mixture of t-distributions.}
 \usage{
-plot_single_gene(dat, gene_id, random_starts = 8, max_it = 100,
+plot_single_gene(dat, gene_id, g = NULL, random_starts = 8, max_it = 100,
   ll_thresh = 8, min_clust_size = 8, tol = 1e-04, start_method = "both",
   three = TRUE)
 }
@@ -12,6 +12,8 @@ plot_single_gene(dat, gene_id, random_starts = 8, max_it = 100,
 \item{dat}{matrix of gene expression data.}
 
 \item{gene_id}{row number of gene to be plotted.}
+
+\item{g}{force number of components, default = NULL}
 
 \item{random_starts}{The number of random initializations used per gene when fitting mixtures of t-distributions. Initialisation uses k-means by default.}
 
@@ -25,7 +27,7 @@ plot_single_gene(dat, gene_id, random_starts = 8, max_it = 100,
 
 \item{start_method}{Default value is "both". Can also choose "random" for purely random starts.}
 
-\item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
+\item{three}{Also test g=2 vs g=3 where appropriate. Defaults to TRUE.}
 }
 \value{
 A ggplot2 histogram with fitted t-distributions overlayed. 

@@ -130,6 +130,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nearest_cluster
+arma::uvec nearest_cluster(arma::mat& data, arma::mat& centres);
+RcppExport SEXP _EMMIXgene_nearest_cluster(SEXP dataSEXP, SEXP centresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type centres(centresSEXP);
+    rcpp_result_gen = Rcpp::wrap(nearest_cluster(data, centres));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_EMMIXgene_mahalanobis_c", (DL_FUNC) &_EMMIXgene_mahalanobis_c, 3},
@@ -140,6 +152,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_EMMIXgene_each_gene", (DL_FUNC) &_EMMIXgene_each_gene, 8},
     {"_EMMIXgene_emmix_gene", (DL_FUNC) &_EMMIXgene_emmix_gene, 8},
     {"_EMMIXgene_tkmeans", (DL_FUNC) &_EMMIXgene_tkmeans, 8},
+    {"_EMMIXgene_nearest_cluster", (DL_FUNC) &_EMMIXgene_nearest_cluster, 2},
     {NULL, NULL, 0}
 };
 

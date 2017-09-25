@@ -12,7 +12,7 @@ cluster_genes(gen, g = NULL)
 \item{g}{The desired number of gene clusters. If not specified will be selected automatically on the basis of BIC.}
 }
 \value{
-An mclust object containing the clustering.
+An array containing the clustering.
 }
 \description{
 Sorts genes into clusters using mixtures of normal distributions with covariance matrices restricted to be multiples of the indentity matrix.
@@ -22,5 +22,4 @@ Sorts genes into clusters using mixtures of normal distributions with covariance
 #only run on first 100 genes for speed
 # example <- select_genes(alon_data[1:100, ]) 
 # example2<- cluster_genes(example)
-
 }

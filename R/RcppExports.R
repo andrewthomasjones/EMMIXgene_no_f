@@ -37,3 +37,7 @@ tkmeans <- function(M, k, alpha, weights, nstart, iter, tol, verbose) {
     .Call('_EMMIXgene_tkmeans', PACKAGE = 'EMMIXgene', M, k, alpha, weights, nstart, iter, tol, verbose)
 }
 
+nearest_cluster <- function(data, centres) {
+    .Call('_EMMIXgene_nearest_cluster', PACKAGE = 'EMMIXgene', data, centres)
+}
+

@@ -72,7 +72,10 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
     a$all_genes <- data
     
     #ranks of selected 
-    a$ranks<-c(order(a$stat)[a$selected], rep(NA, length(a$stat)-sum(a$selected)))
+    a$stat2<-a$stat
+    a$stat2[!a$selected]<-NA
+    a$ranks<-order(a$stat2, decreasing = T, na.last = TRUE)
+    a$stat2 <- NULL
     
     result<-structure(a, class="emmix-gene")
     #return selected genes
@@ -85,34 +88,66 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
 #'
 #' @param gen an emmix-gene object produced by select_genes().  
 #' @param g The desired number of gene clusters. If not specified will be selected automatically on the basis of BIC.
-#' @return An mclust object containing the clustering. 
+#' @return An array containing the clustering. 
 #' @examples
 #' #' data(alon_data)
 #' #only run on first 100 genes for speed
 #' # example <- select_genes(alon_data[1:100, ]) 
 #' # example2<- cluster_genes(example)
-#' 
 #' @export
 cluster_genes<-function(gen, g=NULL){
   
-  clust_genes<-mclust::Mclust((gen$genes), G=g, modelNames = "VII")
-  g<-clust_genes$G
+  clust_genes_k<-tkmeans(as.matrix(gen$genes), k=g, 0.00001, rep(1, ncol(gen$genes)), 10, 100, 0.001, F)
+  clusters<-nearest_cluster(as.matrix(gen$genes), clust_genes_k)
+  #clust_genes<-mclust::Mclust((gen$genes), G=g, modelNames = "VII")
+  #g<-clust_genes$G
   
   ll_rank_stat<-array(0,g)
   
   for(i in 1:g){
-    ll_rank_stat[i]<-each_gene(colMeans(clust_genes$data[clust_genes$classification==i,]))$Ratio
+    if(sum(clusters==i)>0){
+      ll_rank_stat[i]<-each_gene(colMeans(gen$genes[clusters==i,]))$Ratio
+    }
     
   }
   
   #reorder clusters as ranked by mean of ll statistic from emmix-gene fit
-  tmp<-factor(clust_genes$classification)
-  levels(tmp) <- as.character(order(unlist(ll_rank_stat)))
-  clust_genes$classification<-as.numeric(as.character(tmp))
+  tmp<-factor(clusters)
+  levels(tmp) <- as.character(order(unlist(ll_rank_stat), decreasing = T))
+  clust_genes<-as.numeric(as.character(tmp))
   
   return(clust_genes)
 }
 
+
+#' Clusters tissues using all group means
+#'
+#' @param gen emmix-gene object
+#' @param clusters mclust object
+#' @param q number of factors if using mfa
+#' @param G number of components if using mfa
+#' @return a clustering for each sample (columns) by each group(rows)
+# #' @examples
+#' 
+#' @export
+all_cluster_tissues<-function(gen, clusters, q=6, G=2){
+  
+  g<- length(table(clusters))
+  
+  p<-ncol(gen$genes)
+  group_means<-array(0,c(g,p))
+  
+    
+    for(i in 1:g){
+      group_means[i,] <- colMeans(gen$genes[clusters==i,])
+    }
+    mfa_fit<-mcfa(t(group_means), G, q, itmax=250, nkmeans=100, nrandom=100)
+    clustering<- as.numeric(predict_mcfa(mfa_fit, t(group_means))-1) 
+    
+  
+  
+  return(clustering)
+}
 
 #' Clusters tissues
 #'
@@ -127,27 +162,27 @@ cluster_genes<-function(gen, g=NULL){
 #' @export
 cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
   
-  g<-clusters$G
-  p<-ncol(clusters$data)
+  g<-length(table(clusters))
+  p<-ncol(gen$genes)
   clustering<-array(0,c(g,p))
   clustering2<-array(0,c(g,p))
   
   if(method=='t'){
     for(i in 1:g){
-        group_means <- colMeans(gen$genes[clusters$classification==i,])
+        group_means <- colMeans(gen$genes[clusters==i,])
         t_fit<-emmix_t(group_means, G)
-        clustering[i,]<-as.numeric(xor(t_fit$Clusters, (t_fit$mu[1]>t_fit$mu[2])))
+        clustering[i,]<-t_fit$Clusters
      }
     
   }
   
   if(method=='mfa'){
     for(i in 1:g){
-      group <- as.matrix((gen$genes[clusters$classification==i,]))
+      group <- as.matrix((gen$genes[clusters==i,]))
       #actually mixture of common factor analysers. consider fixing.
       #print(dim(group))
-      
-        mfa_fit<-mcfa(t(group), G, q)
+        q1<-min(q, sum(clusters==i)-1 )
+        mfa_fit<-mcfa(t(group), G, q1, itmax=100, nkmeans=50, nrandom=50)
         clustering[i,]<- as.numeric(predict_mcfa(mfa_fit, t(group))-1) 
         
     
@@ -189,7 +224,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
     
       group_means <- colMeans(gen$all_genes[top_genes,])
       fit<-emmix_t(group_means, g)
-      clustering<-as.numeric(xor(fit$Clusters, (fit$mu[1]>fit$mu[2])))
+      clustering<-fit$Clusters
     
     
   }
@@ -198,7 +233,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
     
       group <- as.matrix((gen$all_genes[top_genes,]))
       fit<-mcfa(t(group), g, q)
-      clustering<- as.numeric(xor(predict_mcfa(fit, t(group))-1, (diff(fit$xi[1,])>0))) 
+      clustering<- predict_mcfa(fit, t(group))-1
       
       
       
@@ -225,6 +260,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #'
 #' @param dat matrix of gene expression data.
 #' @param clustering a vector of sample classifications. MUst be same length as the number of columns in dat.
+#' @param y_lab optional label for y-axis.
 #' @return A ggplot2 heat map.
 #' @examples
 #' data(alon_data)
@@ -232,7 +268,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #' 
 #'   
 #' @export
-heat_maps<-function(dat, clustering=NULL){
+heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
   colnames(dat) <- NULL
   if(!is.null(clustering)){
     dat<-dat[,order(clustering)]
@@ -246,14 +282,20 @@ heat_maps<-function(dat, clustering=NULL){
   
   plot<-ggplot(df_heatmap, aes(df_heatmap$samples,df_heatmap$genes )) + geom_tile(aes(fill = df_heatmap$expression_level),  color = "white") +
     scale_fill_distiller(palette = "Spectral")  +  
-    ylab("Genes") +
-    xlab("Samples") +
+     xlab("Samples") +
+    
     theme(legend.title = element_text(size = 10),
           legend.text = element_text(size = 12),
           plot.title = element_text(size=16),
           axis.title=element_text(size=14,face="bold"),
          axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
     labs(fill = "Expression level")
+  
+  if(!is.null(clustering)){
+    plot<- plot + ylab(y_lab)
+  }else{
+    plot<- plot + ylab("Genes")
+  }
   
   if(is.null(clustering)){
     plot<- plot +  scale_x_discrete(breaks = seq(0, length(levels(df_heatmap$genes)), 10) )

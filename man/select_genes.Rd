@@ -33,6 +33,7 @@ An emmix-gene object containing:
 \item{g}{The selected number of components for each gene.}
 \item{it}{The number of iterations for each genes selected fit.} 
 \item{selected}{An indicator for each genes selected status}
+\item{ranks}{selected gene ids ranked by stat}
 \item{genes}{A dataframe of selected genes.}
 \item{all_genes}{Returns dat or contents of filename.}
 }
