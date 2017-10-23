@@ -399,8 +399,11 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
       starts++;
     }else{
       if(safety_count>random_starts*10){
-        //return_list = tempOut.back();
-        
+          //return_list = tempOut.back();
+        List return_list = List::create(
+          Named("LL") = - arma::datum::inf,
+          Named("c_min") = 0
+        );
         return return_list;
       }
     }
@@ -424,6 +427,9 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
   
   List g1 = emmix_t(dat, 1, random_starts, max_it, tol, start_method);
   List g2 = emmix_t(dat, 2, random_starts, max_it, tol, start_method);
+  
+
+  
   List best_g = g1;
  
   double lambda = 0;
@@ -467,6 +473,7 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
   
   
   best_g["Ratio"] = -2*(lambda_s);
+ 
   
   
   return(best_g);
@@ -485,11 +492,19 @@ List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double
  arma::vec it =  arma::zeros(n);
  
  for(int i=0; i<n;i++){
+
    tmp = (each_gene(bigdat.row(i).t(), random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
+   
    stat.at(i) = as<double>(tmp["Ratio"]);
    comp.at(i) = as<double>(tmp["components"]);
    it.at(i) = as<double>(tmp["n_iter"]);
+   
+   //Rcpp::Rcout << i<< std::endl;
+  
+   
  }
+ 
+ 
  
  //Rcpp::List ret = each_gene(bigdat.row(0).t(), random_starts, ll_thresh, min_clust_size, tol);
  Rcpp::List ret =List::create(
