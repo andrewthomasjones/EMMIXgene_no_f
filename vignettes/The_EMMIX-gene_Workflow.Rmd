@@ -71,16 +71,10 @@ groups<-20
 alon_clus_20 <- cluster_genes(alon_sel, groups)
 alon_clus_20_t1<-all_cluster_tissues(gen=alon_sel, clusters=alon_clus_20, q=6, G=2)
 alon_clus_20_t2<-cluster_tissues(alon_sel, alon_clus_20, method='t')
-cat(c("C1: ", paste(which(alon_clus_20$clustering==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20$clustering==0)),"\n"))
-```
+alon_clus_20_t3<-cluster_tissues(alon_sel, alon_clus_20, method='mfa', q=4, G=2)
+cat(c("C1: ", paste(which(alon_clus_20_t1==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_20_t1==0)),"\n"))
 
-```{r, echo=F,  cache=TRUE,message='hide'}
-groups<-20
-alon_clus_20 <- cluster_genes(alon_sel, groups)
-alon_clus_20_t1<-all_cluster_tissues(gen=alon_sel, clusters=alon_clus_20, q=6, G=2)
-alon_clus_20_t2<-cluster_tissues(alon_sel, alon_clus_20, method='t')
-alon_clus_20_t3<-cluster_tissues(alon_sel, alon_clus_20, method='mfa', q=4)
 ```
 
 

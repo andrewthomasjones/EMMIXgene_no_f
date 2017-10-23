@@ -56,6 +56,12 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
       warning("Incomplete cases removed removed.")
     }
   
+    if(any(apply(su_gene_matrix,1,var)==0)){
+      warning("Some rows are constant across samples and have been removed.")
+    }
+  
+    data<-data[!apply(su_gene_matrix,1,var)==0,]
+  
     #remove missing data
     data<-data[stats::complete.cases((data)),]
     data<-data[,stats::complete.cases(t(data))]
@@ -178,13 +184,14 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
   
   if(method=='mfa'){
     for(i in 1:g){
-      group <- as.matrix((gen$genes[clusters==i,]))
+        group <- as.matrix((gen$genes[clusters==i,]))
       #actually mixture of common factor analysers. consider fixing.
       #print(dim(group))
+        if(dim(group)[1]>20){
         q1<-min(q, sum(clusters==i)-1 )
         mfa_fit<-mcfa(t(group), G, q1, itmax=100, nkmeans=50, nrandom=50)
         clustering[i,]<- as.numeric(predict_mcfa(mfa_fit, t(group))-1) 
-        
+        }
     
       
     }
@@ -282,14 +289,7 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
   
   plot<-ggplot(df_heatmap, aes(df_heatmap$samples,df_heatmap$genes )) + geom_tile(aes(fill = df_heatmap$expression_level),  color = "white") +
     scale_fill_distiller(palette = "Spectral")  +  
-     xlab("Samples") +
-    
-    theme(legend.title = element_text(size = 10),
-          legend.text = element_text(size = 12),
-          plot.title = element_text(size=16),
-          axis.title=element_text(size=14,face="bold"),
-         axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
-    labs(fill = "Expression level")
+     xlab("Samples")  + guides(fill=guide_legend(title="Expression Level")) +theme(axis.text.y = element_blank(), axis.text.x = element_text(size = 6), axis.ticks.y=element_blank())
   
   if(!is.null(clustering)){
     plot<- plot + ylab(y_lab)
