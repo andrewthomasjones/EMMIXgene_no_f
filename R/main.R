@@ -56,11 +56,12 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100, ll_thresh =
       warning("Incomplete cases removed removed.")
     }
   
-    if(any(apply(su_gene_matrix,1,var)==0)){
+    if(any(apply(data,1,var)==0)){
       warning("Some rows are constant across samples and have been removed.")
     }
   
-    data<-data[!apply(su_gene_matrix,1,var)==0,]
+    data<-data[!apply(data,1,var)==0,]
+
   
     #remove missing data
     data<-data[stats::complete.cases((data)),]
