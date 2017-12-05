@@ -129,7 +129,7 @@ golub_sel<-select_genes(golub_data)
 
 ```{r, echo=F,  cache=TRUE,message='hide'}
 groups<-40
-golub_clus_40 <- cluster_genes(golub, groups)
+golub_clus_40 <- cluster_genes(golub_sel, groups)
 golub_clus_40_t1<-all_cluster_tissues(gen=golub, clusters=alon_clus_20, q=8, G=2)
 golub_clus_40_t2<-cluster_tissues(golub_sel, golub_clus_40, method='t')
 golub_clus_40_t3<-cluster_tissues(golub_sel, golub_clus_40, method='mfa', q=4)
