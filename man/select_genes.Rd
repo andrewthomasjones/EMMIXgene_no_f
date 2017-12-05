@@ -9,27 +9,38 @@ select_genes(dat, filename, random_starts = 4, max_it = 100,
   three = FALSE)
 }
 \arguments{
-\item{dat}{A matrix or dataframe containing gene expression data. Rows are genes and columns are samples. Must supply one of filename and dat.}
+\item{dat}{A matrix or dataframe containing gene expression data.
+Rows are genes and columns are samples. Must supply one of filename and dat.}
 
-\item{filename}{Name of file containing gene data. Can be either .csv or space separated .dat. Rows are genes and columns are samples. Must supply one of filename and dat.}
+\item{filename}{Name of file containing gene data. Can be either .csv 
+or space separated .dat. Rows are genes and columns are samples. 
+Must supply one of filename and dat.}
 
-\item{random_starts}{The number of random initializations used per gene when fitting mixtures of t-distributions. Initialisation uses k-means by default.}
+\item{random_starts}{The number of random initializations used per gene when
+fitting mixtures of t-distributions. Initialisation uses k-means by default.}
 
-\item{max_it}{The maximum number of iterations per mixture fit. Default value is 100.}
+\item{max_it}{The maximum number of iterations per mixture fit. 
+Default value is 100.}
 
-\item{ll_thresh}{The difference in -2 log lambda used as a threshold for selecting between g=1 and g=2 for each gene. Default value is 8, which was chosen arbitraily in the original paper.}
+\item{ll_thresh}{The difference in -2 log lambda used as a threshold 
+for selecting between g=1 and g=2 for each gene. Default value is 8,
+which was chosen arbitraily in the original paper.}
 
-\item{min_clust_size}{The minimum number of observations per cluster used when fitting mixtures of t-distributions for each gene. Default value is 8.}
+\item{min_clust_size}{The minimum number of observations per cluster
+used when fitting mixtures of t-distributions for each gene.
+Default value is 8.}
 
 \item{tol}{Tolerance value used for detecting convergence of EMMIX fits.}
 
-\item{start_method}{Default value is "both". Can also choose "random" for purely random starts.}
+\item{start_method}{Default value is "both". 
+Can also choose "random" for purely random starts.}
 
 \item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
 }
 \value{
 An emmix-gene object containing:
-\item{stat}{The difference in log-liklihood for g=1 and g=2 for each gene (or for g=2 and g=3 where relevant).}
+\item{stat}{The difference in log-liklihood for g=1 
+and g=2 for each gene (or for g=2 and g=3 where relevant).}
 \item{g}{The selected number of components for each gene.}
 \item{it}{The number of iterations for each genes selected fit.} 
 \item{selected}{An indicator for each genes selected status}
@@ -39,7 +50,10 @@ An emmix-gene object containing:
 }
 \description{
 Follows the gene selection methodology of 
-G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the clustering of microarray expression data , Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422, https://doi.org/10.1093/bioinformatics/18.3.413
+G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the 
+clustering of microarray expression data , Bioinformatics, Volume 18, 
+Issue 3, 1 March 2002, Pages 413–422,
+https://doi.org/10.1093/bioinformatics/18.3.413
 }
 \examples{
 data(alon_data)

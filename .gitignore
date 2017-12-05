@@ -6,3 +6,4 @@ inst/doc
 src/*.o
 src/*.so
 vignettes/The_EMMIX-gene_Workflow_cache
+test_script.R

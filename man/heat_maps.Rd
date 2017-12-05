@@ -9,7 +9,8 @@ heat_maps(dat, clustering = NULL, y_lab = NULL)
 \arguments{
 \item{dat}{matrix of gene expression data.}
 
-\item{clustering}{a vector of sample classifications. MUst be same length as the number of columns in dat.}
+\item{clustering}{a vector of sample classifications.
+MUst be same length as the number of columns in dat.}
 
 \item{y_lab}{optional label for y-axis.}
 }
@@ -17,11 +18,12 @@ heat_maps(dat, clustering = NULL, y_lab = NULL)
 A ggplot2 heat map.
 }
 \description{
-Plot heat maps of gene expression data. Optionally sort the x-axis according to a predtermined clustering.
+Plot heat maps of gene expression data. Optionally sort the x-axis 
+according to a predtermined clustering.
 }
 \examples{
 data(alon_data)
 example <- heat_maps(alon_data[1:100, ])
 
-  
+
 }

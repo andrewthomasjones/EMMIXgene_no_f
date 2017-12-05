@@ -2,7 +2,7 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 
-//'@importFrom Rcpp sourceCpp
+//'@importFrom Rcpp sourceCpp BH
 //'@useDynLib EMMIXgene
 
 
@@ -32,7 +32,8 @@ public:
 
   double operator()(double v) {
 
-    double temp = -boost::math::digamma(0.5*v) + std::log(0.5*v) + v_sum + boost::math::digamma(0.5*(v+1.)) - std::log(0.5*(v+1.))+1.;
+    double temp = -boost::math::digamma(0.5*v) + std::log(0.5*v) + v_sum +
+        boost::math::digamma(0.5*(v+1.)) - std::log(0.5*(v+1.))+1.;
     return temp;
     //return df_eq_est(v,v_sum);
 
@@ -76,8 +77,10 @@ double mahalanobis_c(double y, double mu, double sigma)
 // [[Rcpp::export]]
 double t_dist(double y, double mu, double sigma, double nu,  int p =1)
 {
-  double pdf =((tgamma(0.5*(nu+p))/sqrt(sigma))/(  std::pow(arma::datum::pi*nu, 0.5*p ) *tgamma(0.5*nu)* std::pow(1+(mahalanobis_c(y,mu,sigma)/nu), 0.5*(nu+p))  ));
-  return pdf;
+    double pdf =((tgamma(0.5*(nu+p))/sqrt(sigma))/
+        (std::pow(arma::datum::pi*nu, 0.5*p ) *
+        tgamma(0.5*nu)*std::pow(1+(mahalanobis_c(y,mu,sigma)/nu), 0.5*(nu+p))));
+    return pdf;
 }
 
 
@@ -104,10 +107,13 @@ arma::mat estep(const arma::vec& dat, const arma::mat& params){
     double mu_i = mu.at(i);
     double sigma_i = sigma.at(i);
     double nu_i = nu.at(i);
-    std::transform(dat.begin(), dat.end(), dens.begin(), [mu_i, sigma_i, nu_i](double dat) { return t_dist(dat, mu_i, sigma_i, nu_i); });
+    std::transform(dat.begin(), dat.end(), dens.begin(), 
+                   [mu_i, sigma_i, nu_i](double dat)
+                       { return t_dist(dat, mu_i, sigma_i, nu_i); });
     arma::vec dens2 = arma::conv_to<arma::vec>::from(dens);
     tau.row(i)  = pi.at(i)*dens2.t();
-    you.row(i) = ((nu.at(i)+1.0)/(nu.at(i) + (dat-mu.at(i))%(dat-mu.at(i))*(1/sigma.at(i)))).t();
+    you.row(i) = ((nu.at(i)+1.0)/(nu.at(i) + 
+        (dat-mu.at(i))%(dat-mu.at(i))*(1/sigma.at(i)))).t();
 
   }
   
@@ -141,7 +147,8 @@ arma::mat start_kmeans(arma::vec dat, int g){
     arma::uvec tmp1 = find(alloc == i);
     cluster_sizes.at(i) = tmp1.n_elem;
     params(i,3) = sum(pow(dat(tmp1)-params(i,1),2.0))/dat.n_elem;
-    params(i,2) = 4.0+(sum(pow((dat(tmp1)-params(i,1))/sqrt(params(i,3)),4.0))/dat.n_elem)/6.0;
+    params(i,2) = 4.0+(sum(pow((dat(tmp1)-params(i,1))/sqrt(params(i,3)),4.0))/
+        dat.n_elem)/6.0;
     if(params(i,2) < 0 ){params(i,2) = 2.5;}
     if(params(i,2) > 300 ){params(i,2) = 299.99;}
   }
@@ -175,7 +182,8 @@ arma::mat start_random(arma::vec dat, int g){
     arma::uvec tmp1 = find(alloc == i);
     cluster_sizes.at(i) = tmp1.n_elem;
     params(i,3) = sum(pow(dat(tmp1)-params(i,1),2.0))/dat.n_elem;
-    params(i,2) = 4.0+(sum(pow((dat(tmp1)-params(i,1))/sqrt(params(i,3)),4.0))/dat.n_elem)/6.0;
+    params(i,2) = 4.0+(sum(pow((dat(tmp1)-params(i,1))/sqrt(params(i,3)),4.0))/
+        dat.n_elem)/6.0;
 
   }
   
@@ -204,16 +212,19 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
   
   double a = 0.01;
   double b = 299.99;
-  boost::uintmax_t df_max_iter=500; // boost solver params, could be user params but relatively unimportant
+  boost::uintmax_t df_max_iter=500; // boost solver params, 
+  //could be user params but relatively unimportant
   boost::math::tools::eps_tolerance<double> tol(30);
  
   for(int i=0;i<g;i++){
     mu2(i) = (sum(dat.t()%you.row(i)%tau.row(i)) / sum(you.row(i)%tau.row(i)));
-    sigma2(i) = (sum(you.row(i)%tau.row(i)%((dat.t()-mu2(i))%(dat.t()-mu2(i)))) / s_tau(i));
+    sigma2(i) = (sum(you.row(i)%tau.row(i)%((dat.t()-mu2(i))%(dat.t()-mu2(i)))) 
+                     / s_tau(i));
     
   
     
-    double v_sum = (1/s_tau(i))*sum(tau.row(i)%(arma::log(you.row(i))-you.row(i)));
+    double v_sum = (1/s_tau(i))*sum(tau.row(i)%
+    (arma::log(you.row(i))-you.row(i)));
     // Rcpp::Rcout << "(s_tau(i)) = " << (s_tau(i)) << std::endl;
     // Rcpp::Rcout << "(1/s_tau(i)) = " << (1/s_tau(i)) << std::endl;
     // Rcpp::Rcout << "v_sum = " << v_sum << std::endl;
@@ -258,7 +269,8 @@ double AIC_calc(double LL,  int k){
 
 
 // [[Rcpp::export]]
-List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double tol = 0.0001, std::string start_method = "both"){
+List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100,
+             double tol = 0.0001, std::string start_method = "both"){
   int n = dat.size();
   int k =0; int n_fixed = 0;
   double  LL =0;
@@ -350,7 +362,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
           diff = std::abs(LL - old_LL);
           old_LL = LL;
           
-          //Rcpp::Rcout << "LL Q1 = " << accumQ1 << " LL Q2 = " << accumQ2 << " LL Q3 = " << accumQ3 << std::endl;
+          
           j++;
           
         }
@@ -390,7 +402,8 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
         Named("k") = k, //number of parameters
         Named("Clusters") = export_uvec(clusters),
         Named("c_min") = c_min, //smallest cluster,
-        Named("n_iter") = j,//total iterations, if not equal max_iter then terminated due to meeting tolerance
+        Named("n_iter") = j,//total iterations, if not equal max_iter then 
+        //terminated due to meeting tolerance
         Named("components") = g,
         Named("Ratio") = 0.0
       );
@@ -423,7 +436,10 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100, double
 }
 
 // [[Rcpp::export]]
-List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "both", bool three=false){
+List each_gene(arma::vec dat, int random_starts=4, int max_it = 100,
+               double ll_thresh = 8, int min_clust_size = 8,
+               double tol = 0.0001, std::string start_method = "both",
+               bool three=false){
   
   List g1 = emmix_t(dat, 1, random_starts, max_it, tol, start_method);
   List g2 = emmix_t(dat, 2, random_starts, max_it, tol, start_method);
@@ -456,10 +472,7 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
         double ll_g3=as<double>(g3["LL"]);
         
         lambda = ll_g2-ll_g3;
-        
-        //lambda = as<double>(g2["LL"]) - as<double>(g3["LL"]); // ll_ratio(List g2, List g3)
-      
-        
+
         if(-2*(lambda) > ll_thresh){
           if(as<int>(g3["c_min"]) >= min_clust_size){
             best_g = g3;
@@ -482,7 +495,10 @@ List each_gene(arma::vec dat, int random_starts=4, int max_it = 100, double ll_t
 
 
 // [[Rcpp::export]]
-List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double ll_thresh = 8, int min_clust_size = 8, double tol = 0.0001, std::string start_method = "both", bool three = false){
+List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100,
+                double ll_thresh = 8, int min_clust_size = 8, 
+                double tol = 0.0001, std::string start_method = "both",
+                bool three = false){
  
  int n = bigdat.n_rows;
  Rcpp::List tmp;
@@ -493,7 +509,8 @@ List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double
  
  for(int i=0; i<n;i++){
 
-   tmp = (each_gene(bigdat.row(i).t(), random_starts, max_it, ll_thresh, min_clust_size, tol, start_method));
+   tmp = (each_gene(bigdat.row(i).t(), random_starts, max_it, ll_thresh,
+                    min_clust_size, tol, start_method));
    
    stat.at(i) = as<double>(tmp["Ratio"]);
    comp.at(i) = as<double>(tmp["components"]);
@@ -505,8 +522,6 @@ List emmix_gene(arma::mat& bigdat, int random_starts=4, int max_it = 100, double
  }
  
  
- 
- //Rcpp::List ret = each_gene(bigdat.row(0).t(), random_starts, ll_thresh, min_clust_size, tol);
  Rcpp::List ret =List::create(
    Named("stat")= export_vec(stat),
    Named("g")= export_vec(comp),

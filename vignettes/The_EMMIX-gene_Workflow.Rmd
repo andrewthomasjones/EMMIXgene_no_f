@@ -5,9 +5,9 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: bibliography.bib
 vignette: >
-  %\VignetteIndexEntry{EMMIX-gene}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{EMMIX-gene}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
 ---
 
 # EMMIX-gene 
@@ -30,17 +30,20 @@ dim(alon_data)
 data(golub_data)
 dim(golub_data)
 
+golub_data<-golub_data[1:200,]
+alon_data<-alon_data[c(1:200, 1758, 474),]
+
 ```
 
 ## Single Genes
 
 ```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data,1758) 
-plot_single_gene(alon_data,474,g=3) 
+plot_single_gene(alon_data,201) 
+plot_single_gene(alon_data,202,g=3) 
 ```
 
 ```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data, 474, g=2) 
+plot_single_gene(alon_data, 202, g=2) 
 ```
 
 ## Select Genes
@@ -58,7 +61,7 @@ cat(c("C2: ", c(which(alon_top_n$clustering==0)),"\n"))
 
 
 ```{r, fig.show='hold', echo=FALSE, results='hide', cache=TRUE, message='hide'}
-alon_top_50<-top_genes_cluster_tissues(alon_sel, 50, method='mfa', q=6, g=2)
+alon_top_50<-top_genes_cluster_tissues(alon_sel, 12, method='mfa', q=6, g=2)
 heat_maps(alon_sel$all_genes[alon_top_50$top_genes,], alon_top_50$clustering)
 cat(c("C1: ", paste(which(alon_top_50$clustering==1)),"\n"))
 cat(c("C2: ", paste(which(alon_top_50$clustering==0)),"\n"))
@@ -67,55 +70,55 @@ cat(c("C2: ", paste(which(alon_top_50$clustering==0)),"\n"))
 
 #5.1.2
 ```{r, echo=F,  cache=TRUE,message='hide'}
-groups<-20
-alon_clus_20 <- cluster_genes(alon_sel, groups)
-alon_clus_20_t1<-all_cluster_tissues(gen=alon_sel, clusters=alon_clus_20, q=6, G=2)
-alon_clus_20_t2<-cluster_tissues(alon_sel, alon_clus_20, method='t')
-alon_clus_20_t3<-cluster_tissues(alon_sel, alon_clus_20, method='mfa', q=4, G=2)
-cat(c("C1: ", paste(which(alon_clus_20_t1==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20_t1==0)),"\n"))
+groups<-4
+alon_clus_5 <- cluster_genes(alon_sel, groups)
+alon_clus_5_t1<-all_cluster_tissues(gen=alon_sel, clusters=alon_clus_5, q=3, G=2)
+alon_clus_5_t2<-cluster_tissues(alon_sel, alon_clus_5, method='t')
+alon_clus_5_t3<-cluster_tissues(alon_sel, alon_clus_5, method='mfa', q=2, G=2)
+cat(c("C1: ", paste(which(alon_clus_5_t1==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_5_t1==0)),"\n"))
 
 ```
 
 
 ```{r, echo=F, fig.show='hold'} 
 j=1
-plot<-heat_maps(alon_sel$genes[alon_clus_20==j,], alon_clus_20_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(alon_sel$genes[alon_clus_5==j,], alon_clus_5_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(alon_clus_20_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(alon_clus_5_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_5_t3[j,]==0)),"\n"))
 ```
 
 ```{r, echo=F, fig.show='hold'} 
 j=2
-plot<-heat_maps(alon_sel$genes[alon_clus_20==j,], alon_clus_20_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(alon_sel$genes[alon_clus_5==j,], alon_clus_5_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(alon_clus_20_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(alon_clus_5_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_5_t3[j,]==0)),"\n"))
 ```
 
 ```{r, echo=F, fig.show='hold'} 
 j=3
-plot<-heat_maps(alon_sel$genes[alon_clus_20==j,], alon_clus_20_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(alon_sel$genes[alon_clus_5==j,], alon_clus_5_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(alon_clus_20_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(alon_clus_5_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_5_t3[j,]==0)),"\n"))
 ```
 
 
 ```{r, echo=F, fig.show='hold'} 
 j=4
-plot<-heat_maps(alon_sel$genes[alon_clus_20==j,], alon_clus_20_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(alon_sel$genes[alon_clus_5==j,], alon_clus_5_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(alon_clus_20_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(alon_clus_5_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_5_t3[j,]==0)),"\n"))
 ```
 
 
 5.1.3
 ```{r, echo=F,  cache=TRUE, message='hide'}
-cat(c("C1: ", paste(which(alon_clus_20_t1==1)),"\n"))
-cat(c("C2: ", paste(which(alon_clus_20_t1==0)),"\n"))
+cat(c("C1: ", paste(which(alon_clus_5_t1==1)),"\n"))
+cat(c("C2: ", paste(which(alon_clus_5_t1==0)),"\n"))
 ```
 
 
@@ -128,51 +131,51 @@ golub_sel<-select_genes(golub_data)
 
 
 ```{r, echo=F,  cache=TRUE,message='hide'}
-groups<-40
-golub_clus_40 <- cluster_genes(golub_sel, groups)
-golub_clus_40_t1<-all_cluster_tissues(gen=golub, clusters=alon_clus_20, q=8, G=2)
-golub_clus_40_t2<-cluster_tissues(golub_sel, golub_clus_40, method='t')
-golub_clus_40_t3<-cluster_tissues(golub_sel, golub_clus_40, method='mfa', q=4)
+groups<-5
+golub_clus_10 <- cluster_genes(golub_sel, groups)
+golub_clus_10_t1<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_10, q=3, G=2)
+golub_clus_10_t2<-cluster_tissues(golub_sel, golub_clus_10, method='t')
+golub_clus_10_t3<-cluster_tissues(golub_sel, golub_clus_10, method='mfa', q=2)
 ```
 
 
 ```{r, echo=F, fig.show='hold'} 
 j=1
-plot<-heat_maps(golub_sel$genes[golub_clus_40==j,], golub_clus_40_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(golub_sel$genes[golub_clus_10==j,], golub_clus_10_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(golub_clus_40_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(golub_clus_40_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(golub_clus_10_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(golub_clus_10_t3[j,]==0)),"\n"))
 ```
 
 ```{r, echo=F, fig.show='hold'} 
 j=2
-plot<-heat_maps(golub_sel$genes[golub_clus_40==j,], golub_clus_40_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(golub_sel$genes[golub_clus_10==j,], golub_clus_10_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(golub_clus_40_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(golub_clus_40_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(golub_clus_10_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(golub_clus_10_t3[j,]==0)),"\n"))
 ```
 
 ```{r, echo=F, fig.show='hold'} 
 j=3
-plot<-heat_maps(golub_sel$genes[golub_clus_40==j,], golub_clus_40_t3[j,], paste0("Genes from Group G",j))
+plot<-heat_maps(golub_sel$genes[golub_clus_10==j,], golub_clus_10_t3[j,], paste0("Genes from Group G",j))
 print(plot)
-cat(c("C1: ", paste(which(golub_clus_40_t3[j,]==1)),"\n"))
-cat(c("C2: ", paste(which(golub_clus_40_t3[j,]==0)),"\n"))
+cat(c("C1: ", paste(which(golub_clus_10_t3[j,]==1)),"\n"))
+cat(c("C2: ", paste(which(golub_clus_10_t3[j,]==0)),"\n"))
 ```
 
 
 ```{r, echo=F,cache=TRUE, message='hide'}
-groups<-40
-golub_clus_40 <- cluster_genes(golub_sel, groups)
-golub_clus_40_t1<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_40, q=8, G=2)
-golub_clus_40_t2<-cluster_tissues(golub_sel, golub_clus_40, method='t')
-golub_clus_40_t3<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_40, q=6, G=3)
+groups<-10
+golub_clus_10 <- cluster_genes(golub_sel, groups)
+golub_clus_10_t1<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_10, q=5, G=2)
+golub_clus_10_t2<-cluster_tissues(golub_sel, golub_clus_10, method='t')
+golub_clus_10_t3<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_10, q=3, G=3)
 ```
 
 
 ```{r, echo=F, fig.show='hold'} 
-cat(c("C1: ", paste(which(golub_clus_40_t1==1)),"\n"))
-cat(c("C2: ", paste(which(golub_clus_40_t1==0)),"\n"))
+cat(c("C1: ", paste(which(golub_clus_10_t1==1)),"\n"))
+cat(c("C2: ", paste(which(golub_clus_10_t1==0)),"\n"))
 ```
 
 ```{r, echo=F, results='hide', fig.show='hold'}
@@ -184,9 +187,9 @@ cat(c("C2: ", paste(which(golub_top_50$clustering==1)),"\n"))
 ```
 
 ```{r, echo=F, fig.show='hold'} 
-cat(c("C1: ", paste(which(golub_clus_40_t3==0)),"\n"))
-cat(c("C2: ", paste(which(golub_clus_40_t3==1)),"\n"))
-cat(c("C3: ", paste(which(golub_clus_40_t3==2)),"\n"))
+cat(c("C1: ", paste(which(golub_clus_10_t3==0)),"\n"))
+cat(c("C2: ", paste(which(golub_clus_10_t3==1)),"\n"))
+cat(c("C3: ", paste(which(golub_clus_10_t3==2)),"\n"))
 ```
 
 

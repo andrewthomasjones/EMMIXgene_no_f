@@ -9,7 +9,14 @@
 data(golub_data)
 }
 \description{
-A dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from Golub, Todd R., et al. "Molecular classification of cancer: class discovery and class prediction by gene expression monitoring." science 286.5439 (1999): 531-537.
-The method of subset selection was described in G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the clustering of microarray expression data , Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
+A dataset containing the centred and normalised values of the
+logged expression values of a subset of 3731 genes taken from Golub,
+Todd R., et al. "Molecular classification of cancer: class discovery
+and class prediction by gene expression monitoring." 
+Science 286.5439 (1999): 531-537.
+The method of subset selection was described in G. J. McLachlan, R. W. Bean,
+D. Peel; A mixture model-based approach to the clustering of microarray
+expression data ,
+Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
 }
 \keyword{datasets}
