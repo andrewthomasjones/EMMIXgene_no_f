@@ -117,10 +117,10 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'selected automatically on the basis of BIC.
 #'@return An array containing the clustering. 
 #'@examples
-#'#'data(alon_data)
+#'data(alon_data)
 #'#only run on first 100 genes for speed
-#'# example <- select_genes(alon_data[1:100, ]) 
-#'# example2<- cluster_genes(example)
+#'example <- select_genes(alon_data[1:100, ]) 
+#'example2<- cluster_genes(example, 2)
 #'@export
 cluster_genes<-function(gen, g=NULL){
     
@@ -129,6 +129,10 @@ cluster_genes<-function(gen, g=NULL){
     clusters<-nearest_cluster(as.matrix(gen$genes), clust_genes_k)
     #clust_genes<-mclust::Mclust((gen$genes), G=g, modelNames = "VII")
     #g<-clust_genes$G
+    
+    if(min(table(clusters)<2)){
+        warning("At least one cluster is a singleton. Reduce the number of clusters (g)")
+    }
     
     ll_rank_stat<-array(0,g)
     
@@ -158,8 +162,8 @@ cluster_genes<-function(gen, g=NULL){
 #'data(alon_data)
 #'#only run on first 100 genes for speed
 #'example <- select_genes(alon_data[1:100, ]) 
-#'example2<- cluster_genes(example)
-#'alon_clust<-all_cluster_tissues(gen=example, clusters=example2, q=3, G=2)
+#'example2<- cluster_genes(example, 2)
+#'alon_clust<-all_cluster_tissues(gen=example, clusters=example2, q=1, G=2)
 #'@export
 all_cluster_tissues<-function(gen, clusters, q=6, G=2){
     g<- length(table(clusters))
@@ -190,7 +194,7 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 #'#'data(alon_data)
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[1:100, ]) 
-#'alon_clust<- cluster_genes(alon_sel)
+#'alon_clust<- cluster_genes(alon_sel,3)
 #'alon_clust<-cluster_tissues(alon_sel, alon_clust, method='t') 
 #'alon_clust<-cluster_tissues(alon_sel, alon_clust, method='mfa', q=2, G=2) 
 #'@export
@@ -449,8 +453,8 @@ plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
 #'@format A data frame with 2000 rows (genes) and 62 variables (samples).
 #'@examples
 #'#not run
-#'#data(alon_data)
-#'#dim(alon_data)
+#'data(alon_data)
+#'dim(alon_data)
 NULL
 
 #'@title Normalised gene expression values from Golub et al. (1999).
@@ -471,7 +475,6 @@ NULL
 #'@usage data(golub_data)
 #'@format A data frame with 3731 rows (genes) and 72 variables (samples).
 #'#'@examples
-#'#not run
-#'#data(golub_data)
-#'#dim(golub_data)
+#'data(golub_data)
+#'dim(golub_data)
 NULL

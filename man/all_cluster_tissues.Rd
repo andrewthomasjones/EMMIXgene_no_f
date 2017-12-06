@@ -25,6 +25,6 @@ Clusters tissues using all group means
 data(alon_data)
 #only run on first 100 genes for speed
 example <- select_genes(alon_data[1:100, ]) 
-example2<- cluster_genes(example)
-alon_clust<-all_cluster_tissues(gen=example, clusters=example2, q=3, G=2)
+example2<- cluster_genes(example, 2)
+alon_clust<-all_cluster_tissues(gen=example, clusters=example2, q=1, G=2)
 }

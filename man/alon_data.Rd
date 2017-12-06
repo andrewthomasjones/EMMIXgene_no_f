@@ -21,7 +21,7 @@ Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
 }
 \examples{
 #not run
-#data(alon_data)
-#dim(alon_data)
+data(alon_data)
+dim(alon_data)
 }
 \keyword{datasets}
