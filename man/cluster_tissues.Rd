@@ -25,3 +25,11 @@ a clustering for each sample (columns) by each group(rows)
 \description{
 Clusters tissues
 }
+\examples{
+#'data(alon_data)
+#only run on first 100 genes for speed
+alon_sel <- select_genes(alon_data[1:100, ]) 
+alon_clust<- cluster_genes(alon_sel)
+alon_clust<-cluster_tissues(alon_sel, alon_clust, method='t') 
+alon_clust<-cluster_tissues(alon_sel, alon_clust, method='mfa', q=2, G=2) 
+}
