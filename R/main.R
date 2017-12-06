@@ -381,9 +381,10 @@ plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
     
     df_dens<-data.frame(x=p2$data[[1]]$x, y=p2$data[[1]]$density) 
     
-    plot<-ggplot(df_dens) + geom_bar(aes(x=df_dens$x, y=df_dens$y), alpha=.5,
+    plot<-ggplot(df_dens)
+    plot<-plot+geom_bar(aes(x=df_dens$x, y=df_dens$y), alpha=.5,
         stat="identity", position="identity")
-        +theme_bw()+xlab("Gene Expression Value")+ylab("Density")
+    plot<-plot+theme_bw()+xlab("Gene Expression Value")+ylab("Density")
     
     df2<-data.frame(x=seq(-4, 2, length.out = 1000))
     

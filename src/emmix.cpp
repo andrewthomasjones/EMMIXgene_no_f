@@ -2,7 +2,8 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 
-//'@importFrom Rcpp sourceCpp BH
+//'@importFrom Rcpp sourceCpp
+//'@import BH
 //'@useDynLib EMMIXgene
 
 

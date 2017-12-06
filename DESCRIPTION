@@ -14,8 +14,7 @@ Suggests:
   rmarkdown
 LinkingTo: 
   Rcpp,
-  RcppArmadillo,
-  BH
+  RcppArmadillo
 Depends:
   R (>= 3.5.0)
 Imports: 
@@ -25,7 +24,8 @@ Imports:
   reshape,
   ggplot2,
   scales,
-  tools
+  tools,
+  BH
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
