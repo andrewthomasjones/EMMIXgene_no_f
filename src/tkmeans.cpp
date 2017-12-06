@@ -28,8 +28,6 @@ public:
 };
 
 
-
-
 arma::vec Mahalanobis(arma::mat x, arma::rowvec center, arma::mat cov) {
   unsigned int n = x.n_rows;
   arma::mat x_cen;
