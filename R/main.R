@@ -478,25 +478,3 @@ plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
 #'data(alon_data)
 #'dim(alon_data)
 NULL
-
-#'@title Normalised gene expression values from Golub et al. (1999).
-#'
-#'@description A dataset containing the centred and normalised values of the
-#'logged expression values of a subset of 3731 genes taken from Golub,
-#'Todd R., et al. "Molecular classification of cancer: class discovery
-#'and class prediction by gene expression monitoring." 
-#'Science 286.5439 (1999): 531-537.
-#'The method of subset selection was described in G. J. McLachlan, R. W. Bean,
-#'D. Peel; A mixture model-based approach to the clustering of microarray
-#'expression data ,
-#'Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
-#'
-#'@docType data
-#'@keywords datasets
-#'@name golub_data
-#'@usage data(golub_data)
-#'@format A data frame with 3731 rows (genes) and 72 variables (samples).
-#'#'@examples
-#'data(golub_data)
-#'dim(golub_data)
-NULL

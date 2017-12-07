@@ -27,10 +27,6 @@ The method of subset selection for both datasets follows that of their original 
 library(EMMIXgene)
 data(alon_data)
 dim(alon_data)
-data(golub_data)
-dim(golub_data)
-
-golub_data<-golub_data[1:200,]
 alon_data<-alon_data[c(1:200, 1758, 474),]
 
 ```
