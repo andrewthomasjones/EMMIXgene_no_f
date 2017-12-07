@@ -237,7 +237,6 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
             
             group <- as.matrix((gen$genes[clusters==i,,drop=FALSE]))
             #actually mixture of common factor analysers. consider fixing.
-            #print(dim(group))
             if(dim(group)[1]>20){
                 q1<-min(q, sum(clusters==i)-1 )
                 mfa_fit<-mcfa(t(group), G, q1, itmax=100,

@@ -1,6 +1,6 @@
 mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
                 initClust=NULL, initMethod='eigenA', convMeas='diff',
-                errorMsg=FALSE, ...){
+                errorMsg=FALSE, verbose=FALSE, ...){
     
     if(!is.matrix(Y)) Y <- as.matrix(Y)
     p <- ncol(Y)
@@ -11,9 +11,7 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
     if(p < q)
         stop("the number of factors must not be greater
     than the number of variables")
-    #return(ERRMSG <- "Error: the number of factors must not be greater
-    #than the number of variables")
-    
+
     startClust <- Starts(Y, g, initClust, nkmeans, nrandom)
     maxinit <- ncol(startClust)
     if(is.null(maxinit)) maxinit <- 1
@@ -44,9 +42,11 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
                 Hmodel <- estModel
                 maxLOGL <- Hmodel$logL
             }
-            cat(sprintf("g = %i, q = %i, initialization %i logL %8.4f,
-                maxlogL = %8.4f \n",
-                g, q, ii, estModel$logL, maxLOGL))
+            if(verbose){
+                message(sprintf("g = %i, q = %i, initialization %i logL %8.4f,
+                    maxlogL = %8.4f \n",
+                    g, q, ii, estModel$logL, maxLOGL))
+            }
         }
         if(class(estModel) == "error"){
             when <- paste("At start", ii)
@@ -56,9 +56,10 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
     }
     
     if(!exists("Hmodel")){
-        cat("Error: Failed to Estimate a Model. See Error Messages.")
+        stop("Error: Failed to Estimate a Model. See Error Messages.")
         return(ERRMSG)
     }
+    
     CH <- chol(t(Hmodel$A) %*% Hmodel$A)
     Hmodel$A <- Hmodel$A %*% solve(CH)
     Hmodel$xi <- CH %*% Hmodel$xi
@@ -303,82 +304,4 @@ factor.scores.mcfa <- function(Y, g, q, pivec, A, xi, omega, D,
         Fmat[i, ] <- tau[i,] %*% t(matrix(U[i,,], c(q, g)))
     }
     return(list(U=U, UC=UC, Fmat=Fmat))
-}
-
-
-
-print.mcfa <- function(x, ...){
-    cat("Call:\n")
-    print(x$call)
-    
-    cat("\nCoefficients: \n")
-    cat("pi_i : ", round(x$pivec, 3), "\n")
-    
-    cat("A: \n")
-    x$A
-    
-    for(j in 1:x$g)
-    {
-        cat("xi_",j,":\n")
-        print(x$xi[, j])
-    }
-    
-    for(j in 1:x$g)
-    {
-        cat("omega_",j, ":\n")
-        print(x$omega[,, j])
-    }
-    
-    cat("diag D: \n", diag(x$D), "\n")
-}
-
-summary.mcfa <- function(object, ...){
-    cat("Call:\n")
-    print(object$call)
-    
-    summ <- cbind(num_comp = object$g,
-            num_fac = object$q,
-            log_like = object$logL,
-            BIC = object$BIC)
-    cat("\n")
-    print(summ)
-}
-
-plot.mcfa <- function(x, ...){
-    
-    if(x$q == 1)
-    {
-        graphics::plot(x$Fmat, 1:length(x$Fmat),  xlim=range(x$Fmat), 
-            axes=FALSE,
-            xlab=expression(widehat(u)[1]),
-            ylab="",type="p", 
-            pch = if (x$g <= 5) {20+as.numeric(x$clust)} 
-            else{as.numeric(x$clust)},
-            col = as.numeric(x$clust), bg =  as.numeric(x$clust))
-            graphics::axis(side=1)
-    }
-    
-    if(x$q == 2)
-    {
-        graphics::plot(x$Fmat[,c(1, 2)], pch = if (x$g <= 5) 
-        {20+as.numeric(x$clust)} else{as.numeric(x$clust)},
-        col = as.numeric(x$clust), bg =  as.numeric(x$clust), 
-        xlim = range(x$Fmat[,1]),
-        ylim = range(x$Fmat[,2]),
-        xlab = expression(widehat(u)[1]), ylab=expression(widehat(u)[2]) )
-    }
-    
-    if(x$q > 2)
-    {
-        graphics::pairs(x$Fmat, pch = if (x$g <= 5) {20+as.numeric(x$clust)} 
-            else{as.numeric(x$clust)},
-            col = as.numeric(x$clust), bg =  as.numeric(x$clust))
-    }
-}
-
-predict_mcfa <- function(object, x, ...){
-    tau <- tau.mcfa(x, object$g, object$q, object$pivec, object$A, object$xi,
-            object$omega, object$D)
-    clust <- apply(tau, 1, which.max)
-    clust
 }
