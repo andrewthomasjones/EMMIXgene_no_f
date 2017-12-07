@@ -22,6 +22,6 @@ covariance matrices restricted to be multiples of the indentity matrix.
 \examples{
 data(alon_data)
 #only run on first 100 genes for speed
-example <- select_genes(alon_data[1:100, ]) 
-example2<- cluster_genes(example, 2)
+alon_sel <- select_genes(alon_data[1:100, ]) 
+alon_clust<- cluster_genes(alon_sel , 2)
 }

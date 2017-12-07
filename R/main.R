@@ -64,7 +64,7 @@ NULL
 #'@examples
 #'data(alon_data)
 #'#only run on first 100 genes for speed
-#'example <- select_genes(alon_data[1:100, ]) 
+#'alon_sel <- select_genes(alon_data[1:100, ]) 
 #'
 #'@export
 select_genes<-function(dat, filename, random_starts=4, max_it = 100, 
@@ -143,8 +143,8 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'@examples
 #'data(alon_data)
 #'#only run on first 100 genes for speed
-#'example <- select_genes(alon_data[1:100, ]) 
-#'example2<- cluster_genes(example, 2)
+#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_clust<- cluster_genes(alon_sel , 2)
 #'@export
 cluster_genes<-function(gen, g=NULL){
     
@@ -154,16 +154,10 @@ cluster_genes<-function(gen, g=NULL){
     #clust_genes<-mclust::Mclust((gen$genes), G=g, modelNames = "VII")
     #g<-clust_genes$G
     
-    if(min(table(clusters)<2)){
-        warning("At least one cluster is a singleton. Reduce the number of clusters (g)")
-    }
-    
     ll_rank_stat<-array(0,g)
     
     for(i in 1:g){
-        if(sum(clusters==i)>1){
-            ll_rank_stat[i]<-each_gene(colMeans(gen$genes[clusters==i,]))$Ratio
-        }
+        ll_rank_stat[i]<-each_gene(colMeans(gen$genes[clusters==i, ,drop=FALSE]))$Ratio
     }
     
     #reorder clusters as ranked by mean of ll statistic from emmix-gene fit
@@ -185,9 +179,9 @@ cluster_genes<-function(gen, g=NULL){
 #'@examples
 #'data(alon_data)
 #'#only run on first 100 genes for speed
-#'example <- select_genes(alon_data[1:100, ]) 
-#'example2<- cluster_genes(example, 2)
-#'alon_clust<-all_cluster_tissues(gen=example, clusters=example2, q=1, G=2)
+#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_clust<- cluster_genes(alon_sel , 2)
+#'alon_tissue_all<-all_cluster_tissues(alon_sel, alon_clust, q=1, G=2)
 #'@export
 all_cluster_tissues<-function(gen, clusters, q=6, G=2){
     g<- length(table(clusters))
@@ -196,7 +190,7 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
     group_means<-array(0,c(g,p))
     
     for(i in 1:g){
-        group_means[i,] <- colMeans(gen$genes[clusters==i,])
+        group_means[i,] <- colMeans(gen$genes[clusters==i,,drop=FALSE])
     }
     mfa_fit<-mcfa(t(group_means), G, q, itmax=250, nkmeans=100, nrandom=100)
     clustering<- as.numeric(predict_mcfa(mfa_fit, t(group_means))-1) 
@@ -218,19 +212,20 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 #'#'data(alon_data)
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[1:100, ]) 
-#'alon_clust<- cluster_genes(alon_sel,3)
-#'alon_clust<-cluster_tissues(alon_sel, alon_clust, method='t') 
-#'alon_clust<-cluster_tissues(alon_sel, alon_clust, method='mfa', q=2, G=2) 
+#'alon_clust<- cluster_genes(alon_sel,2)
+#'alon_tissue_t<-cluster_tissues(alon_sel, alon_clust, method='t') 
+#'alon_tissue_mfa<-cluster_tissues(alon_sel, alon_clust, method='mfa', q=2, G=2) 
 #'@export
 cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
     g<-length(table(clusters))
     p<-ncol(gen$genes)
+    
     clustering<-array(0,c(g,p))
     clustering2<-array(0,c(g,p))
     
     if(method=='t'){
         for(i in 1:g){
-            group_means <- colMeans(gen$genes[clusters==i,])
+            group_means <- colMeans(gen$genes[clusters==i,,drop=FALSE])
             t_fit<-emmix_t(group_means, G)
             clustering[i,]<-t_fit$Clusters
         }
@@ -239,7 +234,8 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
     
     if(method=='mfa'){
         for(i in 1:g){
-            group <- as.matrix((gen$genes[clusters==i,]))
+            
+            group <- as.matrix((gen$genes[clusters==i,,drop=FALSE]))
             #actually mixture of common factor analysers. consider fixing.
             #print(dim(group))
             if(dim(group)[1]>20){
