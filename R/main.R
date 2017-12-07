@@ -192,7 +192,7 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
     for(i in 1:g){
         group_means[i,] <- colMeans(gen$genes[clusters==i,,drop=FALSE])
     }
-    mfa_fit<-mcfa(t(group_means), G, q, itmax=250, nkmeans=100, nrandom=100)
+    mfa_fit<-mcfa(t(group_means), G, q, itmax=100, nkmeans=5, nrandom=5)
     clustering<- as.numeric(predict_mcfa(mfa_fit, t(group_means))-1) 
     
     return(clustering)
@@ -348,12 +348,14 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
     df_heatmap$genes<-factor(df_heatmap$genes)
     df_heatmap$samples<-factor(df_heatmap$samples)
     
-    plot<-ggplot(df_heatmap, aes(df_heatmap$samples,df_heatmap$genes )) 
-        + geom_tile(aes(fill = df_heatmap$expression_level),  color = "white") +
-        scale_fill_distiller(palette = "Spectral")  +  
-        xlab("Samples")  + guides(fill=guide_legend(title="Expression Level"))
-        +theme(axis.text.y = element_blank(), axis.text.x = element_text(size = 6),
-        axis.ticks.y=element_blank())
+    plot<-ggplot(df_heatmap, aes(df_heatmap$samples,df_heatmap$genes ))+
+        geom_tile(aes(fill = df_heatmap$expression_level),  color = "white")+
+        scale_fill_distiller(palette = "Spectral")+  
+        xlab("Samples")  + guides(fill=guide_legend(title="Expression Level"))+
+        theme(axis.text.y = element_blank(),
+            axis.text.x = element_text(size = 6),
+            axis.ticks.y=element_blank()
+        )
     
     if(!is.null(clustering)){
         plot<- plot + ylab(y_lab)
