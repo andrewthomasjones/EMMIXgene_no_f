@@ -36,4 +36,5 @@ biocViews: 	Classification,
     RNASeq,
     Software,
     Clustering,
-    Regression
+    Regression,
+    TissueMicroarray

@@ -23,30 +23,30 @@ alon_data is a dataset containing the centred and normalised values of the logge
 
 The method of subset selection for both datasets follows that of their original papers and is described in @mclachlan2002mixture.
 
-```{r}
-library(EMMIXgene)
-data(alon_data)
-dim(alon_data)
-alon_data<-alon_data[c(1:200, 1758, 474),]
+<!-- ```{r} -->
+<!-- library(EMMIXgene) -->
+<!-- data(alon_data) -->
+<!-- dim(alon_data) -->
+<!-- alon_data<-alon_data[c(1:200, 1758, 474),] -->
 
-```
+<!-- ``` -->
 
-## Single Genes
+<!-- ## Single Genes -->
 
-```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data,201) 
-plot_single_gene(alon_data,202,g=3) 
-```
+<!-- ```{r, fig.show='hold', cache=T} -->
+<!-- plot_single_gene(alon_data,201)  -->
+<!-- plot_single_gene(alon_data,202,g=3)  -->
+<!-- ``` -->
 
-```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data, 202, g=2) 
-```
+<!-- ```{r, fig.show='hold', cache=T} -->
+<!-- plot_single_gene(alon_data, 202, g=2)  -->
+<!-- ``` -->
 
-## Select Genes
-```{r, echo=F, cache=TRUE}
-alon_sel<-select_genes(alon_data)
-n_alon<-sum(alon_sel$selected)
-```
+<!-- ## Select Genes -->
+<!-- ```{r, echo=F, cache=TRUE} -->
+<!-- alon_sel<-select_genes(alon_data) -->
+<!-- n_alon<-sum(alon_sel$selected) -->
+<!-- ``` -->
 
 <!-- ```{r, fig.show='hold', echo=FALSE, results='hide', cache=TRUE, message='hide'} -->
 <!-- alon_top_n<-top_genes_cluster_tissues(alon_sel, n_alon, method='mfa', q=6, g=2) -->
