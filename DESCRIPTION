@@ -1,6 +1,7 @@
 Package: EMMIXgene
 Type: Package
-Title: Unsupervised clustering and selection of gene expression variables using mixture models fitted using the EM algorithm (EMMIX) 
+Title: Unsupervised clustering and selection of gene expression variables using mixture models fitted using the EM algorithm (EMMIX)
+Desciption: EMMIXgene ...
 Version: 0.99.0
 Author: Andrew Thomas Jones, Geoffrey McLachlan
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>

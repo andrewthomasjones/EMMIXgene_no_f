@@ -1,5 +1,29 @@
 #'@import ggplot2 mclust scales tools
 NULL
+
+#'EMMIXgene: 
+#'
+#'Selects genes using the EMMIXgene algorithim, following the methodlogy of 
+#'G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the 
+#'clustering of microarray expression data , Bioinformatics, Volume 18, 
+#'Issue 3, 1 March 2002, Pages 413–422,
+#'https://doi.org/10.1093/bioinformatics/18.3.413
+#'
+#'@section Functions:
+#'\code{\link{select_genes}}: Selects the most differentially espressed genes.
+#'
+#'\code{\link{cluster_genes}}: Clusters the genes using a mixture model
+#'approach.
+#'
+#'\code{\link{cluster_tissues}}: Clusters the tissues based on the differences 
+#'between the tissue samples among the gene groups.
+#'
+#'See \code{vignette('The-EMMIXgene-Workflow')} for more details.
+#' @docType package
+#' @name EMMIXgene
+NULL
+
+
 #'@title Selects genes using the EMMIXgene algorithim.
 #'
 #'@description Follows the gene selection methodology of 
