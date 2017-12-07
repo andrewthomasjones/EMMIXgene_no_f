@@ -456,25 +456,3 @@ plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
     return(plot)
 }
 
-#'@title Normalised gene expression values from Alon et al. (1999).
-#'
-#'@description A dataset containing centred and normalised values of the 
-#'logged expression values of a subset of 2000 genes taken from 
-#'Alon, Uri, et al. "Broad patterns of gene expression revealed by clustering
-#'analysis of tumor and normal colon tissues probed by oligonucleotide arrays."
-#'Proceedings of the National Academy of Sciences 96.12 (1999): 6745-6750.
-#'The method of subset selection was described in G. J. McLachlan, R. W. Bean, 
-#'D. Peel; A mixture model-based approach to the clustering of microarray 
-#'expression data ,
-#'Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
-#'
-#'@docType data
-#'@keywords datasets
-#'@name alon_data
-#'@usage data(alon_data)
-#'@format A data frame with 2000 rows (genes) and 62 variables (samples).
-#'@examples
-#'#not run
-#'data(alon_data)
-#'dim(alon_data)
-NULL
