@@ -12,12 +12,14 @@ LazyData: TRUE
 Suggests: 
   testthat,
   knitr,
-  rmarkdown
+  rmarkdown,
+  colonCA,
+  golubEsets
 LinkingTo: 
   Rcpp,
   RcppArmadillo
 Depends:
-  R (>= 3.5.0)
+  R (>= 3.4.0)
 Imports: 
   Rcpp (>= 0.12.5),
   stats,
