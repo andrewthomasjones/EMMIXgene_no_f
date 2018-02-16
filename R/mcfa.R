@@ -305,3 +305,11 @@ factor.scores.mcfa <- function(Y, g, q, pivec, A, xi, omega, D,
     }
     return(list(U=U, UC=UC, Fmat=Fmat))
 }
+
+
+predict.mcfa <- function(object, x, ...){
+    tau <- tau.mcfa(x, object$g, object$q, object$pivec, object$A, object$xi,
+                    object$omega, object$D)
+    clust <- apply(tau, 1, which.max)
+    clust
+}

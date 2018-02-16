@@ -193,7 +193,7 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
         group_means[i,] <- colMeans(gen$genes[clusters==i,,drop=FALSE])
     }
     mfa_fit<-mcfa(t(group_means), G, q, itmax=100, nkmeans=5, nrandom=5)
-    clustering<- as.numeric(predict_mcfa(mfa_fit, t(group_means))-1) 
+    clustering<- as.numeric(predict.mcfa(mfa_fit, t(group_means))-1) 
     
     return(clustering)
 }
@@ -241,7 +241,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
                 q1<-min(q, sum(clusters==i)-1 )
                 mfa_fit<-mcfa(t(group), G, q1, itmax=100,
                 nkmeans=50, nrandom=50)
-                clustering[i,]<- as.numeric(predict_mcfa(mfa_fit, t(group))-1) 
+                clustering[i,]<- as.numeric(predict.mcfa(mfa_fit, t(group))-1) 
             }
             
             
@@ -298,7 +298,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
         
         group <- as.matrix((gen$all_genes[top_genes,]))
         fit<-mcfa(t(group), g, q)
-        clustering<- predict_mcfa(fit, t(group))-1
+        clustering<- predict.mcfa(fit, t(group))-1
         
         
         
@@ -409,11 +409,11 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 #'@export
 plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
             ll_thresh = 8, min_clust_size = 8,
-            tol = 0.0001, start_method = "both",  three=TRUE){ 
+            tol = 0.0001, start_method = "both",  three=TRUE, min = -4, max = 2){ 
     
     df<-data.frame(x=dat[gene_id,])
     n<-length(df$x)/4
-    breaks<-seq(-4,2, length.out=n)
+    breaks<-seq(min, max, length.out=n)
     p<-ggplot(df, aes(x=df$x)) + geom_histogram(breaks=breaks, alpha=.5)
     p2<-ggplot_build(p+theme_bw())
     
@@ -424,7 +424,7 @@ plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
         stat="identity", position="identity")
     plot<-plot+theme_bw()+xlab("Gene Expression Value")+ylab("Density")
     
-    df2<-data.frame(x=seq(-4, 2, length.out = 1000))
+    df2<-data.frame(x=seq(min, max, length.out = 1000))
     
     if(!is.null(g)){
         res<-emmix_t(dat[gene_id,], g, random_starts, max_it, tol,start_method)
