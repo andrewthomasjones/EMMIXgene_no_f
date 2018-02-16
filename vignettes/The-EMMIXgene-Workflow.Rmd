@@ -25,19 +25,21 @@ The method of subset selection for both datasets follows that of their original 
 
 ```{r}
 library(EMMIXgene)
-data(Golub_Merge)
+library(Biobase)
 data(colonCA)
+alon_data<-log(Biobase::exprs(colonCA))
+
 ```
 
 ## Single Genes
 
 ```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data,201)
-plot_single_gene(alon_data,202,g=3)
+plot_single_gene(alon_data,201, min =4, max=10)
+plot_single_gene(alon_data,202,g=3, min =4, max=10)
 ```
 
 ```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data, 202, g=2)
+plot_single_gene(alon_data, 202, g=2, min =4, max=10)
 ```
 
 ## Select Genes

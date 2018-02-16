@@ -7,7 +7,7 @@ fitted mixture of t-distributions.}
 \usage{
 plot_single_gene(dat, gene_id, g = NULL, random_starts = 8, max_it = 100,
   ll_thresh = 8, min_clust_size = 8, tol = 1e-04, start_method = "both",
-  three = TRUE)
+  three = TRUE, min = -4, max = 2)
 }
 \arguments{
 \item{dat}{matrix of gene expression data.}
