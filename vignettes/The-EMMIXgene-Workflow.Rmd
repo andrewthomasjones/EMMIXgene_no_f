@@ -15,38 +15,63 @@ The aim of this document is to reproduce the results of the original EMMIX-gene 
 
 
 ## Data
-The original paper analysed two data sets. These are included in the R-package. 
+The original paper analysed two data sets. golub_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from @golub1999molecular. alon_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 2000 genes taken from @alon1999broad. The method of subset selection for both datasets follows that of their original papers and is described in @mclachlan2002mixture.
 
-golub_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from @golub1999molecular.
 
-alon_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 2000 genes taken from @alon1999broad.
 
-The method of subset selection for both datasets follows that of their original papers and is described in @mclachlan2002mixture.
+#Setup 
 
-```{r}
+less available
+recreate using Bioconductor
+basic processing with vsn @vsn2002 for purpose of example
+
+
+```{r, recho=F, cache=TRUE}
 library(EMMIXgene)
 library(Biobase)
-data(colonCA)
-alon_data<-log(Biobase::exprs(colonCA))
+library(vsn)
+data(colonCA, package = 'colonCA')
+data(Golub_Merge, package = 'golubEsets')
+alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+golub_data<-(Biobase::exprs(vsn::vsn2(Golub_Merge)))
+set.seed(123)
 
 ```
 
 ## Single Genes
 
-```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data,201, min =4, max=10)
-plot_single_gene(alon_data,202,g=3, min =4, max=10)
-```
+different genes
+
+see tha link for issue on datasets being different
+
+different scale too
+
+Figuresn 1 to 3 in  (@mclachlan2002mixture)
+
 
 ```{r, fig.show='hold', cache=T}
-plot_single_gene(alon_data, 202, g=2, min =4, max=10)
+plot_single_gene(alon_data,1758, min =4, max=12)
+plot_single_gene(alon_data,474,g=3, min =4, max=12)
+plot_single_gene(alon_data, 474, g=2, min =4, max=12)
 ```
+
+
+
+
 
 ## Select Genes
+
+Slecting genes as in section 5.1 in  (@mclachlan2002mixture)
+
+431 not 446
+
 ```{r, echo=F, cache=TRUE}
 alon_sel<-select_genes(alon_data)
 n_alon<-sum(alon_sel$selected)
 ```
+
+Ways to work with
+broadly similar
 
 ```{r, fig.show='hold', echo=FALSE, results='hide', cache=TRUE, message='hide'}
 alon_top_n<-top_genes_cluster_tissues(alon_sel, n_alon, method='mfa', q=6, g=2)
@@ -65,12 +90,13 @@ cat(c("C2: ", paste(which(alon_top_50$clustering==0)),"\n"))
 
 
 #5.1.2
+
 ```{r, echo=F,  cache=TRUE,message='hide'}
 groups<-4
 alon_clus_5 <- cluster_genes(alon_sel, groups)
-alon_clus_5_t1<-all_cluster_tissues(gen=alon_sel, clusters=alon_clus_5, q=3, G=2)
+alon_clus_5_t1<-all_cluster_tissues(gen=alon_sel, clusters=alon_clus_5, q=2, G=2)
 alon_clus_5_t2<-cluster_tissues(alon_sel, alon_clus_5, method='t')
-alon_clus_5_t3<-cluster_tissues(alon_sel, alon_clus_5, method='mfa', q=2, G=2)
+alon_clus_5_t3<-cluster_tissues(alon_sel, alon_clus_5, method='mfa', q=1, G=2)
 cat(c("C1: ", paste(which(alon_clus_5_t1==1)),"\n"))
 cat(c("C2: ", paste(which(alon_clus_5_t1==0)),"\n"))
 
@@ -120,6 +146,8 @@ cat(c("C2: ", paste(which(alon_clus_5_t1==0)),"\n"))
 
 
 ## Select Genes
+
+5.2 in in  (@mclachlan2002mixture)
 ```{r, cache=TRUE}
 golub_sel<-select_genes(golub_data)
 ```
@@ -127,11 +155,12 @@ golub_sel<-select_genes(golub_data)
 
 
 ```{r, echo=F,  cache=TRUE,message='hide'}
-groups<-5
+groups<-40
 golub_clus_10 <- cluster_genes(golub_sel, groups)
-golub_clus_10_t1<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_10, q=3, G=2)
+golub_clus_10_t1<-all_cluster_tissues(gen=golub_sel, clusters=golub_clus_10, q=6, G=2)
+
 golub_clus_10_t2<-cluster_tissues(golub_sel, golub_clus_10, method='t')
-golub_clus_10_t3<-cluster_tissues(golub_sel, golub_clus_10, method='mfa', q=2)
+golub_clus_10_t3<-cluster_tissues(golub_sel, golub_clus_10, method='mfa', q=6)
 ```
 
 

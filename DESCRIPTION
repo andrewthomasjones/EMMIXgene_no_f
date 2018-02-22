@@ -12,9 +12,7 @@ LazyData: TRUE
 Suggests: 
   testthat,
   knitr,
-  rmarkdown,
-  colonCA,
-  golubEsets
+  rmarkdown
 LinkingTo: 
   Rcpp,
   RcppArmadillo
