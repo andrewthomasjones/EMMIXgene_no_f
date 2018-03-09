@@ -12,10 +12,14 @@ LazyData: TRUE
 Suggests: 
   testthat,
   knitr,
-  rmarkdown
+  rmarkdown,
+  vsn,
+  colonCA,
+  golubEsets
 LinkingTo: 
   Rcpp,
-  RcppArmadillo
+  RcppArmadillo,
+  BH
 Depends:
   R (>= 3.4.0)
 Imports: 
@@ -25,8 +29,7 @@ Imports:
   reshape,
   ggplot2,
   scales,
-  tools,
-  BH
+  tools
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
