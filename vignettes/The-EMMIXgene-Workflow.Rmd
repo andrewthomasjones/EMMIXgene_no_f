@@ -13,42 +13,33 @@ vignette: >
 # EMMIX-gene 
 The aim of this document is to reproduce the results of the original EMMIX-gene paper (@mclachlan2002mixture) while demonstrating the EMMIX-gene R-package workflow.
 
-
 ## Data
-The original paper analysed two data sets. golub_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from @golub1999molecular. alon_data is a dataset containing the centred and normalised values of the logged expression values of a subset of 2000 genes taken from @alon1999broad. The method of subset selection for both datasets follows that of their original papers and is described in @mclachlan2002mixture.
-
-
+The original paper analysed two data sets. The Golub Data was a dataset containing the centred and normalised values of the logged expression values of a subset of 3731 genes taken from @golub1999molecular. The Alon data was a dataset containing the centred and normalised values of the logged expression values of a subset of 2000 genes taken from @alon1999broad. The method of subset selection for both datasets follows that of their original papers and is described in @mclachlan2002mixture.
 
 #Setup 
+Unfortunately the original data used in the paper was not easily available, however this provides an opportunity to recreate the analysis using Bioconductor tools, which is also the purpose of this package. 
 
-less available
-recreate using Bioconductor
-basic processing with vsn @vsn2002 for purpose of example
+The raw Alon and Golub data are available in the 'colonCA' and 'golubEsets' Bioconductor packages respectively. 
+Basic data pre-processing was peformed with vsn @vsn2002 for purpose of these examples:
 
 
 ```{r, recho=F, cache=TRUE}
 library(EMMIXgene)
 library(Biobase)
 library(vsn)
-data(colonCA, package = 'colonCA')
-data(Golub_Merge, package = 'golubEsets')
-alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
-golub_data<-(Biobase::exprs(vsn::vsn2(Golub_Merge)))
 set.seed(123)
+
+data(colonCA, package = 'colonCA')
+alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+
+data(Golub_Merge, package = 'golubEsets')
+golub_data<-(Biobase::exprs(vsn::vsn2(Golub_Merge)))
 
 ```
 
 ## Single Genes
 
-different genes
-
-see tha link for issue on datasets being different
-
-different scale too
-
-Figuresn 1 to 3 in  (@mclachlan2002mixture)
-
-
+Figures 1 to 3 in  (@mclachlan2002mixture) are reproduced here using the function plot_single_gene(). Due to the limitations with the original data mentioned earlier, the same genes could not be used and the scale is different. 
 ```{r, fig.show='hold', cache=T}
 plot_single_gene(alon_data,1758, min =4, max=12)
 plot_single_gene(alon_data,474,g=3, min =4, max=12)
@@ -56,14 +47,9 @@ plot_single_gene(alon_data, 474, g=2, min =4, max=12)
 ```
 
 
-
-
-
 ## Select Genes
 
-Slecting genes as in section 5.1 in  (@mclachlan2002mixture)
-
-431 not 446
+The method of selecting genes isas in section 5.1 in (@mclachlan2002mixture) is performed using the function select_genes(). We find that 431 genes were selected, which compares well to 446 genes in the original analysis.
 
 ```{r, echo=F, cache=TRUE}
 alon_sel<-select_genes(alon_data)
@@ -146,6 +132,8 @@ cat(c("C2: ", paste(which(alon_clus_5_t1==0)),"\n"))
 
 
 ## Select Genes
+
+In the case of the Golub data the same limitations mentioned earlier mean it is difficult to reproduce the original analysis exactly. This issue has been noted before [here](https://web.stanford.edu/~hastie/CASI_files/DATA/leukemia.html).
 
 5.2 in in  (@mclachlan2002mixture)
 ```{r, cache=TRUE}
