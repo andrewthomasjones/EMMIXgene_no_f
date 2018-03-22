@@ -56,7 +56,6 @@ Issue 3, 1 March 2002, Pages 413–422,
 https://doi.org/10.1093/bioinformatics/18.3.413
 }
 \examples{
-library(EMMIXgene)
 library(Biobase)
 library(vsn)
 set.seed(123)

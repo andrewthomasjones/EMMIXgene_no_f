@@ -20,7 +20,6 @@ Sorts genes into clusters using mixtures of normal distributions with
 covariance matrices restricted to be multiples of the indentity matrix.
 }
 \examples{
-library(EMMIXgene)
 library(Biobase)
 library(vsn)
 set.seed(123)

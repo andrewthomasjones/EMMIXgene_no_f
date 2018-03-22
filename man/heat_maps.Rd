@@ -22,7 +22,6 @@ Plot heat maps of gene expression data. Optionally sort the x-axis
 according to a predtermined clustering.
 }
 \examples{
-library(EMMIXgene)
 library(Biobase)
 library(vsn)
 set.seed(123)

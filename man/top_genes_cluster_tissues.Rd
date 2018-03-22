@@ -31,7 +31,6 @@ for each sample (columns) by each group(rows).}
 Cluster tissues
 }
 \examples{
-library(EMMIXgene)
 library(Biobase)
 library(vsn)
 set.seed(123)

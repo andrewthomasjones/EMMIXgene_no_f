@@ -48,7 +48,6 @@ Plot a single gene expression histogram with best
 fitted mixture of t-distributions according to the EMMIX-gene algorithm.
 }
 \examples{
-library(EMMIXgene)
 library(Biobase)
 library(vsn)
 set.seed(123)

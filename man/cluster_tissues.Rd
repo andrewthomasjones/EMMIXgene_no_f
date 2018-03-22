@@ -26,7 +26,6 @@ a clustering for each sample (columns) by each group(rows)
 Clusters tissues
 }
 \examples{
-library(EMMIXgene)
 library(Biobase)
 library(vsn)
 set.seed(123)

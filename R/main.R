@@ -1,4 +1,4 @@
-#'@import ggplot2 mclust scales tools
+#'@import ggplot2 mclust scales tools Biobase vsn colonCA
 NULL
 
 #'EMMIXgene: 
@@ -62,7 +62,6 @@ NULL
 #'\item{all_genes}{Returns dat or contents of filename.}
 #'
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
@@ -146,7 +145,6 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'selected automatically on the basis of BIC.
 #'@return An array containing the clustering. 
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
@@ -188,7 +186,6 @@ cluster_genes<-function(gen, g=NULL){
 #'@param G number of components if using mfa
 #'@return a clustering for each sample (columns) by each group(rows)
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
@@ -226,7 +223,6 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 #'@param G number of components if using mfa
 #'@return a clustering for each sample (columns) by each group(rows)
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
@@ -295,7 +291,6 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'\item{top_gene}{The row nunbers of the top genes.}
 #'\item{fit}{The fit object used to determine the clustering.}
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
@@ -359,7 +354,6 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #'@param y_lab optional label for y-axis.
 #'@return A ggplot2 heat map.
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
@@ -436,7 +430,6 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 #'@param min,max Minimum and maximum x-axis values for the plot window.
 #'@return A ggplot2 histogram with fitted t-distributions overlayed. 
 #'@examples
-#'library(EMMIXgene)
 #'library(Biobase)
 #'library(vsn)
 #'set.seed(123)
