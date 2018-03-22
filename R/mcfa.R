@@ -18,7 +18,7 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
     
     ERRMSG <- NULL
     maxLOGL  <- -Inf
-    for (ii in 1:maxinit) {
+    for (ii in seq_len(maxinit)) {
         if(min(table(startClust[, ii]) == 1)){
             when <- paste("At start", ii)
             what <- "Initial partition was not used as it has a cluster of one
@@ -63,7 +63,7 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
     CH <- chol(t(Hmodel$A) %*% Hmodel$A)
     Hmodel$A <- Hmodel$A %*% solve(CH)
     Hmodel$xi <- CH %*% Hmodel$xi
-    for(i in 1:g){
+    for(i in seq_len(g)){
         Hmodel$omega[,,i] <- CH %*% Hmodel$omega[,,i] %*% t(CH)
     }
     d <- (g-1) + p + q*(p+g) + g*q*(q+1)/2 - q*q
@@ -94,7 +94,7 @@ est.mcfa <- function(Y, g, q, itmax, tol, pivec,
         class(FIT) <- "error"
         return(FIT)
     }
-    for(niter in 1:itmax) {
+    for(niter in seq_len(itmax)) {
         FIT <- do.call('Mstep.mcfa', c(list(Y=Y), fit))
         if(class(FIT) == 'error'){
             FIT <- paste('Computational error in ', niter,
@@ -131,7 +131,7 @@ loglike.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
     
     Fji <- array(NA, c(n,g))
     InvD <- diag(1/diag(D))
-    for(i in 1:g){
+    for(i in seq_len(g)){
         InvS <- try(InvD - InvD %*% A %*%
             chol.inv(chol.inv(omega[,,i]) + t(A) %*% InvD %*% A) %*%
             t(A) %*% InvD)
@@ -159,7 +159,7 @@ tau.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
     n <- nrow(Y)
     Fji <- array(NA, c(n,g))
     InvD <- diag(1/diag(D))
-    for(i in 1:g){
+    for(i in seq_len(g)){
         InvS <- InvD - InvD %*% A %*%
             chol.inv(chol.inv(omega[,,i]) + t(A) %*% InvD %*% A) %*%
             t(A) %*% InvD
@@ -186,7 +186,7 @@ Mstep.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
     A1 <- array(0, c(p,q))
     A2 <- array(0, c(q,q))
     Di <- array(0, c(p))
-    for (i in 1:g){
+    for (i in seq_len(g)){
         gamma <- (InvD - InvD %*% A %*%
             chol.inv(chol.inv(omega[,,i]) + t(A) %*% InvD %*% A) %*%
             t(A) %*% InvD) %*% A %*% omega[,, i]
@@ -231,7 +231,7 @@ init.est.para.mcfa <- function(Y, g, q, start, init.method="eigenA", ...){
         D <- diag(diag(stats::cov(Y)))
         SqrtD <- diag(sqrt(diag(D)))
         InvSqrtD <- diag(1/diag(SqrtD))
-        for(i in 1:g) {
+        for(i in seq_len(g)) {
             indices  <- which(start == i)
             pivec[i] <- length(indices)/n
             uiT <- Y[indices,] %*% A
@@ -249,19 +249,19 @@ init.est.para.mcfa <- function(Y, g, q, start, init.method="eigenA", ...){
                 sigma2 <- mean(lambda[(q+1):p])
             }
             if(q==1) {
-                omega[,, i] <- t(A) %*% SqrtD %*% H[, ix.lambda[1:q]] %*%
-                    diag((lambda[1:q] - sigma2), q) %*%
-                    t(H[, ix.lambda[1:q]]) %*% SqrtD %*% A
+                omega[,, i] <- t(A) %*% SqrtD %*% H[, ix.lambda[seq_len(q)]] %*%
+                    diag((lambda[seq_len(q)] - sigma2), q) %*%
+                    t(H[, ix.lambda[seq_len(q)]]) %*% SqrtD %*% A
             }else{
-                omega[,, i] <- t(A) %*% SqrtD %*% H[, ix.lambda[1:q]] %*%
-                    diag((lambda[1:q] - sigma2))%*%
-                    t(H[, ix.lambda[1:q]]) %*% SqrtD %*% A
+                omega[,, i] <- t(A) %*% SqrtD %*% H[, ix.lambda[seq_len(q)]] %*%
+                    diag((lambda[seq_len(q)] - sigma2))%*%
+                    t(H[, ix.lambda[seq_len(q)]]) %*% SqrtD %*% A
             }
         }
     } else {
         Eig <- eigen(t(Y) %*% Y)
-        A <- as.matrix(Eig$vectors[, 1:q], ncol=q)
-        for(i in 1:g) {
+        A <- as.matrix(Eig$vectors[, seq_len(q)], ncol=q)
+        for(i in seq_len(g)) {
             indices  <- which(start == i)
             pivec[i] <- length(indices)/n
             uiT <- Y[indices,] %*% A
@@ -283,7 +283,7 @@ factor.scores.mcfa <- function(Y, g, q, pivec, A, xi, omega, D,
     U <- array(0, c(n, q, g))
     gamma <- array(0, c(p, q, g))
     invD <- diag(1/diag(D))
-    for (i in 1:g){
+    for (i in seq_len(g)){
         gamma[,, i] <- (invD - invD %*% A %*%
             chol.inv(chol.inv(omega[,, i]) + t(A) %*% invD %*% A) %*%
             t(A) %*% invD) %*% A %*% omega[,, i]
@@ -299,7 +299,7 @@ factor.scores.mcfa <- function(Y, g, q, pivec, A, xi, omega, D,
         clust <- apply(tau, 1, which.max)
     UC <- array(0, c(n, q))
     Fmat <- array(0, c(n, q))
-    for (i in 1:n){
+    for (i in seq_len(n)){
         UC[i, ] <- U[i,, clust[i]]
         Fmat[i, ] <- tau[i,] %*% t(matrix(U[i,,], c(q, g)))
     }

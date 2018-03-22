@@ -4,12 +4,15 @@ author: "Andrew Jones"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: bibliography.bib
+csl: harvard-bournemouth-university.csl
 vignette: >
     %\VignetteIndexEntry{EMMIX-gene}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
-
+```{r,  echo=F}
+knitr::opts_chunk$set(fig.width=8, fig.height=6)
+```
 # EMMIX-gene 
 The aim of this document is to reproduce the results of the original EMMIX-gene paper (@mclachlan2002mixture) while demonstrating the EMMIX-gene R-package workflow.
 
@@ -23,7 +26,7 @@ The raw Alon and Golub data are available in the 'colonCA' and 'golubEsets' Bioc
 Basic data pre-processing was peformed with vsn @vsn2002 for purpose of these examples:
 
 
-```{r, recho=F, cache=TRUE}
+```{r, echo=F, cache=TRUE}
 library(EMMIXgene)
 library(Biobase)
 library(vsn)

@@ -16,14 +16,14 @@ ari <- function (cls, hat.cls)
 }
 
 # permutations
-perm <- function (n, r, v = 1:n){
+perm <- function (n, r, v = seq_len(n)){
     if (r == 1)
         matrix(v, n, 1)
     else if (n == 1)
         matrix(v, 1, r)
     else {
         X <- NULL
-        for (i in 1:n)
+        for (i in seq_len(n))
             X <- rbind(X, cbind(v[i], perm(n - 1, r - 1, v[-i])))
         X
     }
@@ -35,13 +35,13 @@ err <- function(cls, hat.cls) {
         stop('length of the two arguments should be equal')
     tcls = rep(0, length(cls))
     labs = unique(cls)
-    for(j in 1:length(labs))
+    for(j in seq_len(length(labs)))
         tcls[cls==labs[j]] = j
     cls = tcls
     
     tcls = rep(0, length(hat.cls))
     labs = unique(hat.cls)
-    for(j in 1:length(labs))
+    for(j in seq_len(length(labs)))
         tcls[hat.cls==labs[j]] = j
     hat.cls = tcls
     
@@ -49,9 +49,9 @@ err <- function(cls, hat.cls) {
     g = length(labs)
     x = perm(g, g)
     min.err = Inf
-    for( j in 1:nrow(x) ) {
+    for( j in seq_len(nrow(x) )) {
         newCls = rep(0, length(cls))
-        for(k in 1:g )
+        for(k in seq_len(g))
             newCls[cls==labs[k]] = x[j, k]
         e = sum(newCls != hat.cls)
         if(e < min.err)
@@ -75,7 +75,7 @@ Starts <- function(Y, g, initClust, nkmeans, nrandom){
     
     if(is.numeric(nkmeans) & ! is.null(nkmeans) & (nkmeans > 0))
     {
-        for (i in 1:nkmeans)
+        for (i in seq_len(nkmeans))
             starts <- cbind(starts, stats::kmeans(Y, g)$cluster)
     }
     

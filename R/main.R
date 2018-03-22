@@ -64,7 +64,7 @@ NULL
 #'@examples
 #'data(alon_data)
 #'#only run on first 100 genes for speed
-#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'
 #'@export
 select_genes<-function(dat, filename, random_starts=4, max_it = 100, 
@@ -143,7 +143,7 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'@examples
 #'data(alon_data)
 #'#only run on first 100 genes for speed
-#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel , 2)
 #'@export
 cluster_genes<-function(gen, g=NULL){
@@ -156,8 +156,9 @@ cluster_genes<-function(gen, g=NULL){
     
     ll_rank_stat<-array(0,g)
     
-    for(i in 1:g){
-        ll_rank_stat[i]<-each_gene(colMeans(gen$genes[clusters==i, ,drop=FALSE]))$Ratio
+    for(i in seq_len(g)){
+        ll_rank_stat[i]<-
+            each_gene(colMeans(gen$genes[clusters==i, ,drop=FALSE]))$Ratio
     }
     
     #reorder clusters as ranked by mean of ll statistic from emmix-gene fit
@@ -179,7 +180,7 @@ cluster_genes<-function(gen, g=NULL){
 #'@examples
 #'data(alon_data)
 #'#only run on first 100 genes for speed
-#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel , 2)
 #'alon_tissue_all<-all_cluster_tissues(alon_sel, alon_clust, q=1, G=2)
 #'@export
@@ -189,7 +190,7 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
     p<-ncol(gen$genes)
     group_means<-array(0,c(g,p))
     
-    for(i in 1:g){
+    for(i in seq_len(g)){
         group_means[i,] <- colMeans(gen$genes[clusters==i,,drop=FALSE])
     }
     mfa_fit<-mcfa(t(group_means), G, q, itmax=100, nkmeans=5, nrandom=5)
@@ -211,10 +212,12 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 #'@examples
 #'#'data(alon_data)
 #'#only run on first 100 genes for speed
-#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel,2)
-#'alon_tissue_t<-cluster_tissues(alon_sel, alon_clust, method='t') 
-#'alon_tissue_mfa<-cluster_tissues(alon_sel, alon_clust, method='mfa', q=2, G=2) 
+#'alon_tissue_t<-
+#'    cluster_tissues(alon_sel,alon_clust,method='t')
+#'alon_tissue_mfa<-
+#'    cluster_tissues(alon_sel, alon_clust,method='mfa',q=2,G=2) 
 #'@export
 cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
     g<-length(table(clusters))
@@ -224,7 +227,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
     clustering2<-array(0,c(g,p))
     
     if(method=='t'){
-        for(i in 1:g){
+        for(i in seq_len(g)){
             group_means <- colMeans(gen$genes[clusters==i,,drop=FALSE])
             t_fit<-emmix_t(group_means, G)
             clustering[i,]<-t_fit$Clusters
@@ -233,7 +236,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
     }
     
     if(method=='mfa'){
-        for(i in 1:g){
+        for(i in seq_len(g)){
             
             group <- as.matrix((gen$genes[clusters==i,,drop=FALSE]))
             #actually mixture of common factor analysers. consider fixing.
@@ -272,7 +275,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'\item{fit}{The fit object used to determine the clustering.}
 #'@examples
 #'data(alon_data)
-#'alon_sel <- select_genes(alon_data[1:100, ]) 
+#'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_top_10<-top_genes_cluster_tissues(alon_sel, 10, method='mfa', q=3, g=2)
 #' 
 #'
@@ -283,7 +286,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
     p<-ncol(gen$genes)
     clustering<-array(0,p)
     
-    top_genes<-gen$ranks[1:n_top]
+    top_genes<-gen$ranks[seq_len(n_top)]
     
     if(method=='t'){
         
@@ -331,7 +334,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #'@return A ggplot2 heat map.
 #'@examples
 #'data(alon_data)
-#'example <- heat_maps(alon_data[1:100, ])
+#'example <- heat_maps(alon_data[seq_len(100), ])
 #'
 #'
 #'@export
@@ -403,13 +406,14 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 # #'@examples
 #'data(alon_data)
 #'example <- plot_single_gene(alon_data,1) 
-#'#not run
 #'#plot(example)
 #'
 #'@export
-plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
-            ll_thresh = 8, min_clust_size = 8,
-            tol = 0.0001, start_method = "both",  three=TRUE, min = -4, max = 2){ 
+plot_single_gene<-function(dat, gene_id, g=NULL, 
+                           random_starts=8, max_it = 100,
+                           ll_thresh = 8, min_clust_size = 8,
+                           tol = 0.0001, start_method = "both",
+                           three=TRUE, min = -4, max = 2){ 
     
     df<-data.frame(x=dat[gene_id,])
     n<-length(df$x)/4
@@ -434,8 +438,8 @@ plot_single_gene<-function(dat, gene_id, g=NULL, random_starts=8, max_it = 100,
     }
     
     
-    for(i in 1:res$components){
-        for(j in 1:nrow(df2)){
+    for(i in seq_len(res$components)){
+        for(j in seq_len(nrow(df2))){
             df2[[paste0('y',i)]][j]<-res$pi[i]*t_dist(df2$x[j], res$mu[i], 
                 res$sigma[i], res$nu[i])
         }

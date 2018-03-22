@@ -1,43 +1,21 @@
 Package: EMMIXgene
-Type: Package
-Title: Unsupervised clustering and selection of gene expression variables using mixture models fitted using the EM algorithm (EMMIX)
-Desciption: EMMIXgene ...
+Title: A Mixture Model-based Approach to the Clustering of Microarray Expression Data
+Description: Provides unsupervised clustering and selection of gene
+    expression variables using mixture models fitted using
+    the EM algorithm(EMMIX) <doi:10.1093/bioinformatics/18.3.413>.
 Version: 0.99.0
+Encoding: UTF-8
 Author: Andrew Thomas Jones, Geoffrey McLachlan
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
-Description: Re-implements EMMIX-GENE as an R-Package.
-Encoding: UTF-8
-License: GPL (>= 3)
+License: GPL(>=3)
+biocViews: Classification, GeneExpression, Microarray, RNASeq, Software,
+    Clustering, Regression ,TissueMicroarray
 LazyData: TRUE
-Suggests: 
-  testthat,
-  knitr,
-  rmarkdown,
-  vsn,
-  colonCA,
-  golubEsets
-LinkingTo: 
-  Rcpp,
-  RcppArmadillo,
-  BH
-Depends:
-  R (>= 3.4.0)
-Imports: 
-  Rcpp (>= 0.12.5),
-  stats,
-  mclust,
-  reshape,
-  ggplot2,
-  scales,
-  tools
+Suggests: testthat, knitr, rmarkdown, vsn, colonCA, golubEsets
+LinkingTo: Rcpp, RcppArmadillo, BH
+Depends: R (>= 3.5.0)
+Imports: Rcpp (>= 0.12.5), stats, mclust, reshape, ggplot2, scales,
+    tools, BH
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
-biocViews: 	Classification,
-    GeneExpression,
-    Microarray,
-    RNASeq,
-    Software,
-    Clustering,
-    Regression,
-    TissueMicroarray

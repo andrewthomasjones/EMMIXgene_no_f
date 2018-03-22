@@ -58,6 +58,6 @@ https://doi.org/10.1093/bioinformatics/18.3.413
 \examples{
 data(alon_data)
 #only run on first 100 genes for speed
-alon_sel <- select_genes(alon_data[1:100, ]) 
+alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 
 }

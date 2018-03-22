@@ -23,7 +23,7 @@ according to a predtermined clustering.
 }
 \examples{
 data(alon_data)
-example <- heat_maps(alon_data[1:100, ])
+example <- heat_maps(alon_data[seq_len(100), ])
 
 
 }

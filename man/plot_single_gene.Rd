@@ -42,7 +42,6 @@ Can also choose "random" for purely random starts.}
 A ggplot2 histogram with fitted t-distributions overlayed. 
 data(alon_data)
 example <- plot_single_gene(alon_data,1) 
-#not run
 #plot(example)
 }
 \description{

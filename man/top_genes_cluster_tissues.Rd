@@ -32,7 +32,7 @@ Cluster tissues
 }
 \examples{
 data(alon_data)
-alon_sel <- select_genes(alon_data[1:100, ]) 
+alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 alon_top_10<-top_genes_cluster_tissues(alon_sel, 10, method='mfa', q=3, g=2)
 
 

@@ -1,2 +1,4 @@
 PKG_CPPFLAGS =  -I../inst/include/
 PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+CFLAGS=-Wall -Wextra -pedantic -O0 -ggdb CXXFLAGS=-Wall -Wextra -pedantic -O0 -ggdb FFLAGS=-Wall -Wextra -pedantic -O0 -ggdb
