@@ -11,11 +11,11 @@ License: GPL(>=3)
 biocViews: Classification, GeneExpression, Microarray, RNASeq, Software,
     Clustering, Regression ,TissueMicroarray
 LazyData: TRUE
-Suggests: testthat, knitr, rmarkdown, vsn, colonCA, golubEsets
+Suggests:knitr, rmarkdown, golubEsets
 LinkingTo: Rcpp, RcppArmadillo, BH
 Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 0.12.5), stats, mclust, reshape, ggplot2, scales,
-    tools, BH
+    tools, BH, Biobase, vsn, colonCA
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

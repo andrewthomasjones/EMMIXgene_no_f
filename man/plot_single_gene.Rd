@@ -37,14 +37,24 @@ Default value is 8.}
 Can also choose "random" for purely random starts.}
 
 \item{three}{Also test g=2 vs g=3 where appropriate. Defaults to TRUE.}
+
+\item{min, max}{Minimum and maximum x-axis values for the plot window.}
 }
 \value{
-A ggplot2 histogram with fitted t-distributions overlayed. 
-data(alon_data)
-example <- plot_single_gene(alon_data,1) 
-#plot(example)
+A ggplot2 histogram with fitted t-distributions overlayed.
 }
 \description{
 Plot a single gene expression histogram with best 
 fitted mixture of t-distributions according to the EMMIX-gene algorithm.
+}
+\examples{
+library(EMMIXgene)
+library(Biobase)
+library(vsn)
+set.seed(123)
+data(colonCA, package = 'colonCA')
+alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+example <- plot_single_gene(alon_data,1) 
+#plot(example)
+
 }

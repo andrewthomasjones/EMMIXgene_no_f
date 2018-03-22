@@ -62,7 +62,12 @@ NULL
 #'\item{all_genes}{Returns dat or contents of filename.}
 #'
 #'@examples
-#'data(alon_data)
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA')
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'
@@ -141,7 +146,12 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'selected automatically on the basis of BIC.
 #'@return An array containing the clustering. 
 #'@examples
-#'data(alon_data)
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA')
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel , 2)
@@ -178,7 +188,13 @@ cluster_genes<-function(gen, g=NULL){
 #'@param G number of components if using mfa
 #'@return a clustering for each sample (columns) by each group(rows)
 #'@examples
-#'data(alon_data)
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA')
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+#'example <- plot_single_gene(alon_data,1) 
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel , 2)
@@ -210,7 +226,12 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 #'@param G number of components if using mfa
 #'@return a clustering for each sample (columns) by each group(rows)
 #'@examples
-#'#'data(alon_data)
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA') 
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel,2)
@@ -274,7 +295,12 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'\item{top_gene}{The row nunbers of the top genes.}
 #'\item{fit}{The fit object used to determine the clustering.}
 #'@examples
-#'data(alon_data)
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA')
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA))) 
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_top_10<-top_genes_cluster_tissues(alon_sel, 10, method='mfa', q=3, g=2)
 #' 
@@ -333,7 +359,12 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #'@param y_lab optional label for y-axis.
 #'@return A ggplot2 heat map.
 #'@examples
-#'data(alon_data)
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA')
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA))) 
 #'example <- heat_maps(alon_data[seq_len(100), ])
 #'
 #'
@@ -402,9 +433,15 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 #'@param start_method Default value is "both". 
 #'Can also choose "random" for purely random starts.
 #'@param three Also test g=2 vs g=3 where appropriate. Defaults to TRUE.
+#'@param min,max Minimum and maximum x-axis values for the plot window.
 #'@return A ggplot2 histogram with fitted t-distributions overlayed. 
-# #'@examples
-#'data(alon_data)
+#'@examples
+#'library(EMMIXgene)
+#'library(Biobase)
+#'library(vsn)
+#'set.seed(123)
+#'data(colonCA, package = 'colonCA')
+#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #'example <- plot_single_gene(alon_data,1) 
 #'#plot(example)
 #'

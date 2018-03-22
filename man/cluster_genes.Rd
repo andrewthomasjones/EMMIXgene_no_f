@@ -20,7 +20,12 @@ Sorts genes into clusters using mixtures of normal distributions with
 covariance matrices restricted to be multiples of the indentity matrix.
 }
 \examples{
-data(alon_data)
+library(EMMIXgene)
+library(Biobase)
+library(vsn)
+set.seed(123)
+data(colonCA, package = 'colonCA')
+alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #only run on first 100 genes for speed
 alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 alon_clust<- cluster_genes(alon_sel , 2)

@@ -22,7 +22,13 @@ a clustering for each sample (columns) by each group(rows)
 Clusters tissues using all group means
 }
 \examples{
-data(alon_data)
+library(EMMIXgene)
+library(Biobase)
+library(vsn)
+set.seed(123)
+data(colonCA, package = 'colonCA')
+alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+example <- plot_single_gene(alon_data,1) 
 #only run on first 100 genes for speed
 alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 alon_clust<- cluster_genes(alon_sel , 2)
