@@ -2,7 +2,7 @@ Package: EMMIXgene
 Title: A Mixture Model-Based Approach to the Clustering of Microarray Expression Data
 Description: Provides unsupervised clustering and selection of gene
     expression variables using mixture models fitted using
-    the EM algorithm (EMMIX) <doi:10.1093/bioinformatics/18.3.413>.
+    the EM algorithm (EMMIX) as in <doi:10.1093/bioinformatics/18.3.413>.
 Version: 0.1.0
 Encoding: UTF-8
 Author: Andrew Thomas Jones, Geoffrey McLachlan
