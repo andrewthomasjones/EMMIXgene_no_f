@@ -26,11 +26,6 @@ a clustering for each sample (columns) by each group(rows)
 Clusters tissues
 }
 \examples{
-library(Biobase)
-library(vsn)
-set.seed(123)
-data(colonCA, package = 'colonCA') 
-alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #only run on first 100 genes for speed
 alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 alon_clust<- cluster_genes(alon_sel,2)

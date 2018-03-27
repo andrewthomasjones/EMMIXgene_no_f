@@ -346,9 +346,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100,
           //
           for(int i=0; i <g; i++){
               
-              Q2(i) = - std::log(boost::math::tgamma(0.5*(nu.at(i)))) +
-                  0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(boost::math::digamma(0.5*(nu.at(i)+1.0)) -
-                  std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1);
+              Q2(i) = -std::log(boost::math::tgamma(0.5*(nu.at(i)))) +0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(boost::math::digamma(0.5*(nu.at(i)+1.0))-std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1);
               Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
               
             for(int k=0; k <n; k++){

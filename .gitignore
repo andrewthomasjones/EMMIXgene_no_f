@@ -2,8 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-inst/doc
 src/*.o
 src/*.so
-vignettes/The_EMMIX-gene_Workflow_cache
+vignettes/EMMIXgene_cache
+vignettes/EMMIXgene_files
 test_script.R
+vignettes/\.*
