@@ -9,7 +9,7 @@ Author: Andrew Thomas Jones, Geoffrey McLachlan
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 License: GPL(>=3)
 LazyData: TRUE
-Suggests:knitr, rmarkdown, golubEsets, Biobase, vsn, colonCA
+Suggests:knitr, rmarkdown
 LinkingTo: Rcpp, RcppArmadillo, BH
 Depends: R (>= 3.3.0)
 biocViews:
