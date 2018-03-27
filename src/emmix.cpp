@@ -3,7 +3,6 @@
 // [[Rcpp::plugins(cpp11)]]
 
 //'@importFrom Rcpp sourceCpp
-//'@import BH
 //'@useDynLib EMMIXgene
 
 

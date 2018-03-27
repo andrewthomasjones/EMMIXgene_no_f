@@ -1,4 +1,4 @@
-#'@import ggplot2 mclust scales tools Biobase vsn colonCA
+#'@import ggplot2 mclust scales tools
 NULL
 
 #'EMMIXgene: 
