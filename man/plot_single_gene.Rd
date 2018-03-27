@@ -48,11 +48,7 @@ Plot a single gene expression histogram with best
 fitted mixture of t-distributions according to the EMMIX-gene algorithm.
 }
 \examples{
-library(Biobase)
-library(vsn)
-set.seed(123)
-data(colonCA, package = 'colonCA')
-alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+
 example <- plot_single_gene(alon_data,1) 
 #plot(example)
 

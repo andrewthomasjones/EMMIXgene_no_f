@@ -62,11 +62,6 @@ NULL
 #'\item{all_genes}{Returns dat or contents of filename.}
 #'
 #'@examples
-#'library(Biobase)
-#'library(vsn)
-#'set.seed(123)
-#'data(colonCA, package = 'colonCA')
-#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'
@@ -145,11 +140,7 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'selected automatically on the basis of BIC.
 #'@return An array containing the clustering. 
 #'@examples
-#'library(Biobase)
-#'library(vsn)
-#'set.seed(123)
-#'data(colonCA, package = 'colonCA')
-#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+#'
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel , 2)
@@ -186,11 +177,7 @@ cluster_genes<-function(gen, g=NULL){
 #'@param G number of components if using mfa
 #'@return a clustering for each sample (columns) by each group(rows)
 #'@examples
-#'library(Biobase)
-#'library(vsn)
-#'set.seed(123)
-#'data(colonCA, package = 'colonCA')
-#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+#'
 #'example <- plot_single_gene(alon_data,1) 
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
@@ -291,11 +278,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'\item{top_gene}{The row nunbers of the top genes.}
 #'\item{fit}{The fit object used to determine the clustering.}
 #'@examples
-#'library(Biobase)
-#'library(vsn)
-#'set.seed(123)
-#'data(colonCA, package = 'colonCA')
-#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA))) 
+#' 
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_top_10<-top_genes_cluster_tissues(alon_sel, 10, method='mfa', q=3, g=2)
 #' 
@@ -354,11 +337,7 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #'@param y_lab optional label for y-axis.
 #'@return A ggplot2 heat map.
 #'@examples
-#'library(Biobase)
-#'library(vsn)
-#'set.seed(123)
-#'data(colonCA, package = 'colonCA')
-#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA))) 
+#' 
 #'example <- heat_maps(alon_data[seq_len(100), ])
 #'
 #'
@@ -430,11 +409,7 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 #'@param min,max Minimum and maximum x-axis values for the plot window.
 #'@return A ggplot2 histogram with fitted t-distributions overlayed. 
 #'@examples
-#'library(Biobase)
-#'library(vsn)
-#'set.seed(123)
-#'data(colonCA, package = 'colonCA')
-#'alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
+#'
 #'example <- plot_single_gene(alon_data,1) 
 #'#plot(example)
 #'
@@ -489,3 +464,44 @@ plot_single_gene<-function(dat, gene_id, g=NULL,
     return(plot)
 }
 
+#'@title Normalised gene expression values from Alon et al. (1999).
+#'
+#'@description A dataset containing centred and normalised values of the 
+#'logged expression values of a subset of 2000 genes taken from 
+#'Alon, Uri, et al. "Broad patterns of gene expression revealed by clustering
+#'analysis of tumor and normal colon tissues probed by oligonucleotide arrays."
+#'Proceedings of the National Academy of Sciences 96.12 (1999): 6745-6750.
+#'The method of subset selection was described in G. J. McLachlan, R. W. Bean, 
+#'D. Peel; A mixture model-based approach to the clustering of microarray 
+#'expression data ,
+#'Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
+#'
+#'@docType data
+#'@keywords datasets
+#'@name alon_data
+#'@usage data(alon_data)
+#'@format A data frame with 2000 rows (genes) and 62 variables (samples).
+#'@examples
+#'dim(alon_data)
+NULL
+
+#'@title Normalised gene expression values from Golub et al. (1999).
+#'
+#'@description A dataset containing the centred and normalised values of the
+#'logged expression values of a subset of 3731 genes taken from Golub,
+#'Todd R., et al. "Molecular classification of cancer: class discovery
+#'and class prediction by gene expression monitoring." 
+#'Science 286.5439 (1999): 531-537.
+#'The method of subset selection was described in G. J. McLachlan, R. W. Bean,
+#'D. Peel; A mixture model-based approach to the clustering of microarray
+#'expression data ,
+#'Bioinformatics, Volume 18, Issue 3, 1 March 2002, Pages 413–422.
+#'
+#'@docType data
+#'@keywords datasets
+#'@name golub_data
+#'@usage data(golub_data)
+#'@format A data frame with 3731 rows (genes) and 72 variables (samples).
+#'#'@examples
+#'dim(golub_data)
+NULL

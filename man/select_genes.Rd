@@ -56,11 +56,6 @@ Issue 3, 1 March 2002, Pages 413–422,
 https://doi.org/10.1093/bioinformatics/18.3.413
 }
 \examples{
-library(Biobase)
-library(vsn)
-set.seed(123)
-data(colonCA, package = 'colonCA')
-alon_data<-(Biobase::exprs(vsn::vsn2(colonCA)))
 #only run on first 100 genes for speed
 alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 

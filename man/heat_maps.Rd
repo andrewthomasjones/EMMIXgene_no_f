@@ -22,11 +22,7 @@ Plot heat maps of gene expression data. Optionally sort the x-axis
 according to a predtermined clustering.
 }
 \examples{
-library(Biobase)
-library(vsn)
-set.seed(123)
-data(colonCA, package = 'colonCA')
-alon_data<-(Biobase::exprs(vsn::vsn2(colonCA))) 
+
 example <- heat_maps(alon_data[seq_len(100), ])
 
 
