@@ -27,5 +27,5 @@ example <- plot_single_gene(alon_data,1)
 #only run on first 100 genes for speed
 alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 alon_clust<- cluster_genes(alon_sel , 2)
-alon_tissue_all<-all_cluster_tissues(alon_sel, alon_clust, q=1, G=2)
+\donttest{alon_tissue_all<-all_cluster_tissues(alon_sel, alon_clust, q=1, G=2)}
 }
