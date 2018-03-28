@@ -9,7 +9,7 @@ Author: Andrew Thomas Jones, Geoffrey McLachlan
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 License: GPL(>=3)
 LazyData: TRUE
-Suggests:knitr, rmarkdown
+Suggests:R.rsp
 LinkingTo: Rcpp, RcppArmadillo, BH
 Depends: R (>= 3.3.0)
 biocViews:
@@ -17,5 +17,5 @@ Imports: Rcpp (>= 0.12.5), stats, mclust, reshape, ggplot2, scales,
     tools
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
-VignetteBuilder: knitr
+VignetteBuilder: R.rsp
 
