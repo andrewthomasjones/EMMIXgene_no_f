@@ -137,7 +137,7 @@ arma::mat start_kmeans(arma::vec dat, int g){
   
   params.col(1) = tkmeans(dat, g, 0.0, weights, 1);
   
-  for(int i=0; i<dat.n_elem;i++){
+  for(int i=0; i<((int)dat.n_elem);i++){
     arma::vec temp = abs(params.col(1)- dat(i)); 
     alloc.at(i) = arma::index_min(temp);
   }
@@ -150,7 +150,7 @@ arma::mat start_kmeans(arma::vec dat, int g){
     params(i,2) = 4.0+(sum(pow((dat(tmp1)-params(i,1))/sqrt(params(i,3)),4.0))/
         dat.n_elem)/6.0;
     if(params(i,2) < 0 ){params(i,2) = 2.5;}
-    if(params(i,2) > 300 ){params(i,2) = 299.99;}
+    if(params(i,2) > 200 ){params(i,2) = 199.99;}
   }
   
   params.col(0) = arma::conv_to< arma::vec >::from(cluster_sizes)/dat.n_elem;
@@ -172,7 +172,7 @@ arma::mat start_random(arma::vec dat, int g){
   }
   
   
-  for(int i=0; i<dat.n_elem;i++){
+  for(int i=0; i<((int)dat.n_elem);i++){
     arma::vec temp = abs(params.col(1)- dat(i)); 
     alloc.at(i) = arma::index_min(temp);
   }
@@ -211,7 +211,7 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
 
   
   double a = 0.01;
-  double b = 299.99;
+  double b = 199.99;
   boost::uintmax_t df_max_iter=500; // boost solver params, 
   //could be user params but relatively unimportant
   boost::math::tools::eps_tolerance<double> tol(30);
@@ -236,7 +236,7 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
         std::pair<double, double>  r1= boost::math::tools::bisect(rootFun, a, b, tol, df_max_iter);
         nu2(i) = (r1.first + r1.second)/2.0;
     }catch(...){
-        nu2(i) = 299.99;
+        nu2(i) = 199.99;
         //nu2(i) = nu(i);
     }
     //nu2.t().print();
@@ -345,15 +345,21 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100,
           
           //
           for(int i=0; i <g; i++){
-              
+              //Rcpp::Rcout << "0.5*(nu.at(i)) = " << 0.5*(nu.at(i)) << std::endl;
+              //Rcpp::Rcout << "boost::math::tgamma(0.5*(nu.at(i))) = " << boost::math::tgamma(0.5*(nu.at(i))) << std::endl;
+             
               Q2(i) = -std::log(boost::math::tgamma(0.5*(nu.at(i)))) +0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(boost::math::digamma(0.5*(nu.at(i)+1.0))-std::log (0.5*(nu.at(i)+1.0)) + sum(arma::log(you.row(i))-you.row(i)),1);
               Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
               
-            for(int k=0; k <n; k++){
-              accumQ1+=tau(i,k)*std::log(params(i,0));
-              accumQ2+=tau(i,k)*Q2(i);
-              accumQ3+=tau(i,k)*Q3(i,k);
-            }
+
+          }
+          
+          for(int i=0; i <g; i++){
+              for(int k=0; k <n; k++){
+                  accumQ1+=tau(i,k)*std::log(params(i,0));
+                  accumQ2+=tau(i,k)*Q2(i);
+                  accumQ3+=tau(i,k)*Q3(i,k);
+              }
           }
 
           lik.at(j) = accumQ1 + accumQ2 + accumQ3 ;
