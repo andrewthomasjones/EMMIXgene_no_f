@@ -5,14 +5,13 @@ Description: Provides unsupervised clustering and selection of gene
     the EM algorithm (EMMIX) as in <doi:10.1093/bioinformatics/18.3.413>.
 Version: 0.1.0
 Encoding: UTF-8
-Author: Andrew Thomas Jones, Geoffrey McLachlan
+Author: Andrew Thomas Jones
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 License: GPL(>=3)
 LazyData: TRUE
 Suggests:R.rsp
 LinkingTo: Rcpp, RcppArmadillo, BH
 Depends: R (>= 3.3.0)
-biocViews:
 Imports: Rcpp (>= 0.12.5), stats, mclust, reshape, ggplot2, scales,
     tools
 SystemRequirements: C++11
