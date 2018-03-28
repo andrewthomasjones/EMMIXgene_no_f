@@ -137,7 +137,7 @@ arma::mat start_kmeans(arma::vec dat, int g){
   
   params.col(1) = tkmeans(dat, g, 0.0, weights, 1);
   
-  for(int i=0; i<dat.n_elem;i++){
+  for(int i=0; i<((int)dat.n_elem);i++){
     arma::vec temp = abs(params.col(1)- dat(i)); 
     alloc.at(i) = arma::index_min(temp);
   }
@@ -172,7 +172,7 @@ arma::mat start_random(arma::vec dat, int g){
   }
   
   
-  for(int i=0; i<dat.n_elem;i++){
+  for(int i=0; i<((int)dat.n_elem);i++){
     arma::vec temp = abs(params.col(1)- dat(i)); 
     alloc.at(i) = arma::index_min(temp);
   }
