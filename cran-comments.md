@@ -1,6 +1,11 @@
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Fixed the package description in DESCRIPTION
+
 ## Test environments
 * local OS X install, R 3.5.0
-* ubuntu 12.04 (on travis-ci), R 3.5.0
+* ubuntu 12.04 (on travis-ci), R 3.3.0
 * win-builder (devel and release)
 
 ## R CMD check results
@@ -12,4 +17,3 @@
 ## Reverse dependencies
 
 This is a new release, so there are no reverse dependencies.
-
