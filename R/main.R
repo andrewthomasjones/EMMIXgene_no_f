@@ -182,7 +182,7 @@ cluster_genes<-function(gen, g=NULL){
 #'#only run on first 100 genes for speed
 #'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
 #'alon_clust<- cluster_genes(alon_sel , 2)
-#'alon_tissue_all<-all_cluster_tissues(alon_sel, alon_clust, q=1, G=2)
+#'\donttest{alon_tissue_all<-all_cluster_tissues(alon_sel, alon_clust, q=1, G=2)}
 #'@export
 all_cluster_tissues<-function(gen, clusters, q=6, G=2){
     g<- length(table(clusters))
@@ -273,11 +273,8 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'\item{top_gene}{The row numbers of the top genes.}
 #'\item{fit}{The fit object used to determine the clustering.}
 #'@examples
-#' 
-#'alon_sel <- select_genes(alon_data[seq_len(100), ]) 
-#'alon_top_10<-top_genes_cluster_tissues(alon_sel, 10, method='mfa', q=3, g=2)
-#' 
-#'
+#'\donttest{alon_sel <- select_genes(alon_data[seq_len(100), ])}
+#'\donttest{alon_top_10<-top_genes_cluster_tissues(alon_sel, 10, method='mfa', q=3, g=2)}
 #'@export
 top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
     
