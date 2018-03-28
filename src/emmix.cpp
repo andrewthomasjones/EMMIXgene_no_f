@@ -322,7 +322,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100,
       //primary loop
         int j =0; double diff=10.0; double old_LL=0;
         
-        while(j<max_it & diff > tol){
+        while((j<max_it) && (diff > tol)){
           
           arma::mat temp1 = estep(dat,params);
           tau = temp1.rows(0,g-1);
