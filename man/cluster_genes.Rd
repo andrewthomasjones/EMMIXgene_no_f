@@ -7,7 +7,7 @@
 cluster_genes(gen, g = NULL)
 }
 \arguments{
-\item{gen}{an emmix-gene object produced by select_genes().}
+\item{gen}{an EMMIXgene object produced by select_genes().}
 
 \item{g}{The desired number of gene clusters. If not specified will be 
 selected automatically on the basis of BIC.}
@@ -17,7 +17,7 @@ An array containing the clustering.
 }
 \description{
 Sorts genes into clusters using mixtures of normal distributions with
-covariance matrices restricted to be multiples of the indentity matrix.
+covariance matrices restricted to be multiples of the identity matrix.
 }
 \examples{
 

@@ -18,7 +18,7 @@ plot_single_gene(dat, gene_id, g = NULL, random_starts = 8, max_it = 100,
 
 \item{random_starts}{The number of random initializations used 
 per gene when fitting mixtures of t-distributions. 
-Initialisation uses k-means by default.}
+Initialization uses k-means by default.}
 
 \item{max_it}{The maximum number of iterations per mixture fit.
 Default value is 100.}

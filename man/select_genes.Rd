@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{select_genes}
 \alias{select_genes}
-\title{Selects genes using the EMMIXgene algorithim.}
+\title{Selects genes using the EMMIXgene algorithm.}
 \usage{
 select_genes(dat, filename, random_starts = 4, max_it = 100,
   ll_thresh = 8, min_clust_size = 8, tol = 1e-04, start_method = "both",
@@ -17,7 +17,7 @@ or space separated .dat. Rows are genes and columns are samples.
 Must supply one of filename and dat.}
 
 \item{random_starts}{The number of random initializations used per gene when
-fitting mixtures of t-distributions. Initialisation uses k-means by default.}
+fitting mixtures of t-distributions. Initialization uses k-means by default.}
 
 \item{max_it}{The maximum number of iterations per mixture fit. 
 Default value is 100.}
@@ -38,7 +38,7 @@ Can also choose "random" for purely random starts.}
 \item{three}{Also test g=2 vs g=3 where appropriate. Defaults to FALSE.}
 }
 \value{
-An emmix-gene object containing:
+An EMMIXgene object containing:
 \item{stat}{The difference in log-likelihood for g=1 
 and g=2 for each gene (or for g=2 and g=3 where relevant).}
 \item{g}{The selected number of components for each gene.}

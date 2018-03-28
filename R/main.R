@@ -24,7 +24,7 @@ NULL
 NULL
 
 
-#'@title Selects genes using the EMMIXgene algorithim.
+#'@title Selects genes using the EMMIXgene algorithm.
 #'
 #'@description Follows the gene selection methodology of 
 #'G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the 
@@ -38,7 +38,7 @@ NULL
 #'or space separated .dat. Rows are genes and columns are samples. 
 #'Must supply one of filename and dat.
 #'@param random_starts The number of random initializations used per gene when
-#'fitting mixtures of t-distributions. Initialisation uses k-means by default.
+#'fitting mixtures of t-distributions. Initialization uses k-means by default.
 #'@param max_it The maximum number of iterations per mixture fit. 
 #'Default value is 100.
 #'@param ll_thresh The difference in -2 log lambda used as a threshold 
@@ -51,7 +51,7 @@ NULL
 #'@param start_method Default value is "both". 
 #'Can also choose "random" for purely random starts.
 #'@param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
-#'@return An emmix-gene object containing:
+#'@return An EMMIXgene object containing:
 #'\item{stat}{The difference in log-likelihood for g=1 
 #'and g=2 for each gene (or for g=2 and g=3 where relevant).}
 #'\item{g}{The selected number of components for each gene.}
@@ -125,7 +125,7 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
     a$ranks<-order(a$stat2, decreasing = TRUE, na.last = TRUE)
     a$stat2 <- NULL
     
-    result<-structure(a, class="emmix-gene")
+    result<-structure(a, class="EMMIXgene")
     #return selected genes
     return(result)
 }
@@ -133,9 +133,9 @@ select_genes<-function(dat, filename, random_starts=4, max_it = 100,
 #'Clusters genes using mixtures of normal distributions
 #'
 #'Sorts genes into clusters using mixtures of normal distributions with
-#'covariance matrices restricted to be multiples of the indentity matrix.
+#'covariance matrices restricted to be multiples of the identity matrix.
 #'
-#'@param gen an emmix-gene object produced by select_genes().  
+#'@param gen an EMMIXgene object produced by select_genes().  
 #'@param g The desired number of gene clusters. If not specified will be 
 #'selected automatically on the basis of BIC.
 #'@return An array containing the clustering. 
@@ -160,7 +160,7 @@ cluster_genes<-function(gen, g=NULL){
             each_gene(colMeans(gen$genes[clusters==i, ,drop=FALSE]))$Ratio
     }
     
-    #reorder clusters as ranked by mean of ll statistic from emmix-gene fit
+    #reorder clusters as ranked by mean of ll statistic from EMMIXgene fit
     tmp<-factor(clusters)
     levels(tmp) <- as.character(order(unlist(ll_rank_stat), decreasing = TRUE))
     clust_genes<-as.numeric(as.character(tmp))
@@ -171,7 +171,7 @@ cluster_genes<-function(gen, g=NULL){
 
 #'Clusters tissues using all group means
 #'
-#'@param gen emmix-gene object
+#'@param gen EMMIXgene object
 #'@param clusters mclust object
 #'@param q number of factors if using mfa
 #'@param G number of components if using mfa
@@ -201,7 +201,7 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 
 #'Clusters tissues
 #'
-#'@param gen emmix-gene object
+#'@param gen EMMIXgene object
 #'@param clusters mclust object
 #'@param method Method for separating tissue classes. Can be either 't' for a 
 #'univariate mixture of t-distributions on gene cluster means, or 'mfa'
@@ -260,14 +260,14 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 
 #'Cluster tissues
 #'
-#'@param gen An emmix-gene object produced by select_genes().
+#'@param gen An EMMIXgene object produced by select_genes().
 #'@param n_top number of top genes (as ranked by likelihood) to be selected
-#'@param method Method for seperating tissue classes. Can be either 't' for a 
+#'@param method Method for separating tissue classes. Can be either 't' for a 
 #'univariate mixture of t-distributions on gene cluster means, 
 #'or 'mfa' for a mixture of factor analysers. 
 #'@param q number of factors if using mfa
 #'@param g number of components if using mfa
-#'@return An emmix-gene object containing:
+#'@return An EMMIXgene object containing:
 #'\item{stat}{A matrix containing clustering (0 or 1) 
 #'for each sample (columns) by each group(rows).}
 #'\item{top_gene}{The row numbers of the top genes.}
@@ -388,7 +388,7 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 #'@param g force number of components, default = NULL
 #'@param random_starts The number of random initializations used 
 #'per gene when fitting mixtures of t-distributions. 
-#'Initialisation uses k-means by default.
+#'Initialization uses k-means by default.
 #'@param max_it The maximum number of iterations per mixture fit.
 #'Default value is 100.
 #'@param ll_thresh The difference in -2 log lambda used as a 
@@ -459,7 +459,7 @@ plot_single_gene<-function(dat, gene_id, g=NULL,
     return(plot)
 }
 
-#'@title Normalised gene expression values from Alon et al. (1999).
+#'@title Normalized gene expression values from Alon et al. (1999).
 #'
 #'@description A dataset containing centred and normalized values of the 
 #'logged expression values of a subset of 2000 genes taken from 
@@ -480,7 +480,7 @@ plot_single_gene<-function(dat, gene_id, g=NULL,
 #'dim(alon_data)
 NULL
 
-#'@title Normalised gene expression values from Golub et al. (1999).
+#'@title Normalized gene expression values from Golub et al. (1999).
 #'
 #'@description A dataset containing the centred and normalized values of the
 #'logged expression values of a subset of 3731 genes taken from Golub,

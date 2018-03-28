@@ -7,7 +7,7 @@
 all_cluster_tissues(gen, clusters, q = 6, G = 2)
 }
 \arguments{
-\item{gen}{emmix-gene object}
+\item{gen}{EMMIXgene object}
 
 \item{clusters}{mclust object}
 
