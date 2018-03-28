@@ -3,14 +3,14 @@ NULL
 
 #'EMMIXgene: 
 #'
-#'Selects genes using the EMMIXgene algorithim, following the methodlogy of 
+#'Selects genes using the EMMIXgene algorithm, following the methodology of 
 #'G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the 
 #'clustering of microarray expression data , Bioinformatics, Volume 18, 
 #'Issue 3, 1 March 2002, Pages 413–422,
 #'https://doi.org/10.1093/bioinformatics/18.3.413
 #'
 #'@section Functions:
-#'\code{\link{select_genes}}: Selects the most differentially espressed genes.
+#'\code{\link{select_genes}}: Selects the most differentially expressed genes.
 #'
 #'\code{\link{cluster_genes}}: Clusters the genes using a mixture model
 #'approach.
@@ -43,7 +43,7 @@ NULL
 #'Default value is 100.
 #'@param ll_thresh The difference in -2 log lambda used as a threshold 
 #'for selecting between g=1 and g=2 for each gene. Default value is 8,
-#'which was chosen arbitraily in the original paper.
+#'which was chosen arbitrarily in the original paper.
 #'@param min_clust_size The minimum number of observations per cluster
 #'used when fitting mixtures of t-distributions for each gene.
 #'Default value is 8. 
@@ -52,7 +52,7 @@ NULL
 #'Can also choose "random" for purely random starts.
 #'@param three Also test g=2 vs g=3 where appropriate. Defaults to FALSE.
 #'@return An emmix-gene object containing:
-#'\item{stat}{The difference in log-liklihood for g=1 
+#'\item{stat}{The difference in log-likelihood for g=1 
 #'and g=2 for each gene (or for g=2 and g=3 where relevant).}
 #'\item{g}{The selected number of components for each gene.}
 #'\item{it}{The number of iterations for each genes selected fit.} 
@@ -203,9 +203,9 @@ all_cluster_tissues<-function(gen, clusters, q=6, G=2){
 #'
 #'@param gen emmix-gene object
 #'@param clusters mclust object
-#'@param method Method for seperating tissue classes. Can be either 't' for a 
+#'@param method Method for separating tissue classes. Can be either 't' for a 
 #'univariate mixture of t-distributions on gene cluster means, or 'mfa'
-#'for a mixture of factor analysers. 
+#'for a mixture of factor analyzers. 
 #'@param q number of factors if using mfa
 #'@param G number of components if using mfa
 #'@return a clustering for each sample (columns) by each group(rows)
@@ -261,7 +261,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'Cluster tissues
 #'
 #'@param gen An emmix-gene object produced by select_genes().
-#'@param n_top number of top genes (as ranked by liklihood) to be selected
+#'@param n_top number of top genes (as ranked by likelihood) to be selected
 #'@param method Method for seperating tissue classes. Can be either 't' for a 
 #'univariate mixture of t-distributions on gene cluster means, 
 #'or 'mfa' for a mixture of factor analysers. 
@@ -270,7 +270,7 @@ cluster_tissues<-function(gen, clusters, method='t', q=6, G=2){
 #'@return An emmix-gene object containing:
 #'\item{stat}{A matrix containing clustering (0 or 1) 
 #'for each sample (columns) by each group(rows).}
-#'\item{top_gene}{The row nunbers of the top genes.}
+#'\item{top_gene}{The row numbers of the top genes.}
 #'\item{fit}{The fit object used to determine the clustering.}
 #'@examples
 #' 
@@ -324,11 +324,11 @@ top_genes_cluster_tissues<-function(gen, n_top=100, method='mfa', q=2, g=2){
 #'Heat maps
 #'
 #'Plot heat maps of gene expression data. Optionally sort the x-axis 
-#'according to a predtermined clustering.
+#'according to a predetermined clustering.
 #'
 #'@param dat matrix of gene expression data.
 #'@param clustering a vector of sample classifications.
-#'MUst be same length as the number of columns in dat.
+#'Must be same length as the number of columns in dat.
 #'@param y_lab optional label for y-axis.
 #'@return A ggplot2 heat map.
 #'@examples
@@ -393,7 +393,7 @@ heat_maps<-function(dat, clustering=NULL, y_lab=NULL){
 #'Default value is 100.
 #'@param ll_thresh The difference in -2 log lambda used as a 
 #'threshold for selecting between g=1 and g=2 for each gene. 
-#'Default value is 8, which was chosen arbitraily in the original paper.
+#'Default value is 8, which was chosen arbitrarily in the original paper.
 #'@param min_clust_size The minimum number of observations per cluster 
 #'used when fitting mixtures of t-distributions for each gene.
 #'Default value is 8. 
@@ -461,7 +461,7 @@ plot_single_gene<-function(dat, gene_id, g=NULL,
 
 #'@title Normalised gene expression values from Alon et al. (1999).
 #'
-#'@description A dataset containing centred and normalised values of the 
+#'@description A dataset containing centred and normalized values of the 
 #'logged expression values of a subset of 2000 genes taken from 
 #'Alon, Uri, et al. "Broad patterns of gene expression revealed by clustering
 #'analysis of tumor and normal colon tissues probed by oligonucleotide arrays."
@@ -482,7 +482,7 @@ NULL
 
 #'@title Normalised gene expression values from Golub et al. (1999).
 #'
-#'@description A dataset containing the centred and normalised values of the
+#'@description A dataset containing the centred and normalized values of the
 #'logged expression values of a subset of 3731 genes taken from Golub,
 #'Todd R., et al. "Molecular classification of cancer: class discovery
 #'and class prediction by gene expression monitoring." 

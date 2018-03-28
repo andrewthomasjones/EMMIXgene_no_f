@@ -6,7 +6,7 @@
 \alias{EMMIXgene-package}
 \title{EMMIXgene:}
 \description{
-Selects genes using the EMMIXgene algorithim, following the methodlogy of 
+Selects genes using the EMMIXgene algorithm, following the methodology of 
 G. J. McLachlan, R. W. Bean, D. Peel; A mixture model-based approach to the 
 clustering of microarray expression data , Bioinformatics, Volume 18, 
 Issue 3, 1 March 2002, Pages 413–422,
@@ -14,7 +14,7 @@ https://doi.org/10.1093/bioinformatics/18.3.413
 }
 \section{Functions}{
 
-\code{\link{select_genes}}: Selects the most differentially espressed genes.
+\code{\link{select_genes}}: Selects the most differentially expressed genes.
 
 \code{\link{cluster_genes}}: Clusters the genes using a mixture model
 approach.

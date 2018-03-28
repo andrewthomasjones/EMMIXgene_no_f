@@ -11,9 +11,9 @@ cluster_tissues(gen, clusters, method = "t", q = 6, G = 2)
 
 \item{clusters}{mclust object}
 
-\item{method}{Method for seperating tissue classes. Can be either 't' for a 
+\item{method}{Method for separating tissue classes. Can be either 't' for a 
 univariate mixture of t-distributions on gene cluster means, or 'mfa'
-for a mixture of factor analysers.}
+for a mixture of factor analyzers.}
 
 \item{q}{number of factors if using mfa}
 

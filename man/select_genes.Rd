@@ -24,7 +24,7 @@ Default value is 100.}
 
 \item{ll_thresh}{The difference in -2 log lambda used as a threshold 
 for selecting between g=1 and g=2 for each gene. Default value is 8,
-which was chosen arbitraily in the original paper.}
+which was chosen arbitrarily in the original paper.}
 
 \item{min_clust_size}{The minimum number of observations per cluster
 used when fitting mixtures of t-distributions for each gene.
@@ -39,7 +39,7 @@ Can also choose "random" for purely random starts.}
 }
 \value{
 An emmix-gene object containing:
-\item{stat}{The difference in log-liklihood for g=1 
+\item{stat}{The difference in log-likelihood for g=1 
 and g=2 for each gene (or for g=2 and g=3 where relevant).}
 \item{g}{The selected number of components for each gene.}
 \item{it}{The number of iterations for each genes selected fit.} 

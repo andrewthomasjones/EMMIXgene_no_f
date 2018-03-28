@@ -25,7 +25,7 @@ Default value is 100.}
 
 \item{ll_thresh}{The difference in -2 log lambda used as a 
 threshold for selecting between g=1 and g=2 for each gene. 
-Default value is 8, which was chosen arbitraily in the original paper.}
+Default value is 8, which was chosen arbitrarily in the original paper.}
 
 \item{min_clust_size}{The minimum number of observations per cluster 
 used when fitting mixtures of t-distributions for each gene.

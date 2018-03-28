@@ -10,7 +10,7 @@ top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", q = 2,
 \arguments{
 \item{gen}{An emmix-gene object produced by select_genes().}
 
-\item{n_top}{number of top genes (as ranked by liklihood) to be selected}
+\item{n_top}{number of top genes (as ranked by likelihood) to be selected}
 
 \item{method}{Method for seperating tissue classes. Can be either 't' for a 
 univariate mixture of t-distributions on gene cluster means, 
@@ -24,7 +24,7 @@ or 'mfa' for a mixture of factor analysers.}
 An emmix-gene object containing:
 \item{stat}{A matrix containing clustering (0 or 1) 
 for each sample (columns) by each group(rows).}
-\item{top_gene}{The row nunbers of the top genes.}
+\item{top_gene}{The row numbers of the top genes.}
 \item{fit}{The fit object used to determine the clustering.}
 }
 \description{

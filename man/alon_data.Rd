@@ -9,7 +9,7 @@
 data(alon_data)
 }
 \description{
-A dataset containing centred and normalised values of the 
+A dataset containing centred and normalized values of the 
 logged expression values of a subset of 2000 genes taken from 
 Alon, Uri, et al. "Broad patterns of gene expression revealed by clustering
 analysis of tumor and normal colon tissues probed by oligonucleotide arrays."

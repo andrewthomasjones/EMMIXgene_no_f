@@ -11,7 +11,7 @@ dim(golub_data)}
 data(golub_data)
 }
 \description{
-A dataset containing the centred and normalised values of the
+A dataset containing the centred and normalized values of the
 logged expression values of a subset of 3731 genes taken from Golub,
 Todd R., et al. "Molecular classification of cancer: class discovery
 and class prediction by gene expression monitoring." 
