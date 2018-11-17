@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 test_script.R
 ^cran-comments\.md$
+^\.travis\.yml$
+^README\.Rmd$
+^README-.*\.png$
