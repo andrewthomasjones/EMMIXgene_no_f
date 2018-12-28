@@ -1,6 +1,6 @@
 Package: EMMIXgene
 Type: Package
-Version: 0.1.0
+Version: 0.1.1
 Title: A Mixture Model-Based Approach to the Clustering of Microarray Expression Data
 Description: Provides unsupervised selection and clustering of microarray data
     using mixture models. Following the methods described in McLachlan, Bean and
