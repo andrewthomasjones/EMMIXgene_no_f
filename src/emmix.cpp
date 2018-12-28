@@ -257,7 +257,7 @@ arma::mat mstep(arma::vec dat, arma::mat tau, arma::mat you, arma::mat params){
 
 
 double BIC_calc(double LL,  int k, int n){
-  double BIC = log(n)* k - 2*LL ;
+  double BIC = std::log((double)n)* k - 2*LL ;
   return(BIC);
 }
 
@@ -349,7 +349,7 @@ List emmix_t(arma::vec dat, int g=1, int random_starts=4, int max_it=100,
               //Rcpp::Rcout << "boost::math::tgamma(0.5*(nu.at(i))) = " << boost::math::tgamma(0.5*(nu.at(i))) << std::endl;
              
               Q2(i) = -std::log(boost::math::tgamma(0.5*(nu.at(i)))) +0.5*nu.at(i) *std::log(0.5*nu.at(i)) - 0.5*nu.at(i)*(boost::math::digamma(0.5*(nu.at(i)+1.0))-std::log (0.5*(nu.at(i)+1.0)) + arma::sum(arma::log(you.row(i))-you.row(i)),1);
-              Q3.row(i) = -0.5*1*log(2*arma::datum::pi) - 0.5*log(std::abs(sigma.at(i))) + 0.5*1*log(you.row(i)) - 0.5*you.row(i)*(1/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
+              Q3.row(i) = -0.5*1.0*std::log(2.0*arma::datum::pi) - 0.5*std::log(std::abs(sigma.at(i))) + 0.5*1.0*arma::log(you.row(i)) - 0.5*you.row(i)*(1.0/sigma.at(i))%((dat-mu.at(i))%(dat-mu.at(i))).t();
               
 
           }
