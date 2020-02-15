@@ -3,6 +3,7 @@
 * local OS X install, R 3.6.0
 * ubuntu 16.04 (on travis-ci), R 3.6.2
 * win-builder (devel and release) 
+* RHub ubuntu-gcc-devel --as-cran --run-donttest
 
 ## R CMD check results
 

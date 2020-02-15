@@ -1,3 +1,7 @@
+# EMMIXgene 0.1.3
+
+* Fixed length(class()!=1) issue  
+
 # EMMIXgene 0.1.2
 
 * Fixed compiler warning
