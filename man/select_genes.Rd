@@ -5,8 +5,8 @@
 \title{Selects genes using the EMMIXgene algorithm.}
 \usage{
 select_genes(dat, filename, random_starts = 4, max_it = 100,
-  ll_thresh = 8, min_clust_size = 8, tol = 1e-04, start_method = "both",
-  three = FALSE)
+  ll_thresh = 8, min_clust_size = 8, tol = 1e-04,
+  start_method = "both", three = FALSE)
 }
 \arguments{
 \item{dat}{A matrix or dataframe containing gene expression data.

@@ -8,3 +8,5 @@ vignettes/EMMIXgene_cache
 vignettes/EMMIXgene_files
 test_script.R
 vignettes/\.*
+doc
+Meta

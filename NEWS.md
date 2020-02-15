@@ -1,3 +1,7 @@
+# EMMIXgene 0.1.2
+
+* Fixed compiler warning
+
 # EMMIXgene 0.1.1
 
 * Fixed ambiguous typing in C++ code.

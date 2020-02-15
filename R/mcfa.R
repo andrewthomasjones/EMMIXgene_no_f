@@ -28,7 +28,7 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
         }
         startModel <- try(init.est.para.mcfa(Y, g, q, startClust[, ii],
             initMethod))
-        if(class(startModel) == "try-error"){
+        if(class(startModel)[1] == "try-error"){
             when <- paste("At start", ii)
             what <- "Failed to estimate initial parameters"
             ERRMSG <- rbind(ERRMSG, cbind(when, what))
@@ -37,7 +37,7 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
         estModel <- est.mcfa(Y, g, q, itmax, tol, startModel$pivec, 
             startModel$A,startModel$xi, startModel$omega, 
             startModel$D, convMeas)
-        if((class(estModel) == "mcfa")){
+        if((class(estModel)[1] == "mcfa")){
             if (estModel$logL > maxLOGL){
                 Hmodel <- estModel
                 maxLOGL <- Hmodel$logL
@@ -48,7 +48,7 @@ mcfa<- function(Y, g, q, itmax=50, nkmeans=20, nrandom=20, tol=1.e-5,
                     g, q, ii, estModel$logL, maxLOGL))
             }
         }
-        if(class(estModel) == "error"){
+        if(class(estModel)[1] == "error"){
             when <- paste("At start", ii)
             what <- estModel
             ERRMSG <- rbind(ERRMSG, cbind(when, what))
@@ -88,7 +88,7 @@ est.mcfa <- function(Y, g, q, itmax, tol, pivec,
     fit <- list(g=g, q=q, pivec=pivec, A=A, xi=xi, omega=omega, D=D)
     
     fit$logL <- loglike.mcfa(Y, g, q, pivec, A, xi, omega, D)
-    if(class(fit$logL) == 'character'){
+    if(class(fit$logL)[1] == 'character'){
         FIT <- paste('Failed in computing the 
             log-likelihood before the EM-steps,', fit$logL)
         class(FIT) <- "error"
@@ -96,14 +96,14 @@ est.mcfa <- function(Y, g, q, itmax, tol, pivec,
     }
     for(niter in seq_len(itmax)) {
         FIT <- do.call('Mstep.mcfa', c(list(Y=Y), fit))
-        if(class(FIT) == 'error'){
+        if(class(FIT)[1] == 'error'){
             FIT <- paste('Computational error in ', niter,
                 'iteration of the M-step:',FIT)
             class(FIT) <- "error"
             return(FIT)
         }
         FIT$logL <- do.call('loglike.mcfa', c(list(Y=Y), FIT))
-        if(class(FIT$logL) == 'character'){
+        if(class(FIT$logL)[1] == 'character'){
             FIT <- paste('Failed to compute log-likelihood after ', niter,
                 'th the M-step:', FIT$logL, sep='')
             class(FIT) <- "error"
@@ -135,7 +135,7 @@ loglike.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
         InvS <- try(InvD - InvD %*% A %*%
             chol.inv(chol.inv(omega[,,i]) + t(A) %*% InvD %*% A) %*%
             t(A) %*% InvD)
-        if(class(InvS) == "try-error") {
+        if(class(InvS)[1] == "try-error") {
             return(loglike <- paste('ill-cond. or sing. Sigma_', i,sep=''))
         }
         logdetD <- log(det(as.matrix(omega[,,i]))) + sum(log(diag(D))) +
@@ -205,7 +205,7 @@ Mstep.mcfa <- function(Y, g, q, pivec, A, xi, omega, D, ...){
         pivec[i] <- ti/n
     }
     A <- try(A1 %*% chol.inv(A2))
-    if(class(A) == "try-error"){
+    if(class(A)[1] == "try-error"){
         model <- "tried to invert a ill-conditioned or a singular matrix"
         class(model) <- "error"
         return(model)

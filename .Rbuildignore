@@ -5,3 +5,5 @@ test_script.R
 ^\.travis\.yml$
 ^README\.Rmd$
 ^README-.*\.png$
+^doc$
+^Meta$
