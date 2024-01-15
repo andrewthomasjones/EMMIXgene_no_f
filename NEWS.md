@@ -1,3 +1,7 @@
+# EMMIXgene 0.1.4
+* Removed unnecessary C++11 requirement
+* Updated description
+
 # EMMIXgene 0.1.3
 
 * Fixed length(class()!=1) issue  

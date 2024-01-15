@@ -1,9 +1,9 @@
 citHeader("To cite EMMIXgene in publications use:")
 
-citEntry(entry = "article",
+bibentry(bibtype = "article",
   title="A Mixture Model-based Approach to the Clustering of Microarray Expression
   Data",
-  author=personList( as.person( "Geoffrey J. McLachlan"),
+  author=c( as.person( "Geoffrey J. McLachlan"),
    as.person( "RW Bean"), 
    as.person( "David Peel")),
   journal="Bioinformatics",
