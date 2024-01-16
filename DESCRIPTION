@@ -22,5 +22,5 @@ LinkingTo: Rcpp, RcppArmadillo, BH
 Depends: R (>= 3.3.0)
 Imports: Rcpp (>= 0.12.5), stats, mclust, reshape, ggplot2, scales,
     tools
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.3
 VignetteBuilder: R.rsp

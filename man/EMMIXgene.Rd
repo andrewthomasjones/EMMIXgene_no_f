@@ -3,7 +3,6 @@
 \docType{package}
 \name{EMMIXgene}
 \alias{EMMIXgene}
-\alias{EMMIXgene-package}
 \title{EMMIXgene:}
 \description{
 Selects genes using the EMMIXgene algorithm, following the methodology of 

@@ -4,7 +4,9 @@
 \name{alon_data}
 \alias{alon_data}
 \title{Normalized gene expression values from Alon et al. (1999).}
-\format{A data frame with 2000 rows (genes) and 62 variables (samples).}
+\format{
+A data frame with 2000 rows (genes) and 62 variables (samples).
+}
 \usage{
 data(alon_data)
 }

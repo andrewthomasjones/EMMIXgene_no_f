@@ -4,9 +4,11 @@
 \name{golub_data}
 \alias{golub_data}
 \title{Normalized gene expression values from Golub et al. (1999).}
-\format{A data frame with 3731 rows (genes) and 72 variables (samples).
+\format{
+A data frame with 3731 rows (genes) and 72 variables (samples).
 #'@examples
-dim(golub_data)}
+dim(golub_data)
+}
 \usage{
 data(golub_data)
 }

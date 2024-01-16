@@ -4,8 +4,7 @@
 \alias{top_genes_cluster_tissues}
 \title{Cluster tissues}
 \usage{
-top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", q = 2,
-  g = 2)
+top_genes_cluster_tissues(gen, n_top = 100, method = "mfa", q = 2, g = 2)
 }
 \arguments{
 \item{gen}{An EMMIXgene object produced by select_genes().}
