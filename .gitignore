@@ -10,3 +10,5 @@ test_script.R
 vignettes/\.*
 doc
 Meta
+/doc/
+/Meta/
