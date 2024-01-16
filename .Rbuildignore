@@ -9,3 +9,4 @@ test_script.R
 ^Meta$
 ^CRAN-SUBMISSION$
 ^\.github\*$
+.github
