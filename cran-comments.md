@@ -1,6 +1,6 @@
 ## Test environments
 
-* local Mac OS Sonoma 14.2.1 install, R 4.3.0
+* local Mac OS Sonoma 14.2.1 install, R 4.3.0, M2 chip
 * win-builder (devel and release) 
 * RHub Debian Linux, R-devel, GCC ASAN/UBSAN
 

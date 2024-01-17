@@ -17,8 +17,7 @@ Authors@R: c(person(given = "Andrew Thomas", family = "Jones",
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 License: GPL(>=3)
 LazyData: TRUE
+Depends: Rcpp, R(>= 3.3.0)
 LinkingTo: Rcpp, RcppArmadillo, BH
-Depends: R (>= 3.3.0)
-Imports: Rcpp (>= 0.12.5), stats, mclust, reshape, ggplot2, scales,
-    tools
+Imports: stats, mclust, reshape, ggplot2, scales, tools
 RoxygenNote: 7.2.3

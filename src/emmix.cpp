@@ -1,6 +1,6 @@
-//[[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(BH)]]
-// [[Rcpp::plugins(cpp11)]]
+
 
 //'@importFrom Rcpp sourceCpp
 //'@useDynLib EMMIXgene

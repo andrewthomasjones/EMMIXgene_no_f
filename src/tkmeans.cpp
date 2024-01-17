@@ -2,7 +2,6 @@
 #include <RcppArmadillo.h>
 
 using namespace Rcpp;
-// [[Rcpp::plugins(cpp11)]]
 
 #include <tkmeans.h>
 // constructing priority queues
