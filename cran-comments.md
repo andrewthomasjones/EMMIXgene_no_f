@@ -1,8 +1,8 @@
 ## Test environments
 
-* local OS X install, R 4.3.0
+* local Mac OS Sonoma 14.2.1 install, R 4.3.0
 * win-builder (devel and release) 
-* RHub ubuntu-gcc-devel --as-cran --run-donttest
+* RHub Debian Linux, R-devel, GCC ASAN/UBSAN
 
 ## R CMD check results
 
