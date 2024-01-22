@@ -20,4 +20,6 @@ LazyData: TRUE
 Depends: R(>= 3.3.0)
 LinkingTo: Rcpp, RcppArmadillo, BH
 Imports: Rcpp, stats, mclust, reshape, ggplot2, scales, tools
+URL: https://github.com/andrewthomasjones/EMMIXgene_no_f
+BugReports: https://github.com/andrewthomasjones/EMMIXgene_no_f/issues
 RoxygenNote: 7.2.3
